@@ -24,6 +24,8 @@ modified: '2026-04-28'
 specificationVersion: '0.19'
 apis: []
 common:
+  - type: LinkedIn
+    url: https://www.linkedin.com/company/diebold
   - type: Website
     url: https://www.dieboldnixdorf.com
   - type: Support
