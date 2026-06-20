@@ -9,7 +9,7 @@ description: >-
   Manuals Drivers and Downloads), it does not currently publish a public open
   developer portal or open APIs. This repository is maintained as a placeholder for
   any APIs, developer tools, or machine-readable artifacts that may emerge.
-image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
 type: Index
 position: Consumer
 access: 3rd-Party
