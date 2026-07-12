@@ -25,6 +25,10 @@ modified: '2026-04-28'
 specificationVersion: '0.19'
 apis: []
 common:
+  - type: VulnerabilityDisclosure
+    url: security/diebold-vulnerability-disclosure.yml
+  - type: DomainSecurity
+    url: security/diebold-domain-security.yml
   - type: LinkedIn
     url: https://www.linkedin.com/company/diebold
   - type: Website
