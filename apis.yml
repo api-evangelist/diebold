@@ -9,6 +9,17 @@ description: >-
   Manuals Drivers and Downloads), it does not currently publish a public open
   developer portal or open APIs. This repository is maintained as a placeholder for
   any APIs, developer tools, or machine-readable artifacts that may emerge.
+deliveryModel:
+  model: unknown
+  open_source: false
+  commercial: false
+  callable_host: false
+  label: Delivery model not determined — needs a product licence on record
+  confidence: low
+  source:
+  - none
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: unknown
   onboarding: unknown
