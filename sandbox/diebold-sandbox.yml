@@ -1,0 +1,26 @@
+generated: '2026-09-06'
+method: derived
+source: openapi/diebold-dn-tm-authorization-api-openapi.yml and the servers[] blocks of the eight harvested specifications.
+sandbox_program: false
+note: 'Diebold Nixdorf publishes no sandbox: there is no test environment, no test-mode key prefix, no test card
+  set and no fixture tooling on any reachable page. Two adjacent things exist and are recorded here so they are
+  not mistaken for one.'
+test_surfaces:
+- kind: mock-server
+  host: virtserver.swaggerhub.com
+  urls:
+  - https://virtserver.swaggerhub.com/Diebold-Nixdorf/dn_pledge_api/3.1.0
+  - https://virtserver.swaggerhub.com/Diebold-Nixdorf/tm-pre-digitization-api-outbound/1.0.0
+  detail: Two specifications list a SwaggerHub auto-generated virtual server in servers[]. It returns the examples
+    declared in the document. It is a mock of the contract, not a Diebold Nixdorf test environment, and it is operated
+    by SmartBear.
+- kind: diagnostic-endpoint
+  operationId: sandboxTest
+  method: GET /test
+  spec: openapi/diebold-dn-tm-authorization-api-openapi.yml
+  detail: The DN TM Authorization API exposes GET /test with a required testcase parameter whose only enum value
+    is TEST_INTERCEPTOR_RIGHTS. It verifies that the OAuth token in the Authorization header carries the rights
+    an annotation requires. It exercises authorization plumbing, not business transactions.
+test_values: []
+test_values_note: No test card numbers, test accounts, test PANs or hosted test tokens are published. None are invented
+  here.

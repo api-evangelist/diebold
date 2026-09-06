@@ -1,0 +1,35 @@
+generated: '2026-09-06'
+method: derived
+source: openapi/diebold-dn-assist-api-openapi.yml, openapi/diebold-dn-online-mobile-api-openapi.yml,
+  openapi/diebold-dn-open-backend-api-openapi.yml, openapi/diebold-dn-payment-initiation-api-openapi.yml,
+  openapi/diebold-dn-secure-business-processing-api-openapi.yml, openapi/diebold-dn-tm-authorization-api-openapi.yml
+summary:
+  types:
+  - http
+  - openIdConnect
+schemes:
+- name: basic
+  type: http
+  scheme: basic
+  description: Authorization will contain base 64 encoded userName:password string
+  sources:
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+  - openapi/diebold-dn-secure-business-processing-api-openapi.yml
+  - openapi/diebold-dn-tm-authorization-api-openapi.yml
+- name: bearer
+  type: http
+  scheme: bearer
+  bearerFormat: Any string
+  description: Authorization will contain token received using getToken request as Bearer Token
+  sources:
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-online-mobile-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+  - openapi/diebold-dn-payment-initiation-api-openapi.yml
+  - openapi/diebold-dn-tm-authorization-api-openapi.yml
+- name: openId
+  type: openIdConnect
+  openIdConnectUrl: https://login.microsoftonline.com/52846f0f-bc96-4a36-939b-f4d04bb473a0/v2.0/.well-known/openid-configuration
+  sources:
+  - openapi/diebold-dn-payment-initiation-api-openapi.yml

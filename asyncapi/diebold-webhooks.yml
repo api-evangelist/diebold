@@ -1,0 +1,44 @@
+generated: '2026-09-06'
+method: derived
+source: openapi/diebold-tm-pre-digitization-api-outbound-openapi.yml, harvested verbatim from https://api.swaggerhub.com/apis/Diebold-Nixdorf/tm-pre-digitization-api-outbound/1.0.0
+asyncapi_published: false
+kind: outbound-callback contract described as OpenAPI
+note: 'Diebold Nixdorf publishes no AsyncAPI and no event catalog, and no message broker or streaming surface appears
+  anywhere in its contracts. It does publish one genuinely outbound surface, and it is recorded here rather than
+  being counted as an ordinary REST API. The TM Pre-Digitization API (Outbound) describes calls that Vynamic Transaction
+  Middleware MAKES to a card issuer during card digitization — its own description says the API is "used to inform
+  Issuers of services being requested by, or on-behalf of, their account holders". The issuer implements these three
+  endpoints; Diebold Nixdorf calls them. That is a webhook contract expressed as OpenAPI. It is not a subscription
+  surface: there is no registration endpoint, no signing scheme, no retry or delivery guarantee and no replay mechanism
+  documented.'
+direction: provider -> subscriber (card issuer implements the endpoints)
+subscription:
+  self_serve: false
+  registration_endpoint: null
+  detail: Endpoints are configured as part of the issuer integration, not registered through an API.
+signing:
+  scheme: null
+  detail: No signature header, HMAC scheme or mTLS requirement is declared in the contract.
+delivery:
+  retries: null
+  ordering: null
+  detail: No retry policy, ordering guarantee or dead-letter behaviour is documented.
+correlation: correlationId is carried on requests and echoed on errors.
+events:
+- event: custromerInformation
+  method: POST
+  path: /customerInformation
+  summary: Optional request to get some customer information from the host.
+  request_schema: CustomerInformationRequest
+- event: deliverActivationCode
+  method: POST
+  path: /deliverActivationCode
+  summary: DeliverActivationCode is used to request an Activation Code be sent to authenticate the Account holder.
+  request_schema: DeliverActivationCodeRequest
+- event: notifyServiceActivated
+  method: POST
+  path: /digitizationCompleted
+  summary: digitizationCompleted is used to receive notifications that the provisioning and activation of a token
+    for a funding account has been completed by the digitization service.
+  request_schema: DigitizationCompletedRequest
+event_count: 3

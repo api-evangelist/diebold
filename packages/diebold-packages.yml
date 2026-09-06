@@ -1,0 +1,55 @@
+generated: '2026-09-06'
+method: searched
+source: 'Unauthenticated registry searches run 2026-09-06: registry.npmjs.org (queries "diebold", "vynamic"), pypi.org/pypi
+  (dieboldnixdorf, vynamic), search.maven.org solrsearch (diebold, vynamic), azuresearch-usnc.nuget.org (diebold),
+  rubygems.org search (diebold), crates.io (diebold), packagist.org (diebold), plus api.github.com for the GitHub
+  organizations DieboldNixdorf, dieboldnixdorf-ar and DieboldNixdorfBelgiumPS.'
+packages: []
+package_count: 0
+official_count: 0
+note: 'Diebold Nixdorf publishes no client library on any public package registry. Every query above returned either
+  zero results or unrelated packages (crates.io and Packagist matched on surnames, not on the company). The GitHub
+  organization github.com/DieboldNixdorf exists — created 2020-10-19 — but has public_repos: 0, so there is no source
+  distribution either. Integration with the Vynamic banking APIs is done by generating a client from the OpenAPI
+  definitions in openapi/, or through the SDK Diebold Nixdorf ships to licensed customers under the eServices portal,
+  which is not public.'
+registries_probed:
+- registry: npm
+  query:
+  - diebold
+  - vynamic
+  hits: 0
+- registry: pypi
+  query:
+  - dieboldnixdorf
+  - vynamic
+  hits: 0
+  status: 404
+- registry: maven-central
+  query:
+  - diebold
+  - vynamic
+  hits: 0
+- registry: nuget
+  query:
+  - diebold
+  hits: 0
+- registry: rubygems
+  query:
+  - diebold
+  hits: 0
+- registry: crates.io
+  query:
+  - diebold
+  hits: 0
+  note: 4 results, none related to Diebold Nixdorf
+- registry: packagist
+  query:
+  - diebold
+  hits: 0
+  note: 2 results, none related to Diebold Nixdorf
+- registry: github
+  query:
+  - DieboldNixdorf org
+  hits: 0
+  note: organization exists, 0 public repositories

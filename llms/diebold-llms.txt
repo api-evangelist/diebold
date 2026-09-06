@@ -1,0 +1,94 @@
+# Diebold Nixdorf
+
+> Diebold Nixdorf builds connected-commerce technology for banks and retailers: ATMs and self-service
+> terminals, retail point-of-sale hardware, the Vynamic software portfolio, and the managed services
+> around them. Its API surface is the Vynamic banking stack — Transaction Middleware and the interfaces
+> that connect self-service and digital channels to a core banking system.
+
+Generated: 2026-09-06 by API Evangelist (apievangelist.com) from the eight OpenAPI definitions Diebold
+Nixdorf publishes through its SwaggerHub organization. This file is written by a third party, not by
+Diebold Nixdorf. Diebold Nixdorf serves no llms.txt of its own (https://www.dieboldnixdorf.com/llms.txt
+returned HTTP 404 on 2026-09-06).
+
+## Read this first
+
+Every one of these APIs is CUSTOMER-DEPLOYED. The servers[] block in each specification names
+`localhost:8080` because Vynamic Transaction Middleware runs inside the financial institution's own
+environment. There is no shared Diebold Nixdorf endpoint an agent can call, no public signup, no
+sandbox, no published price and no published rate limit. Access follows a customer or partner
+relationship. The base URL is the bank's, not the vendor's.
+
+## APIs
+
+- [DN Open Backend API](https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn-open_backend_api/4.3.0):
+  Banking core integration — authentication, account information, consumer information, account
+  processing. 62 paths, OpenAPI 3.0.1, version 4.3.0. Carries the two-phase authorize/finalize
+  protocol used by withdrawal, deposit, check cashing and mixed-media payment.
+- [DN Online & Mobile API](https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn_online_mobile_api/3.2.1):
+  Online and mobile banking channel into the Transaction Middleware, including a SEPA Instant
+  push/pull payment surface. 35 paths, OpenAPI 3.0.3, version 3.2.1.
+- [DN Assist API](https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn-assist_api/1.0):
+  Self-service assistance — terminal status, session and customer data, remote commands, teller
+  hand-off. 23 paths, OpenAPI 3.0.1, version 1.0.
+- [DN Payment Initiation API](https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn_payment_initiation_api/1.9.11):
+  Cardless and card-based payment initiation, confirm, cancel, refund and payment-device management.
+  Uses the Berlin Group NextGenPSD2 PSU header set and OpenID Connect. 11 paths, version 1.9.11.
+- [DN TM Authorization API](https://api.swaggerhub.com/apis/Diebold-Nixdorf/DN-TM-Authorization-API/1.8.1):
+  Token issuance and key retrieval for the Transaction Middleware. 8 paths, version 1.8.1.
+- [DN Account BC API](https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn-account_api/1.0.0):
+  Account balance management, transaction authorization and reversal, notifications. 5 paths.
+- [DN Secure Business Processing API](https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn_pledge_api/3.1.0):
+  Invokes a preconfigured business process flow in one request, authorized via an external OpenID
+  provider. 2 paths, version 3.1.0, unchanged since 2022.
+- [TM Pre-Digitization API (Outbound)](https://api.swaggerhub.com/apis/Diebold-Nixdorf/tm-pre-digitization-api-outbound/1.0.0):
+  Outbound calls to card issuers during card digitization — customer information, activation code
+  delivery, digitization completion. 3 paths.
+
+## Machine-readable artifacts in this repository
+
+- Specifications: `openapi/` (eight documents, plus the verbatim harvested JSON in `openapi/_original/`)
+- Authentication profile: `authentication/diebold-authentication.yml`
+- Runtime semantics, idempotency and reversibility: `conventions/diebold-conventions.yml`
+- Error catalog (162 numeric application codes): `errors/diebold-problem-types.yml`
+- Authorization decline codes: `errors/diebold-decline-codes.yml`
+- Standards signatures: `conformance/diebold-conformance.yml`
+- Versions and decay: `lifecycle/diebold-lifecycle.yml`
+- Entity graph: `data-model/diebold-data-model.yml`
+- Agent skills: `skills/_index.yml`
+- Discovery-document probe log: `well-known/diebold-well-known.yml`
+
+## What an agent needs to know before calling anything here
+
+- Auth: HTTP Basic or Bearer on the banking surfaces; OpenID Connect on Payment Initiation (Microsoft
+  Entra ID tenant) and on Secure Business Processing. Tokens come from `getToken`, `tm-authenticate`
+  or `/token`. The Open Backend and Assist APIs also accept a JWE-encrypted bearer, keyed by
+  `getRsaKey` / `getEcKey` / `pkiKey`.
+- Idempotency is PARTIAL. Two of 116 mutating operations state a replay key — `cancel` and `refund`
+  on the Payment Initiation API, both keyed on `transactionId`. There is no `Idempotency-Key` header.
+  The other 114 writes, including every money-moving Open Backend operation, document nothing.
+- Reversal paths exist and are well populated (`reversal`, `transferReversal`, `cancelAccountHold`,
+  `reverseTransaction`, `cancel`, `refund`, `cancelPushPayment`, `cancelPullPayment`), but NO
+  specification states a window inside which a reversal is accepted. Do not assume one.
+- Errors are vendor JSON, not RFC 9457. Read `responseCode` (OK | FAIL | RESUBMIT) and
+  `extendedResponseCode` (40 business outcomes) as well as the HTTP status.
+- Pagination does not exist. Collection reads are bounded by date range.
+- No rate-limit headers, no 429, no status page, no deprecation policy.
+
+## Not available
+
+- No public developer portal. `developer.dieboldnixdorf.com` is a dangling CNAME to a decommissioned
+  Salesforce Experience Cloud site and does not resolve.
+- The Vynamic Retail Platform developer portal, `vrp-api.dieboldnixdorf.com`, is a SwaggerHub Portal
+  behind a login; every path returns HTTP 302 to `portal.swaggerhub.com`.
+- No SDKs on npm, PyPI, Maven Central, NuGet, RubyGems, crates.io or Packagist. The GitHub
+  organization `DieboldNixdorf` has zero public repositories.
+- No MCP server, no A2A agent card, no AsyncAPI, no WSDL, no gRPC contract.
+
+## Company
+
+- [Diebold Nixdorf](https://www.dieboldnixdorf.com)
+- [Support](https://www.dieboldnixdorf.com/en-us/support)
+- [Global Security Portal](https://www.dieboldnixdorf.com/en-us/support/globalsecurityportal)
+- [Report a security concern](https://www.dieboldnixdorf.com/en-us/support/globalsecurityportal/contactsecurity)
+- [Terms of Use](https://www.dieboldnixdorf.com/en-us/terms-of-use)
+- [Global Privacy Notice](https://www.dieboldnixdorf.com/en-us/privacy-policy/global-privacy-notice)

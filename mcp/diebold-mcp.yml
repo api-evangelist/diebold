@@ -1,0 +1,87 @@
+generated: '2026-09-06'
+method: derived
+status: candidate
+source: No Diebold Nixdorf MCP server exists. Searched the web, the SwaggerHub organization Diebold-Nixdorf, github.com/DieboldNixdorf,
+  npm and PyPI, and probed /.well-known/ on every Diebold Nixdorf host this record knows. The tool list below is
+  DERIVED from operations in openapi/ and is not published by the provider.
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: unknown
+  verified: derived
+deployment_note: 'mode: none. Nobody ships a server — not a hosted endpoint and not a stdio package. No endpoint
+  URL is recorded because guessing one would read as a verified agent surface. Note also that the underlying product
+  is customer-deployed: any future MCP server for these APIs would have to point at a financial institution''s own
+  Vynamic Transaction Middleware installation, not at a Diebold Nixdorf host.'
+candidate_tools:
+- name: dn_get_accounts
+  description: List the accounts available to an identified consumer.
+  rest:
+  - accountList
+  - getAccounts
+  spec: openapi/diebold-dn-open-backend-api-openapi.yml
+- name: dn_get_account_details
+  description: Retrieve balances and details for one account.
+  rest:
+  - accountInquiry
+  - getAccountDetails
+  spec: openapi/diebold-dn-open-backend-api-openapi.yml
+- name: dn_get_transactions
+  description: Retrieve account movements for a date range.
+  rest:
+  - getAccountMovement
+  - getTransactions
+  spec: openapi/diebold-dn-open-backend-api-openapi.yml
+- name: dn_create_transfer
+  description: Create a transfer between accounts.
+  rest:
+  - transfer
+  - createTransfer
+  spec: openapi/diebold-dn-online-mobile-api-openapi.yml
+- name: dn_reverse_transfer
+  description: Reverse a completed transfer.
+  rest:
+  - transferReversal
+  spec: openapi/diebold-dn-open-backend-api-openapi.yml
+- name: dn_initiate_payment
+  description: Initiate a cardless or card-based payment transaction.
+  rest:
+  - cardlessPayment
+  - cardbasedPayment
+  spec: openapi/diebold-dn-payment-initiation-api-openapi.yml
+- name: dn_cancel_payment
+  description: 'Cancel an initiated payment (idempotence key: transactionId).'
+  rest:
+  - cancel
+  spec: openapi/diebold-dn-payment-initiation-api-openapi.yml
+- name: dn_refund_payment
+  description: 'Refund an initiated payment (idempotence key: transactionId).'
+  rest:
+  - refund
+  spec: openapi/diebold-dn-payment-initiation-api-openapi.yml
+- name: dn_get_payment
+  description: Retrieve the details and state of a payment transaction.
+  rest:
+  - transactionDetails
+  spec: openapi/diebold-dn-payment-initiation-api-openapi.yml
+- name: dn_list_prestaged_transactions
+  description: List prestaged self-service transactions for a consumer.
+  rest:
+  - getPrestagedTransactions
+  spec: openapi/diebold-dn-online-mobile-api-openapi.yml
+- name: dn_terminal_status
+  description: Read the status of self-service terminals in a tenant.
+  rest:
+  - get:/terminalStatus/{tenantName}
+  spec: openapi/diebold-dn-assist-api-openapi.yml
+- name: dn_get_token
+  description: Obtain a bearer token for the Transaction Middleware.
+  rest:
+  - getToken
+  - tm-authenticate
+  spec: openapi/diebold-dn-tm-authorization-api-openapi.yml
+caution: 'These are candidates only. Every one of them touches money movement on a live core banking system, and
+  the contract documents replay protection on exactly two operations (see conventions/diebold-conventions.yml idempotency.coverage:
+  partial) and no reversal window at all. An agent surface over this API would need both before it was safe to build.'

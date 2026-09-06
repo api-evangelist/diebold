@@ -1,0 +1,17 @@
+generated: '2026-09-06'
+method: searched
+source: https://www.dieboldnixdorf.com/en-us/banking/portfolio/software/ and https://www.dieboldnixdorf.com/en-us/retail/portfolio/software/
+  (both HTTP 200), plus the Vynamic Payments and Vynamic Retail Platform product pages.
+plan_count: 0
+plans: []
+pricing_model: enterprise-contract
+note: 'Diebold Nixdorf publishes no plans, tiers, list prices or usage quotas for any of its software or APIs. Every
+  product page ends in a "Let''s Connect" contact form (https://www.dieboldnixdorf.com/en-us/contact-us, HTTP 200)
+  rather than a pricing page. This is a licensed enterprise product sold with hardware and managed services to banks
+  and retailers; there is no self-serve signup and no published price anywhere on the site. plan_count: 0 is a measurement,
+  not a gap in this pass.'
+signup:
+  self_serve: false
+  url: null
+  detail: No developer signup exists. API access follows a customer or partner relationship; the former developer
+    community at developer.dieboldnixdorf.com no longer resolves.

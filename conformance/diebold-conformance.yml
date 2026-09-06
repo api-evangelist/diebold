@@ -1,0 +1,116 @@
+generated: '2026-09-06'
+method: derived
+source: Read out of the eight Diebold Nixdorf OpenAPI definitions published through the SwaggerHub organization
+  Diebold-Nixdorf. Every entry below points at the exact place in a contract that carries the signature; nothing
+  is taken from a marketing claim, because no Diebold Nixdorf developer documentation site is publicly reachable
+  to make one.
+cross_cutting:
+- id: oauth2
+  conforms: false
+  evidence: No oauth2 securityScheme is declared in any of the eight specifications. Bearer tokens are issued by
+    vendor endpoints (GET /getToken, POST /tm-authorization/authenticate, GET|POST /token) rather than by an OAuth
+    2.0 authorization server described in the contract.
+- id: oidc
+  conforms: true
+  evidence: openapi/diebold-dn-payment-initiation-api-openapi.yml declares components.securitySchemes.openId of
+    type openIdConnect with openIdConnectUrl https://login.microsoftonline.com/52846f0f-bc96-4a36-939b-f4d04bb473a0/v2.0/.well-known/openid-configuration,
+    which returns HTTP 200 and is saved at well-known/diebold-openid-configuration.json. openapi/diebold-dn-secure-business-processing-api-openapi.yml
+    states in info.description that authorization takes place via an external OpenID provider configured in the
+    OCM configuration, expecting the OpenID access token in Authorization and the ID token in a separate parameter.
+- id: rfc9457
+  conforms: false
+  evidence: All 248 4xx/5xx response bodies across the eight specifications are application/json carrying a vendor
+    error object; application/problem+json appears nowhere. See errors/diebold-problem-types.yml.
+- id: idempotency
+  conforms: partial
+  evidence: 'Two of 116 mutating operations state an idempotence key: openapi/diebold-dn-payment-initiation-api-openapi.yml
+    paths./payments/{merchantId}/{transactionId}.delete and .put both carry "Idempotence key: transactionId" in
+    the operation description. No Idempotency-Key header exists. See conventions/diebold-conventions.yml idempotency.coverage:
+    partial.'
+- id: pagination
+  conforms: false
+  evidence: No page, cursor, offset, limit or pageSize parameter is declared in any specification; collection reads
+    are bounded by date range instead.
+- id: json-api
+  conforms: false
+  evidence: No application/vnd.api+json media type and no JSON:API document structure appears in any specification.
+- id: scim
+  conforms: false
+  evidence: No urn:ietf:params:scim:schemas URN and no /Users or /Groups resource appears in any specification.
+- id: odata
+  conforms: false
+  evidence: No $metadata surface and no $filter/$select/$expand system query option appears in any specification.
+- id: fhir
+  conforms: false
+  evidence: Not a health surface.
+- id: fapi
+  conforms: false
+  evidence: 'No FAPI profile is claimed or implied: there is no mTLS or private_key_jwt client authentication, no
+    JARM, no PAR endpoint and no request-object requirement in any specification. Bearer tokens over HTTP Basic-obtained
+    credentials are the norm.'
+domain_standards:
+- id: berlin-group-nextgenpsd2
+  conforms: true
+  grade: partial-signature
+  evidence: 'openapi/diebold-dn-payment-initiation-api-openapi.yml declares the Berlin Group NextGenPSD2 PSU header
+    set verbatim as reusable components.parameters: PSU-IP-AddressParam (PSU-IP-Address), PSU-GEO-LocationParam
+    (PSU-GEO-Location), PSU-User-AgentParam (PSU-User-Agent) and X-Request-ID-Param (X-Request-ID, required, "unique
+    to the call, as determined by the initiating party"). These four headers are the NextGenPSD2 XS2A framework''s
+    TPP-to-ASPSP contract and appear on every operation of the API. The resource model is Diebold Nixdorf''s own
+    (/pay/{merchantId}/..., not /v1/payments/{payment-product}), so this is the Berlin Group header and correlation
+    profile applied to a proprietary payment-initiation resource model, not a conformant NextGenPSD2 implementation.'
+  note: PSD2/PSD3 is the regulatory regime for this provider's sector (banking_open_finance); berlin-group-nextgenpsd2
+    is the named standard in that regime's standards[] list.
+- id: iso-20022
+  conforms: true
+  grade: data-type-signature
+  evidence: openapi/diebold-dn-payment-initiation-api-openapi.yml components.schemas.Amount defines value as "The
+    amount value of the given currency. As defined by ISO 20022, CurrencyAndAmount." and currency as "The currency
+    code as defined by ISO 20022, ActiveCurrencyCode". The same ISO 20022 type derivation appears in openapi/diebold-dn-online-mobile-api-openapi.yml.
+    ISO 20022 message types (pain/pacs/camt) are NOT used — the standard is borrowed for its data dictionary, not
+    its messages.
+- id: sepa-instant
+  conforms: true
+  grade: surface-signature
+  evidence: openapi/diebold-dn-online-mobile-api-openapi.yml exposes a dedicated SEPA Instant surface at /sepa-instant/pushPayment
+    (GET/POST/DELETE) and /sepa-instant/pullPayment (GET/POST/DELETE), with operationIds getPushPayment, createPushPayment,
+    cancelPushPayment, getPullPayment, authorizePullPayment and cancelPullPayment. SEPA is named 18 times in that
+    document.
+- id: emv
+  conforms: true
+  grade: data-element-signature
+  evidence: openapi/diebold-dn-open-backend-api-openapi.yml declares components.schemas.EMVTagData and components.schemas.EMVTags
+    and carries an emvData field on the card-transaction schemas (30 occurrences), which is how EMV chip tag data
+    is passed from the terminal through the middleware to the core.
+- id: iso-8583
+  conforms: true
+  grade: code-mapping-signature
+  evidence: openapi/diebold-dn-open-backend-api-openapi.yml documents its AccountType enum against ISO 8583 data
+    element 54 processing codes — "CREDIT_CARD (ISO 8583; MC DE.54->30 / VISA DE.54->30)", "CHECKING (ISO 8583;
+    MC DE.54->20 / VISA DE.54->20)", "UNIVERSAL (ISO 8583; VISA DE.54->40)", "SPENDING_POWER (ISO 8583; VISA DE.54->64)".
+    The same mapping table appears in the Assist and Account BC specifications.
+- id: 3-d-secure
+  conforms: partial
+  grade: result-code-signature
+  evidence: openapi/diebold-dn-payment-initiation-api-openapi.yml components.schemas.DetailedResponseCode carries
+    CAVV verification outcomes (CURRENT_CAVV_VALID, CURRENT_CAVV_INVALID, CAVV_UNVERIFIED) alongside CVV2 and AVS
+    outcomes. The cardholder authentication value is a 3-D Secure artifact, but no 3-D Secure flow, ACS interaction
+    or version is described in the contract, so this is a downstream result code rather than a 3DS implementation.
+- id: pci-dss
+  conforms: false
+  evidence: PCI is named once, in passing, in the DN Payment Initiation API. No PCI DSS attestation, SAQ, AOC or
+    compliance page is published on any reachable Diebold Nixdorf host — see security/diebold-trust-center.yml (absent)
+    and the coverage note in apis.yml.
+not_applicable:
+- psd2 (as a licensed TPP surface)
+- open-payments
+- confirmation-of-payee
+- fdx
+- obie
+- cdr-banking
+- oai-pmh
+- activitypub
+- lti
+- ed-fi
+- sparkplug
+- openrtb

@@ -1,0 +1,87 @@
+generated: '2026-09-06'
+method: derived
+source: 'SwaggerHub registry metadata for the organization Diebold-Nixdorf (public, unauthenticated: https://api.swaggerhub.com/apis/Diebold-Nixdorf),
+  plus the server path versions declared inside each specification. No Diebold Nixdorf versioning policy, deprecation
+  policy, SLA or status page is publicly published.'
+versioning:
+  scheme: semantic document version in info.version, major version segment in the server path
+  path_versions:
+  - /OB-API-REST/v2
+  - /tm-om-api/v4
+  - /oauth-api/v1
+  - /pi-api/v1
+  - /account/v1
+  - /tm-assist-api/v1
+  - /tm-sbp-api/v1
+  registry: https://api.swaggerhub.com/apis/Diebold-Nixdorf
+apis:
+- name: DN Open Backend API
+  version: 4.3.0
+  path_version: v2
+  last_modified: '2026-03-17'
+  published: true
+  spec: openapi/diebold-dn-open-backend-api-openapi.yml
+- name: DN Online & Mobile API
+  version: 3.2.1
+  path_version: v4
+  last_modified: '2026-06-24'
+  published: false
+  spec: openapi/diebold-dn-online-mobile-api-openapi.yml
+- name: DN Assist API
+  version: '1.0'
+  path_version: v1
+  last_modified: '2025-10-31'
+  published: false
+  spec: openapi/diebold-dn-assist-api-openapi.yml
+- name: DN TM Authorization API
+  version: 1.8.1
+  path_version: v1
+  last_modified: '2025-10-22'
+  published: false
+  spec: openapi/diebold-dn-tm-authorization-api-openapi.yml
+- name: DN Payment Initiation API
+  version: 1.9.11
+  path_version: v1
+  last_modified: '2025-10-01'
+  published: false
+  spec: openapi/diebold-dn-payment-initiation-api-openapi.yml
+- name: DN Account BC API
+  version: 1.0.0
+  path_version: v1
+  last_modified: '2025-01-21'
+  published: false
+  spec: openapi/diebold-dn-account-bc-api-openapi.yml
+- name: TM Pre-Digitization API (Outbound)
+  version: 1.0.0
+  path_version: null
+  last_modified: '2024-05-08'
+  published: false
+  spec: openapi/diebold-tm-pre-digitization-api-outbound-openapi.yml
+- name: DN Secure Business Processing API
+  version: 3.1.0
+  path_version: v1
+  last_modified: '2022-04-19'
+  published: false
+  spec: openapi/diebold-dn-secure-business-processing-api-openapi.yml
+deprecation:
+  policy_published: false
+  sunset_header: false
+  deprecated_operations: []
+  detail: 'No operation in any of the eight specifications carries deprecated: true, and no Sunset or Deprecation
+    response header (RFC 8594) is declared anywhere. Diebold Nixdorf publishes no deprecation or end-of-life policy
+    for these APIs at any reachable URL. The registry does record decay: the Secure Business Processing API has
+    not been touched since 2022-04-19 and the TM Pre-Digitization API since 2024-05-08, but nothing in the contract
+    marks either as retired.'
+staleness:
+  freshest: DN Online & Mobile API, 2026-06-24
+  stalest: DN Secure Business Processing API, 2022-04-19
+  note: Only one of the eight definitions (DN Open Backend API) is flagged Published in the SwaggerHub registry;
+    the other seven are readable but carry X-Published false.
+sla:
+  published: false
+  detail: No SLA or uptime commitment is published for these APIs. Vynamic Transaction Middleware is customer-deployed,
+    so availability is a property of the financial institution's own installation, not of a Diebold Nixdorf endpoint.
+status_page:
+  published: false
+  detail: No status page exists, and none would be meaningful for a customer-deployed product. The eServices and
+    Aftersales portals are support surfaces behind a customer login, not API status pages.

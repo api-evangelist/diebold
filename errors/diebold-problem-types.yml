@@ -1,0 +1,626 @@
+generated: '2026-09-06'
+method: derived
+source: Derived from the 4xx/5xx responses and the error-code tables published inside the eight Diebold Nixdorf
+  OpenAPI definitions harvested from the SwaggerHub organization Diebold-Nixdorf.
+format: vendor-json
+format_note: Not RFC 9457. Every 4xx/5xx response across all eight specifications is application/json carrying a
+  vendor "error" object (message + errorCode, plus paymentProviderErrorCode / correlationId / transactionId on the
+  payment surfaces); no application/problem+json media type and no type/title/status/detail/instance members appear
+  anywhere in the contract.
+envelope:
+  media_type: application/json
+  container: error
+  members:
+  - name: message
+    type: string
+    max_length: 256
+    note: Optional human-readable description.
+  - name: errorCode
+    type: string
+    note: Symbolic code, e.g. HOST_CANCEL, REQUEST_DATA_INVALID_ID.
+  - name: paymentProviderErrorCode
+    type: string
+    note: Payment-provider code on the PI-API and Pre-Digitization surfaces, e.g. SysErr#765.
+  - name: code
+    type: integer
+    note: Numeric code on the Secure Business Processing API, e.g. 850004.
+  - name: transactionId
+    type: string
+    note: Echoed on payment errors so a caller can correlate the failed transaction.
+  - name: correlationId
+    type: string
+    note: Echoed on TM Pre-Digitization outbound errors.
+  companion_fields:
+  - name: responseCode
+    values:
+    - OK
+    - FAIL
+    - RESUBMIT
+    note: Coarse outcome carried in the ResponseBase of every DN banking response, alongside HTTP status. RESUBMIT
+      is an explicit retry instruction.
+  - name: extendedResponseCode
+    note: Fine-grained business outcome — see errors/diebold-decline-codes.yml.
+http_statuses:
+- status: 400
+  title: Bad Request
+  specs:
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-online-mobile-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+  - openapi/diebold-dn-payment-initiation-api-openapi.yml
+  - openapi/diebold-dn-secure-business-processing-api-openapi.yml
+  - openapi/diebold-dn-tm-authorization-api-openapi.yml
+  - openapi/diebold-tm-pre-digitization-api-outbound-openapi.yml
+- status: 401
+  title: Unauthorized
+  specs:
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-online-mobile-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+  - openapi/diebold-dn-payment-initiation-api-openapi.yml
+  - openapi/diebold-dn-secure-business-processing-api-openapi.yml
+  - openapi/diebold-dn-tm-authorization-api-openapi.yml
+  - openapi/diebold-tm-pre-digitization-api-outbound-openapi.yml
+- status: 403
+  title: Forbidden
+  specs:
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- status: 404
+  title: Not Found
+  specs:
+  - openapi/diebold-dn-online-mobile-api-openapi.yml
+  - openapi/diebold-dn-payment-initiation-api-openapi.yml
+  - openapi/diebold-dn-secure-business-processing-api-openapi.yml
+- status: 405
+  title: Method Not Allowed
+  specs:
+  - openapi/diebold-dn-payment-initiation-api-openapi.yml
+  - openapi/diebold-tm-pre-digitization-api-outbound-openapi.yml
+- status: 409
+  title: Conflict
+  specs:
+  - openapi/diebold-dn-payment-initiation-api-openapi.yml
+- status: 500
+  title: Internal Server Error
+  specs:
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+  - openapi/diebold-dn-payment-initiation-api-openapi.yml
+  - openapi/diebold-dn-tm-authorization-api-openapi.yml
+  - openapi/diebold-tm-pre-digitization-api-outbound-openapi.yml
+- status: 503
+  title: Service Unavailable
+  specs:
+  - openapi/diebold-dn-payment-initiation-api-openapi.yml
+application_error_codes:
+  note: 'The DN Online & Mobile API publishes a complete numeric error-code table inside components.schemas.Error.description.
+    Codes are allocated in a per-operation number range (2 87 x x x x): each operation owns a 100-code block and
+    the last two digits identify the error family. Parsed verbatim from the contract; nothing here is invented.'
+  source_spec: openapi/diebold-dn-online-mobile-api-openapi.yml
+  scheme: 2 87 <operation-block> <error-ordinal>
+  count: 162
+  families:
+  - name: SERVER_FAILURE
+    occurrences: 31
+  - name: VERIFICATION_FAILED
+    occurrences: 31
+  - name: REQUEST_DATA_INVALID
+    occurrences: 27
+  - name: SYSTEM_ERROR
+    occurrences: 17
+  - name: NO_RESULT
+    occurrences: 13
+  - name: HOST_OFFLINE
+    occurrences: 12
+  - name: HOST_COMMUNICATION_ERROR
+    occurrences: 12
+  - name: RESERVED
+    occurrences: 7
+  - name: CONSUMER_NOT_FOUND
+    occurrences: 2
+  - name: STANDINGORDER_NOT_FOUND
+    occurrences: 2
+  - name: LIMIT_EXCEEDED
+    occurrences: 1
+  - name: INSUFFICIENT_FUNDS
+    occurrences: 1
+  - name: ACCOUNT_TYPE_INVALID
+    occurrences: 1
+  - name: MESSAGE_NOT_SENT
+    occurrences: 1
+  - name: SERVICE_NOT_SUPPORTED
+    occurrences: 1
+  - name: EXT_RESPONSE_NO_MATCHING_RECORD_FOUND
+    occurrences: 1
+  - name: RESPONSE_NO_CONSUMER_ID_AVAILABLE
+    occurrences: 1
+  - name: RESPONSE_NO_PREFERENCES_AVAILABLE
+    occurrences: 1
+  codes:
+  - code: 2870000
+    name: SERVER_FAILURE
+    operation: getAccounts
+  - code: 2870001
+    name: SYSTEM_ERROR
+    operation: getAccounts
+  - code: 2870002
+    name: REQUEST_DATA_INVALID
+    operation: getAccounts
+  - code: 2870003
+    name: NO_RESULT
+    operation: getAccounts
+  - code: 2870004
+    name: HOST_OFFLINE
+    operation: getAccounts
+  - code: 2870005
+    name: HOST_COMMUNICATION_ERROR
+    operation: getAccounts
+  - code: 2870015
+    name: VERIFICATION_FAILED
+    operation: getAccounts
+  - code: 2870100
+    name: SERVER_FAILURE
+    operation: getAccountTypes
+  - code: 2870115
+    name: VERIFICATION_FAILED
+    operation: getAccountTypes
+  - code: 2870200
+    name: SERVER_FAILURE
+    operation: getAccountDetails
+  - code: 2870201
+    name: SYSTEM_ERROR
+    operation: getAccountDetails
+  - code: 2870202
+    name: REQUEST_DATA_INVALID
+    operation: getAccountDetails
+  - code: 2870203
+    name: NO_RESULT
+    operation: getAccountDetails
+  - code: 2870204
+    name: HOST_OFFLINE
+    operation: getAccountDetails
+  - code: 2870205
+    name: HOST_COMMUNICATION_ERROR
+    operation: getAccountDetails
+  - code: 2870215
+    name: VERIFICATION_FAILED
+    operation: getAccountDetails
+  - code: 2870300
+    name: SERVER_FAILURE
+    operation: getTransactions
+  - code: 2870301
+    name: SYSTEM_ERROR
+    operation: getTransactions
+  - code: 2870302
+    name: REQUEST_DATA_INVALID
+    operation: getTransactions
+  - code: 2870303
+    name: NO_RESULT
+    operation: getTransactions
+  - code: 2870304
+    name: HOST_OFFLINE
+    operation: getTransactions
+  - code: 2870305
+    name: HOST_COMMUNICATION_ERROR
+    operation: getTransactions
+  - code: 2870315
+    name: VERIFICATION_FAILED
+    operation: getTransactions
+  - code: 2870400
+    name: SERVER_FAILURE
+    operation: getScheduledTransactions
+  - code: 2870401
+    name: SYSTEM_ERROR
+    operation: getScheduledTransactions
+  - code: 2870402
+    name: REQUEST_DATA_INVALID
+    operation: getScheduledTransactions
+  - code: 2870403
+    name: NO_RESULT
+    operation: getScheduledTransactions
+  - code: 2870404
+    name: HOST_OFFLINE
+    operation: getScheduledTransactions
+  - code: 2870405
+    name: HOST_COMMUNICATION_ERROR
+    operation: getScheduledTransactions
+  - code: 2870415
+    name: VERIFICATION_FAILED
+    operation: getScheduledTransactions
+  - code: 2870500
+    name: SERVER_FAILURE
+    operation: checkAccount
+  - code: 2870501
+    name: SYSTEM_ERROR
+    operation: checkAccount
+  - code: 2870502
+    name: REQUEST_DATA_INVALID
+    operation: checkAccount
+  - code: 2870503
+    name: NO_RESULT
+    operation: checkAccount
+  - code: 2870504
+    name: HOST_OFFLINE
+    operation: checkAccount
+  - code: 2870505
+    name: HOST_COMMUNICATION_ERROR
+    operation: checkAccount
+  - code: 2870515
+    name: VERIFICATION_FAILED
+    operation: checkAccount
+  - code: 2870600
+    name: SERVER_FAILURE
+    operation: createTransfer
+  - code: 2870601
+    name: SYSTEM_ERROR
+    operation: createTransfer
+  - code: 2870602
+    name: REQUEST_DATA_INVALID
+    operation: createTransfer
+  - code: 2870603
+    name: NO_RESULT
+    operation: createTransfer
+  - code: 2870604
+    name: HOST_OFFLINE
+    operation: createTransfer
+  - code: 2870605
+    name: HOST_COMMUNICATION_ERROR
+    operation: createTransfer
+  - code: 2870606
+    name: LIMIT_EXCEEDED
+    operation: createTransfer
+  - code: 2870607
+    name: INSUFFICIENT_FUNDS
+    operation: createTransfer
+  - code: 2870608
+    name: ACCOUNT_TYPE_INVALID
+    operation: createTransfer
+  - code: 2870615
+    name: VERIFICATION_FAILED
+    operation: createTransfer
+  - code: 2870700
+    name: SERVER_FAILURE
+    operation: createDispute
+  - code: 2870701
+    name: SYSTEM_ERROR
+    operation: createDispute
+  - code: 2870700
+    name: MESSAGE_NOT_SENT
+    operation: createDispute
+  - code: 2870703
+    name: REQUEST_DATA_INVALID
+    operation: createDispute
+  - code: 2870715
+    name: VERIFICATION_FAILED
+    operation: createDispute
+  - code: 2871000
+    name: SERVER_FAILURE
+    operation: getStandingOrders
+  - code: 2871002
+    name: REQUEST_DATA_INVALID
+    operation: getStandingOrders
+  - code: 2871012
+    name: CONSUMER_NOT_FOUND
+    operation: getStandingOrders
+  - code: 2871015
+    name: VERIFICATION_FAILED
+    operation: getStandingOrders
+  - code: 2871100
+    name: SERVER_FAILURE
+    operation: createStandingOrder
+  - code: 2871102
+    name: REQUEST_DATA_INVALID
+    operation: createStandingOrder
+  - code: 2871115
+    name: VERIFICATION_FAILED
+    operation: createStandingOrder
+  - code: 2871200
+    name: SERVER_FAILURE
+    operation: updateStandingOrder
+  - code: 2871201
+    name: SYSTEM_ERROR
+    operation: updateStandingOrder
+  - code: 2871202
+    name: REQUEST_DATA_INVALID
+    operation: updateStandingOrder
+  - code: 2871209
+    name: STANDINGORDER_NOT_FOUND
+    operation: updateStandingOrder
+  - code: 2871215
+    name: VERIFICATION_FAILED
+    operation: updateStandingOrder
+  - code: 2871300
+    name: SERVER_FAILURE
+    operation: deleteStandingOrder
+  - code: 2871302
+    name: REQUEST_DATA_INVALID
+    operation: deleteStandingOrder
+  - code: 2871309
+    name: STANDINGORDER_NOT_FOUND
+    operation: deleteStandingOrder
+  - code: 2871315
+    name: VERIFICATION_FAILED
+    operation: deleteStandingOrder
+  - code: 2871400
+    name: SERVER_FAILURE
+    operation: updateAccountNickname
+  - code: 2871401
+    name: SYSTEM_ERROR
+    operation: updateAccountNickname
+  - code: 2871402
+    name: REQUEST_DATA_INVALID
+    operation: updateAccountNickname
+  - code: 2871403
+    name: NO_RESULT
+    operation: updateAccountNickname
+  - code: 2871404
+    name: HOST_OFFLINE
+    operation: updateAccountNickname
+  - code: 2871405
+    name: HOST_COMMUNICATION_ERROR
+    operation: updateAccountNickname
+  - code: 2871413
+    name: SERVICE_NOT_SUPPORTED
+    operation: updateAccountNickname
+  - code: 2871414
+    name: EXT_RESPONSE_NO_MATCHING_RECORD_FOUND
+    operation: updateAccountNickname
+  - code: 2871415
+    name: VERIFICATION_FAILED
+    operation: updateAccountNickname
+  - code: 2872000
+    name: SERVER_FAILURE
+    operation: createCashout4Me
+  - code: 2872001
+    name: SYSTEM_ERROR
+    operation: createCashout4Me
+  - code: 2872002
+    name: REQUEST_DATA_INVALID
+    operation: createCashout4Me
+  - code: 2872003
+    name: NO_RESULT
+    operation: createCashout4Me
+  - code: 2872004
+    name: HOST_OFFLINE
+    operation: createCashout4Me
+  - code: 2872005
+    name: HOST_COMMUNICATION_ERROR
+    operation: createCashout4Me
+  - code: 2872015
+    name: VERIFICATION_FAILED
+    operation: createCashout4Me
+  - code: 2872100
+    name: SERVER_FAILURE
+    operation: createCashout2You
+  - code: 2872101
+    name: SYSTEM_ERROR
+    operation: createCashout2You
+  - code: 2872102
+    name: REQUEST_DATA_INVALID
+    operation: createCashout2You
+  - code: 2872103
+    name: NO_RESULT
+    operation: createCashout2You
+  - code: 2872104
+    name: HOST_OFFLINE
+    operation: createCashout2You
+  - code: 2872105
+    name: HOST_COMMUNICATION_ERROR
+    operation: createCashout2You
+  - code: 2872115
+    name: VERIFICATION_FAILED
+    operation: createCashout2You
+  - code: 2872200
+    name: SERVER_FAILURE
+    operation: createDeposit
+  - code: 2872201
+    name: SYSTEM_ERROR
+    operation: createDeposit
+  - code: 2872202
+    name: REQUEST_DATA_INVALID
+    operation: createDeposit
+  - code: 2872203
+    name: NO_RESULT
+    operation: createDeposit
+  - code: 2872204
+    name: HOST_OFFLINE
+    operation: createDeposit
+  - code: 2872205
+    name: HOST_COMMUNICATION_ERROR
+    operation: createDeposit
+  - code: 2872215
+    name: VERIFICATION_FAILED
+    operation: createDeposit
+  - code: 2872300
+    name: SERVER_FAILURE
+    operation: createBranchDeposit
+  - code: 2872301
+    name: SYSTEM_ERROR
+    operation: createBranchDeposit
+  - code: 2872302
+    name: REQUEST_DATA_INVALID
+    operation: createBranchDeposit
+  - code: 2872303
+    name: NO_RESULT
+    operation: createBranchDeposit
+  - code: 2872304
+    name: HOST_OFFLINE
+    operation: createBranchDeposit
+  - code: 2872305
+    name: HOST_COMMUNICATION_ERROR
+    operation: createBranchDeposit
+  - code: 2872315
+    name: VERIFICATION_FAILED
+    operation: createBranchDeposit
+  - code: 2872400
+    name: SERVER_FAILURE
+    operation: deletePrestagedTransaction
+  - code: 2872400
+    name: RESERVED
+    operation: deletePrestagedTransaction
+  - code: 2872402
+    name: REQUEST_DATA_INVALID
+    operation: deletePrestagedTransaction
+  - code: 2872415
+    name: VERIFICATION_FAILED
+    operation: deletePrestagedTransaction
+  - code: 2872500
+    name: SERVER_FAILURE
+    operation: getPrestagedTransactions
+  - code: 2872501
+    name: SYSTEM_ERROR
+    operation: getPrestagedTransactions
+  - code: 2872502
+    name: REQUEST_DATA_INVALID
+    operation: getPrestagedTransactions
+  - code: 2872503
+    name: NO_RESULT
+    operation: getPrestagedTransactions
+  - code: 2872504
+    name: HOST_OFFLINE
+    operation: getPrestagedTransactions
+  - code: 2872505
+    name: HOST_COMMUNICATION_ERROR
+    operation: getPrestagedTransactions
+  - code: 2872515
+    name: VERIFICATION_FAILED
+    operation: getPrestagedTransactions
+  - code: 2872600
+    name: SERVER_FAILURE
+    operation: executePrestagedTransaction
+  - code: 2872601
+    name: SYSTEM_ERROR
+    operation: executePrestagedTransaction
+  - code: 2872602
+    name: REQUEST_DATA_INVALID
+    operation: executePrestagedTransaction
+  - code: 2872615
+    name: VERIFICATION_FAILED
+    operation: executePrestagedTransaction
+  - code: 2874000
+    name: SERVER_FAILURE
+    operation: getCreditors
+  - code: 2874001
+    name: SYSTEM_ERROR
+    operation: getCreditors
+  - code: 2874002
+    name: REQUEST_DATA_INVALID
+    operation: getCreditors
+  - code: 2874015
+    name: VERIFICATION_FAILED
+    operation: getCreditors
+  - code: 2874100
+    name: SERVER_FAILURE
+    operation: getSinglePaymentOrderData
+  - code: 2874100
+    name: RESERVED
+    operation: getSinglePaymentOrderData
+  - code: 2874102
+    name: REQUEST_DATA_INVALID
+    operation: getSinglePaymentOrderData
+  - code: 2874112
+    name: CONSUMER_NOT_FOUND
+    operation: getSinglePaymentOrderData
+  - code: 2874115
+    name: VERIFICATION_FAILED
+    operation: getSinglePaymentOrderData
+  - code: 2874200
+    name: SERVER_FAILURE
+    operation: getPreferences
+  - code: 2874200
+    name: RESERVED
+    operation: getPreferences
+  - code: 2874202
+    name: REQUEST_DATA_INVALID
+    operation: getPreferences
+  - code: 2874210
+    name: RESPONSE_NO_CONSUMER_ID_AVAILABLE
+    operation: getPreferences
+  - code: 2874211
+    name: RESPONSE_NO_PREFERENCES_AVAILABLE
+    operation: getPreferences
+  - code: 2874215
+    name: VERIFICATION_FAILED
+    operation: getPreferences
+  - code: 2874300
+    name: SERVER_FAILURE
+    operation: setPreferences
+  - code: 2874300
+    name: RESERVED
+    operation: setPreferences
+  - code: 2874302
+    name: REQUEST_DATA_INVALID
+    operation: setPreferences
+  - code: 2874315
+    name: VERIFICATION_FAILED
+    operation: setPreferences
+  - code: 2874400
+    name: SERVER_FAILURE
+    operation: getClientBranding
+  - code: 2874400
+    name: RESERVED
+    operation: getClientBranding
+  - code: 2874402
+    name: REQUEST_DATA_INVALID
+    operation: getClientBranding
+  - code: 2874415
+    name: VERIFICATION_FAILED
+    operation: getClientBranding
+  - code: 2874500
+    name: SERVER_FAILURE
+    operation: getGenericTransactionOrders
+  - code: 2874500
+    name: RESERVED
+    operation: getGenericTransactionOrders
+  - code: 2874502
+    name: REQUEST_DATA_INVALID
+    operation: getGenericTransactionOrders
+  - code: 2874515
+    name: VERIFICATION_FAILED
+    operation: getGenericTransactionOrders
+  - code: 2874600
+    name: SERVER_FAILURE
+    operation: executeGenericTransactionOrder
+  - code: 2874600
+    name: RESERVED
+    operation: executeGenericTransactionOrder
+  - code: 2874602
+    name: REQUEST_DATA_INVALID
+    operation: executeGenericTransactionOrder
+  - code: 2874615
+    name: VERIFICATION_FAILED
+    operation: executeGenericTransactionOrder
+  - code: 2873000
+    name: SERVER_FAILURE
+    operation: getLocations
+  - code: 2873001
+    name: SYSTEM_ERROR
+    operation: getLocations
+  - code: 2873002
+    name: REQUEST_DATA_INVALID
+    operation: getLocations
+  - code: 2873003
+    name: NO_RESULT
+    operation: getLocations
+  - code: 2873015
+    name: VERIFICATION_FAILED
+    operation: getLocations
+  - code: 2875000
+    name: SERVER_FAILURE
+    operation: getRsaKey
+  - code: 2875015
+    name: VERIFICATION_FAILED
+    operation: getRsaKey
+  - code: 2875100
+    name: SERVER_FAILURE
+    operation: getEcKey
+  - code: 2875115
+    name: VERIFICATION_FAILED
+    operation: getEcKey
+  - code: 2875200
+    name: SERVER_FAILURE
+    operation: getVersion
+  - code: 2875215
+    name: VERIFICATION_FAILED
+    operation: getVersion

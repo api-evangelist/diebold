@@ -1,0 +1,15 @@
+generated: '2026-09-06'
+method: derived
+source: All eight OpenAPI definitions in openapi/ were scanned for 429 responses and for RateLimit-*, X-RateLimit-*
+  and Retry-After response headers. No public Diebold Nixdorf API documentation site is reachable to corroborate.
+limit_count: 0
+limits: []
+response_headers: []
+exhaustion_status: null
+note: 'No rate limit is published and none is signalled in the contract: not one of the 159 operations declares
+  a 429 response, and no RateLimit-*, X-RateLimit-* or Retry-After header appears in any of the eight specifications.
+  The responseCode enum does carry RESUBMIT alongside OK and FAIL, but that is a business instruction from the core
+  banking host ("send this again"), not a throttling signal, and it comes with no window and no backoff guidance.
+  Because Vynamic Transaction Middleware is customer-deployed, any real throughput limit is a property of the financial
+  institution''s own installation and sizing, which Diebold Nixdorf does not publish. limit_count: 0 is an honest
+  zero.'

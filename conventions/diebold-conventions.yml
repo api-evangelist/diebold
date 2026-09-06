@@ -1,0 +1,171 @@
+generated: '2026-09-06'
+method: derived
+source: Derived from the eight Diebold Nixdorf OpenAPI definitions published through the SwaggerHub organization
+  Diebold-Nixdorf; no public developer documentation site is reachable to corroborate them.
+specs:
+- openapi/diebold-dn-open-backend-api-openapi.yml
+- openapi/diebold-dn-online-mobile-api-openapi.yml
+- openapi/diebold-dn-assist-api-openapi.yml
+- openapi/diebold-dn-payment-initiation-api-openapi.yml
+- openapi/diebold-dn-tm-authorization-api-openapi.yml
+- openapi/diebold-dn-account-bc-api-openapi.yml
+- openapi/diebold-dn-secure-business-processing-api-openapi.yml
+- openapi/diebold-tm-pre-digitization-api-outbound-openapi.yml
+auth:
+  style: HTTP Basic and HTTP Bearer across the banking surfaces, with OpenID Connect on the Payment Initiation and
+    Secure Business Processing APIs.
+  token_acquisition: GET /getToken on the DN Open Backend API and POST /tm-authorization/authenticate + GET/POST
+    /token on the DN TM Authorization API return the bearer token the other surfaces expect.
+  jwe: 'The Open Backend and Assist APIs additionally accept a jweBearer scheme: a JWT encrypted with the backend
+    endpoint public key, retrieved via GET /getRsaKey, GET /getEcKey or GET /pkiKey.'
+  detail: authentication/diebold-authentication.yml
+idempotency:
+  coverage: partial
+  mechanism: 'No Idempotency-Key header exists anywhere in the contract. The DN Payment Initiation API instead nominates
+    a natural idempotence key per operation, stated in the operation description as "Idempotence key: transactionId".'
+  scope:
+  - cancel
+  - refund
+  scope_note: Two of 116 mutating operations across the eight specifications carry an idempotence statement. Both
+    are on the DN Payment Initiation API and both key on the caller-supplied transactionId path parameter. The 114
+    remaining writes — including every Open Backend authorize/finalize operation and every Online & Mobile payment
+    creation — document no replay protection.
+  correlation: X-Request-ID is a REQUIRED header on every DN Payment Initiation API operation and is described as
+    unique to the call, but the contract does not say the server deduplicates on it, so it is recorded as correlation
+    rather than as idempotency.
+  evidence: openapi/diebold-dn-payment-initiation-api-openapi.yml — paths./payments/{merchantId}/{transactionId}.delete.description
+    and .put.description
+reversibility:
+  grade: documented
+  summary: Reversal is a first-class part of this contract — it is a transaction-middleware product for ATMs, where
+    a reversal path is table stakes — but no specification states a window inside which a reversal is accepted.
+    Graded documented, not verified, for that reason alone.
+  operations:
+  - surface: DN Payment Initiation API
+    write: cardlessPayment / cardbasedPayment / confirmPayment
+    reversal: cancel
+    operationId: cancel
+    method: DELETE /payments/{merchantId}/{transactionId}
+    window: null
+    window_source: null
+  - surface: DN Payment Initiation API
+    write: cardlessPayment / cardbasedPayment
+    reversal: refund
+    operationId: refund
+    method: PUT /payments/{merchantId}/{transactionId}
+    window: null
+    window_source: null
+  - surface: DN Open Backend API
+    write: withdrawalFinalize / depositFinalize / credit / debit
+    reversal: reversal
+    operationId: reversal
+    method: POST /reversal
+    window: null
+    window_source: null
+  - surface: DN Open Backend API
+    write: transfer / transferFinalize
+    reversal: transferReversal
+    operationId: transferReversal
+    method: POST /transferReversal
+    window: null
+    window_source: null
+  - surface: DN Open Backend API
+    write: accountHold
+    reversal: cancelAccountHold
+    operationId: cancelAccountHold
+    method: POST /cancelAccountHold
+    window: null
+    window_source: null
+  - surface: DN Account BC API
+    write: authorizeTransaction
+    reversal: reverseTransaction
+    operationId: reverseTransaction
+    method: POST /reverseTransaction
+    window: null
+    window_source: null
+  - surface: DN Online & Mobile API
+    write: createPushPayment
+    reversal: cancelPushPayment
+    operationId: cancelPushPayment
+    method: DELETE /sepa-instant/pushPayment
+    window: null
+    window_source: null
+  - surface: DN Online & Mobile API
+    write: authorizePullPayment
+    reversal: cancelPullPayment
+    operationId: cancelPullPayment
+    method: DELETE /sepa-instant/pullPayment
+    window: null
+    window_source: null
+  - surface: DN Online & Mobile API
+    write: createStandingOrder
+    reversal: deleteStandingOrder
+    operationId: deleteStandingOrder
+    method: POST /deleteStandingOrder
+    window: null
+    window_source: null
+  - surface: DN Online & Mobile API
+    write: createCashout4Me / createCashout2You / createDeposit
+    reversal: deletePrestagedTransaction
+    operationId: deletePrestagedTransaction
+    method: POST /deletePrestagedTransaction
+    window: null
+    window_source: null
+  gap: No specification, and no reachable Diebold Nixdorf documentation page, states how long after a payment a
+    cancel or refund is accepted, whether a reversal is permitted after settlement, or what happens to a reversal
+    issued twice. An integrator cannot answer "can this be taken back, and until when?" from the published contract.
+dry_run_mode:
+  supported: partial
+  detail: There is no dry-run flag on any write. The DN TM Authorization API exposes GET /test (operationId sandboxTest)
+    with a testcase enum, but it exercises token rights rather than rehearsing a business write. The banking surfaces
+    instead use a two-phase authorize/validate/finalize protocol (withdrawalAuthorize -> withdrawalFinalize, depositAuthorize
+    -> depositValidate -> depositFinishValidation -> depositProcessClearing -> depositFinalize, checkCashing* and
+    mixedMediaPayment* likewise), which lets a caller obtain a decision before committing funds. That is a commit
+    protocol, not a simulation mode.
+pagination:
+  style: none
+  detail: No specification declares a page, cursor, offset, limit or pageSize parameter. Collection reads (getTransactions,
+    getAccounts, accountList, getStandingOrders, transactions) are bounded by date ranges (fromDateTime/toDateTime,
+    endDate) and by the core system, and return whole result sets.
+field_expansion:
+  supported: false
+  detail: No expand, fields or sparse-fieldset parameter appears in any specification.
+metadata:
+  supported: false
+  detail: No free-form metadata object is exposed on any resource.
+request_id_tracing:
+  supported: true
+  headers:
+  - X-Request-ID
+  other_correlators:
+  - referenceId (Open Backend, Assist)
+  - transactionId
+  - correlationId (TM Pre-Digitization)
+  - businessCorrelationId (Online & Mobile)
+  - timestamp
+  detail: X-Request-ID is required on every DN Payment Initiation API call. The other surfaces carry a referenceId
+    or correlationId in the request envelope rather than a header.
+versioning:
+  style: major version in the path plus a full semantic version in info.version
+  detail: Server paths carry a major version segment (/OB-API-REST/v2, /tm-om-api/v4, /oauth-api/v1, /pi-api/v1,
+    /account/v1, /tm-assist-api/v1, /tm-sbp-api/v1). The published document version is finer-grained (4.3.0, 3.2.1,
+    1.9.11, 1.8.1) and is versioned in the SwaggerHub registry.
+  detail_artifact: lifecycle/diebold-lifecycle.yml
+error_envelope:
+  shape: vendor-json
+  detail: application/json with a vendor error object (message, errorCode, optional paymentProviderErrorCode / code
+    / transactionId / correlationId), plus a coarse responseCode (OK|FAIL|RESUBMIT) and a fine extendedResponseCode
+    in the response envelope. Not RFC 9457.
+  detail_artifact: errors/diebold-problem-types.yml
+rate_limit_signaling:
+  supported: false
+  detail: No RateLimit-*, X-RateLimit-*, Retry-After header and no 429 response appears in any of the eight specifications.
+    RESUBMIT in responseCode is a business retry instruction, not a throttling signal.
+  detail_artifact: rate-limits/diebold-rate-limits.yml
+cross_links:
+  errors: errors/diebold-problem-types.yml
+  decline_codes: errors/diebold-decline-codes.yml
+  lifecycle: lifecycle/diebold-lifecycle.yml
+  authentication: authentication/diebold-authentication.yml
+  rate_limits: rate-limits/diebold-rate-limits.yml
+  conformance: conformance/diebold-conformance.yml

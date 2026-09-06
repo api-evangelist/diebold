@@ -1,0 +1,140 @@
+generated: '2026-09-06'
+method: probed
+source: 'Direct unauthenticated HTTPS probes of every host this record knows: the registrable domain and www, the
+  Vynamic Retail Platform developer-portal host, the public download portal, and the OpenID Connect issuer named
+  by the DN Payment Initiation API securityScheme.'
+note: 'No .well-known document was served. www.dieboldnixdorf.com answers HTTP 200 for four of the probed paths,
+  but every one of those responses is the site''s soft-404 page (HTML titled "404 | Diebold Nixdorf", meta robots
+  noindex) rather than a document — treated as a miss, and no WellKnown pointer is emitted. The one real discovery
+  document in this record is third-party: the Microsoft Entra ID OpenID Connect metadata for the tenant that the
+  DN Payment Initiation API names in its openIdConnect securityScheme. It is recorded under login.microsoftonline.com,
+  not under a Diebold Nixdorf host, because Diebold Nixdorf does not operate it.'
+hosts:
+- host: www.dieboldnixdorf.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+    file: null
+  - path: /.well-known/openid-configuration
+    status: 200
+    file: null
+    note: soft-404 HTML shell titled "404 | Diebold Nixdorf" — not a document
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    file: null
+    note: soft-404 HTML shell titled "404 | Diebold Nixdorf" — not a document
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    file: null
+    note: soft-404 HTML shell titled "404 | Diebold Nixdorf" — not a document
+  - path: /.well-known/api-catalog
+    status: 200
+    file: null
+    note: soft-404 HTML shell titled "404 | Diebold Nixdorf" — not a document
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 404
+    file: null
+  - path: /.well-known/agent.json
+    status: 404
+    file: null
+- host: dieboldnixdorf.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+    file: null
+  - path: /.well-known/openid-configuration
+    status: 200
+    file: null
+    note: soft-404 HTML shell titled "404 | Diebold Nixdorf" — not a document (302 to www first)
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    file: null
+    note: soft-404 HTML shell titled "404 | Diebold Nixdorf" — not a document (302 to www first)
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    file: null
+    note: soft-404 HTML shell titled "404 | Diebold Nixdorf" — not a document (302 to www first)
+  - path: /.well-known/api-catalog
+    status: 200
+    file: null
+    note: soft-404 HTML shell titled "404 | Diebold Nixdorf" — not a document (302 to www first)
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 404
+    file: null
+  - path: /.well-known/agent.json
+    status: 404
+    file: null
+- host: publicdownload.dieboldnixdorf.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+    file: null
+  - path: /.well-known/openid-configuration
+    status: 404
+    file: null
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    file: null
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+    file: null
+  - path: /.well-known/api-catalog
+    status: 404
+    file: null
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 404
+    file: null
+  - path: /.well-known/agent.json
+    status: 404
+    file: null
+- host: vrp-api.dieboldnixdorf.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 302
+    file: null
+    note: SwaggerHub Portal custom domain; every path 302s to https://portal.swaggerhub.com/services/api/login
+  - path: /.well-known/openid-configuration
+    status: 302
+    file: null
+    note: SwaggerHub Portal custom domain; every path 302s to https://portal.swaggerhub.com/services/api/login
+  - path: /.well-known/oauth-authorization-server
+    status: 302
+    file: null
+    note: SwaggerHub Portal custom domain; every path 302s to https://portal.swaggerhub.com/services/api/login
+  - path: /.well-known/oauth-protected-resource
+    status: 302
+    file: null
+    note: SwaggerHub Portal custom domain; every path 302s to https://portal.swaggerhub.com/services/api/login
+  - path: /.well-known/api-catalog
+    status: 302
+    file: null
+    note: SwaggerHub Portal custom domain; every path 302s to https://portal.swaggerhub.com/services/api/login
+  - path: /.well-known/ai-plugin.json
+    status: 302
+    file: null
+    note: SwaggerHub Portal custom domain; every path 302s to https://portal.swaggerhub.com/services/api/login
+  - path: /.well-known/agent-card.json
+    status: 302
+    file: null
+    note: SwaggerHub Portal custom domain; every path 302s to https://portal.swaggerhub.com/services/api/login
+  - path: /.well-known/agent.json
+    status: 302
+    file: null
+    note: SwaggerHub Portal custom domain; every path 302s to https://portal.swaggerhub.com/services/api/login
+- host: login.microsoftonline.com
+  documents:
+  - path: /52846f0f-bc96-4a36-939b-f4d04bb473a0/v2.0/.well-known/openid-configuration
+    status: 200
+    file: diebold-openid-configuration.json
+    note: Third-party issuer. Named by the openIdConnect securityScheme in openapi/diebold-dn-payment-initiation-api-openapi.yml;
+      the Microsoft Entra ID tenant is the identity provider for the DN Payment Initiation API, operated by Microsoft
+      rather than by Diebold Nixdorf.

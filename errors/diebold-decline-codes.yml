@@ -1,0 +1,279 @@
+generated: '2026-09-06'
+method: derived
+source: Derived from the ExtendedResponseCode enums declared in the DN Open Backend, DN Account BC and DN Assist
+  OpenAPI definitions, and the DetailedResponseCode enum in the DN Payment Initiation API — all harvested from the
+  SwaggerHub organization Diebold-Nixdorf.
+applies_to: Vynamic Transaction Middleware authorization surfaces (ATM/self-service withdrawal, deposit, transfer,
+  check cashing, mixed-media payment, cardless and card-based payment).
+envelope_field: extendedResponseCode (string enum), returned inside the ResponseBase alongside responseCode (OK
+  | FAIL | RESUBMIT).
+masking_note: Diebold Nixdorf publishes no guidance on which codes may be shown to a cardholder. These are core-banking
+  authorization outcomes reaching a self-service terminal, and several (CARD_MANIPULATED, ACCOUNT_FROZEN_*, ACCOUNT_CHARGEOFF,
+  PIN_TRY_LIMIT_EXCEEDED) are conventionally masked to a generic decline at the terminal — that convention is NOT
+  stated in the contract and is recorded here as an unanswered question, not as provider guidance.
+decline_codes:
+- code: ACCOUNT_CHARGEOFF
+  meaning: The account is charged off.
+  action: decline
+  specs:
+  - openapi/diebold-dn-account-bc-api-openapi.yml
+- code: ACCOUNT_CLOSED
+  meaning: The account is closed.
+  action: decline
+  specs:
+  - openapi/diebold-dn-account-bc-api-openapi.yml
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- code: ACCOUNT_DORMANT
+  meaning: The account is dormant.
+  action: decline
+  specs:
+  - openapi/diebold-dn-account-bc-api-openapi.yml
+- code: ACCOUNT_FROZEN_ACCRUAL
+  meaning: The account is frozen (accrual).
+  action: decline
+  specs:
+  - openapi/diebold-dn-account-bc-api-openapi.yml
+- code: ACCOUNT_FROZEN_NON_ACCRUAL
+  meaning: The account is frozen (non-accrual).
+  action: decline
+  specs:
+  - openapi/diebold-dn-account-bc-api-openapi.yml
+- code: ACCOUNT_INACTIVE
+  meaning: The account is inactive.
+  action: decline
+  specs:
+  - openapi/diebold-dn-account-bc-api-openapi.yml
+- code: ACCOUNT_NOT_FOUND
+  meaning: The account does not exist at the core.
+  action: decline
+  specs:
+  - openapi/diebold-dn-account-bc-api-openapi.yml
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- code: ACCOUNT_PENDING_CLOSED
+  meaning: The account is pending closure.
+  action: decline
+  specs:
+  - openapi/diebold-dn-account-bc-api-openapi.yml
+- code: ACCOUNT_TYPE_INVALID
+  meaning: The account type is not valid for this transaction.
+  action: decline
+  specs:
+  - openapi/diebold-dn-account-bc-api-openapi.yml
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- code: CARD_BLOCKED
+  meaning: The card is blocked.
+  action: decline
+  specs:
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- code: CARD_EXPIRED
+  meaning: The card has expired.
+  action: decline
+  specs:
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- code: CARD_MANIPULATED
+  meaning: The card was detected as tampered with.
+  action: decline
+  specs:
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- code: CARD_NOT_FOUND
+  meaning: The card is unknown to the core.
+  action: decline
+  specs:
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- code: CARD_NOT_FOUND_FOR_EXPIRY_DATE
+  meaning: No card record matches the presented expiry date.
+  action: decline
+  specs:
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- code: CONTEXT_NOT_FOUND
+  meaning: The session/transaction context could not be resolved.
+  action: decline
+  specs:
+  - openapi/diebold-dn-account-bc-api-openapi.yml
+- code: DIRECT_CURRENCY_CONVERSION_CONFIRM_REQUIRED
+  meaning: A dynamic currency conversion must be confirmed by the consumer.
+  action: confirm-with-consumer
+  specs:
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- code: FAILED
+  meaning: Meaning not stated in the contract; enum value only.
+  action: decline
+  specs:
+  - openapi/diebold-dn-assist-api-openapi.yml
+- code: FCC_CONFIRM_REQUIRED
+  meaning: A foreign currency conversion must be confirmed by the consumer.
+  action: confirm-with-consumer
+  specs:
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- code: HOST_BUSINESS_ERROR
+  meaning: The core returned a business-rule rejection.
+  action: decline
+  specs:
+  - openapi/diebold-dn-account-bc-api-openapi.yml
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- code: HOST_CANCEL
+  meaning: The core banking host cancelled the transaction.
+  action: decline
+  specs:
+  - openapi/diebold-dn-account-bc-api-openapi.yml
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- code: HOST_OFFLINE
+  meaning: The core banking host is unreachable.
+  action: retry
+  specs:
+  - openapi/diebold-dn-account-bc-api-openapi.yml
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- code: INSUFFICIENT_FUNDS
+  meaning: The account balance does not cover the amount.
+  action: decline
+  specs:
+  - openapi/diebold-dn-account-bc-api-openapi.yml
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- code: LIMIT_EXCEEDED
+  meaning: A withdrawal, transfer or velocity limit was exceeded.
+  action: decline
+  specs:
+  - openapi/diebold-dn-account-bc-api-openapi.yml
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- code: MULTI_CONFIRM_REQUIRED
+  meaning: More than one confirmation is outstanding.
+  action: confirm-with-consumer
+  specs:
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- code: NO_RESULT
+  meaning: The host returned no result for the request.
+  action: retry
+  specs:
+  - openapi/diebold-dn-account-bc-api-openapi.yml
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- code: OFFLINE_OKAY
+  meaning: Approved under offline/stand-in processing.
+  action: proceed
+  specs:
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- code: OK
+  meaning: Approved.
+  action: proceed
+  specs:
+  - openapi/diebold-dn-account-bc-api-openapi.yml
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- code: OVERDRAFT_CONFIRM_REQUIRED
+  meaning: An overdraft must be confirmed by the consumer before the transaction can proceed.
+  action: confirm-with-consumer
+  specs:
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- code: PARTIALLY_FAILED
+  meaning: Meaning not stated in the contract; enum value only.
+  action: decline
+  specs:
+  - openapi/diebold-dn-assist-api-openapi.yml
+- code: PINS_DIFFER
+  meaning: PIN change failed because the two entries did not match.
+  action: re-prompt-consumer
+  specs:
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- code: PIN_INACTIVE
+  meaning: The PIN has not been activated.
+  action: decline
+  specs:
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- code: PIN_TRY_LIMIT_EXCEEDED
+  meaning: Too many incorrect PIN attempts.
+  action: decline
+  specs:
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- code: PIN_VALIDATION_FAILED
+  meaning: The PIN did not validate.
+  action: re-prompt-consumer
+  specs:
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- code: REQUEST_DATA_INVALID
+  meaning: The request payload failed validation at the core.
+  action: fix-request
+  specs:
+  - openapi/diebold-dn-account-bc-api-openapi.yml
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- code: RESPONSE_FEE_CONFIRM_REQUIRED
+  meaning: A fee must be confirmed by the consumer before the transaction can proceed.
+  action: confirm-with-consumer
+  specs:
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- code: SERVER_FAILURE
+  meaning: The middleware or host failed while processing the request.
+  action: retry
+  specs:
+  - openapi/diebold-dn-account-bc-api-openapi.yml
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- code: SERVER_NOT_READY
+  meaning: The middleware is not ready to serve requests.
+  action: retry
+  specs:
+  - openapi/diebold-dn-account-bc-api-openapi.yml
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- code: TRANSACTION_NOT_POSSIBLE
+  meaning: The core refused the transaction.
+  action: decline
+  specs:
+  - openapi/diebold-dn-account-bc-api-openapi.yml
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- code: TRX_NOT_PERMITTED_TO_ACCOUNT
+  meaning: The transaction type is not permitted on this account.
+  action: decline
+  specs:
+  - openapi/diebold-dn-assist-api-openapi.yml
+  - openapi/diebold-dn-open-backend-api-openapi.yml
+- code: UNKNOWN_ACCOUNT
+  meaning: The account reference is unknown.
+  action: decline
+  specs:
+  - openapi/diebold-dn-account-bc-api-openapi.yml
+detailed_response_codes:
+  note: Card-verification outcomes returned on card-based payment errors by the DN Payment Initiation API (CVV2,
+    CAVV/3-D Secure, AVS and name verification).
+  source_spec: openapi/diebold-dn-payment-initiation-api-openapi.yml
+  codes:
+  - code: CURRENT_CVV2_VALID
+  - code: CURRENT_CVV2_INVALID
+  - code: CURRENT_CVV2_NOT_PROCESSED
+  - code: CVV2_UNVERIFIED
+  - code: CURRENT_CAVV_INVALID
+  - code: CURRENT_CAVV_VALID
+  - code: CAVV_UNVERIFIED
+  - code: AVS_ZIP_MATCH_ADDRESS_MATCH
+  - code: AVS_ZIP_MISSING_ADDRESS_MATCH
+  - code: AVS_ZIP_MATCH_ADDRESS_NO_MATCH
+  - code: AVS_NOTHING_MATCHES
+  - code: AVS_ZIP_UNVERIFIED
+  - code: AVS_ZIP_RETRY
+  - code: NVS_NAME_MATCH
+  - code: NVS_PARTIAL_NAME_MATCH
+  - code: NVS_NO_NAME_MATCH
