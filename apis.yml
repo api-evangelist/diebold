@@ -71,328 +71,300 @@ created: '2026-03-24'
 modified: '2026-09-06'
 specificationVersion: '0.23'
 apis:
-- name: DN Open Backend API
-  description: Public REST API of Diebold Nixdorf for banking core system integration — authentication, account
-    information, consumer information and account processing operations used by Vynamic Transaction Middleware to
-    connect self-service channels to a bank core. 62 paths across four tag groups; OpenAPI 3.0.1, version 4.3.0.
+- aid: diebold:diebold-accessibility-api-api
+  name: Diebold Nixdorf Accessibility API
+  description: The Accessibility API API from Diebold Nixdorf — 4 operation(s) for accessibility api.
   humanURL: https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn-open_backend_api/4.3.0
   baseURL: https://{customer-host}:8080/OB-API-REST/v2
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/diebold.png
   tags:
-  - Banking
-  - Payments
-  - ATM
-  - Self-Service
-  - Transaction Middleware
-  - Vynamic
-  - Core Banking
-  - Open API
-  tags_raw:
-  - banking
-  - payments
-  - atm
-  - self-service
-  - transaction-middleware
-  - vynamic
-  - core-banking
-  - open-api
+  - Accessibility API
   properties:
   - type: OpenAPI
-    url: openapi/diebold-dn-open-backend-api-openapi.yml
-  - type: APIReference
-    url: https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn-open_backend_api/4.3.0
-  - type: Overlay
-    url: overlays/diebold-dn-open-backend-api-overlay.yaml
-  x-version: 4.3.0
-  x-source: 'SwaggerHub registry, owner Diebold-Nixdorf (public, unauthenticated): https://api.swaggerhub.com/apis/Diebold-Nixdorf'
-  x-deployment: customer-deployed / on-premise — the published servers[] block names localhost:8080 because Vynamic
-    Transaction Middleware is installed in the financial institution's own environment; Diebold Nixdorf publishes
-    no shared multi-tenant host for this API.
-  x-base-url: Not published. The specification names http(s)://localhost:8080/OB-API-REST/v2 — a customer-deployment
-    placeholder, not a host. The real base is <the financial institution's Vynamic Transaction Middleware host>/OB-API-REST/v2.
-    No baseURL is recorded here rather than guessing one.
-- name: DN Online & Mobile API
-  description: Diebold Nixdorf Online & Mobile API — the Vynamic Transaction Middleware surface used by online and
-    mobile banking channels for cardless and mobile-initiated self-service transactions. 35 paths, bearer/OpenID
-    Connect authentication; OpenAPI 3.0.3, version 3.2.1.
-  humanURL: https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn_online_mobile_api/3.2.1
-  baseURL: https://{customer-host}:8080/tm-om-api/v4
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/diebold.png
-  tags:
-  - Banking
-  - Payments
-  - ATM
-  - Self-Service
-  - Transaction Middleware
-  - Vynamic
-  - Mobile Banking
-  - Digital Banking
-  tags_raw:
-  - banking
-  - payments
-  - atm
-  - self-service
-  - transaction-middleware
-  - vynamic
-  - mobile-banking
-  - digital-banking
-  properties:
-  - type: OpenAPI
-    url: openapi/diebold-dn-online-mobile-api-openapi.yml
-  - type: APIReference
-    url: https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn_online_mobile_api/3.2.1
-  - type: Overlay
-    url: overlays/diebold-dn-online-mobile-api-overlay.yaml
-  x-version: 3.2.1
-  x-source: 'SwaggerHub registry, owner Diebold-Nixdorf (public, unauthenticated): https://api.swaggerhub.com/apis/Diebold-Nixdorf'
-  x-deployment: customer-deployed / on-premise — the published servers[] block names localhost:8080 because Vynamic
-    Transaction Middleware is installed in the financial institution's own environment; Diebold Nixdorf publishes
-    no shared multi-tenant host for this API.
-  x-base-url: Not published. The specification names http(s)://localhost:8080/tm-om-api/v4 — a customer-deployment
-    placeholder, not a host. The real base is <the financial institution's Vynamic Transaction Middleware host>/tm-om-api/v4.
-    No baseURL is recorded here rather than guessing one.
-- name: DN Assist API
-  description: Diebold Nixdorf API for SelfService Assistance — remote assistance, session and device interaction
-    operations against self-service terminals. 23 paths with basic, bearer and JWE-bearer authentication; OpenAPI
-    3.0.1, version 1.0.
-  humanURL: https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn-assist_api/1.0
-  baseURL: https://{customer-host}:8080/tm-assist-api/v1
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/diebold.png
-  tags:
-  - Banking
-  - Payments
-  - ATM
-  - Self-Service
-  - Transaction Middleware
-  - Vynamic
-  - Remote Assistance
-  - Kiosk
-  tags_raw:
-  - banking
-  - payments
-  - atm
-  - self-service
-  - transaction-middleware
-  - vynamic
-  - remote-assistance
-  - kiosk
-  properties:
-  - type: OpenAPI
-    url: openapi/diebold-dn-assist-api-openapi.yml
-  - type: APIReference
-    url: https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn-assist_api/1.0
-  - type: Overlay
-    url: overlays/diebold-dn-assist-api-overlay.yaml
-  x-version: '1.0'
-  x-source: 'SwaggerHub registry, owner Diebold-Nixdorf (public, unauthenticated): https://api.swaggerhub.com/apis/Diebold-Nixdorf'
-  x-deployment: customer-deployed / on-premise — the published servers[] block names localhost:8080 because Vynamic
-    Transaction Middleware is installed in the financial institution's own environment; Diebold Nixdorf publishes
-    no shared multi-tenant host for this API.
-  x-base-url: Not published. The specification names http(s)://localhost:8080/tm-assist-api/v1 — a customer-deployment
-    placeholder, not a host. The real base is <the financial institution's Vynamic Transaction Middleware host>/tm-assist-api/v1.
-    No baseURL is recorded here rather than guessing one.
-- name: DN Payment Initiation API
-  description: Public Payment Initiation API (PI-API) of Diebold Nixdorf providing access to the Vynamic Transaction
-    Middleware for initiating payments. Declares an OpenID Connect scheme against a Microsoft Entra ID tenant. 11
-    paths; OpenAPI 3.0.1, version 1.9.11.
-  humanURL: https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn_payment_initiation_api/1.9.11
-  baseURL: https://{customer-host}:8080/pi-api/v1
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/diebold.png
-  tags:
-  - Banking
-  - Payments
-  - ATM
-  - Self-Service
-  - Transaction Middleware
-  - Vynamic
-  - Payment Initiation
-  - Open Banking
-  - OpenID Connect
-  tags_raw:
-  - banking
-  - payments
-  - atm
-  - self-service
-  - transaction-middleware
-  - vynamic
-  - payment-initiation
-  - open-banking
-  - openid-connect
-  properties:
-  - type: OpenAPI
-    url: openapi/diebold-dn-payment-initiation-api-openapi.yml
-  - type: APIReference
-    url: https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn_payment_initiation_api/1.9.11
-  - type: Overlay
-    url: overlays/diebold-dn-payment-initiation-api-overlay.yaml
-  - type: DeclineCodes
-    url: errors/diebold-decline-codes.yml
-  x-version: 1.9.11
-  x-source: 'SwaggerHub registry, owner Diebold-Nixdorf (public, unauthenticated): https://api.swaggerhub.com/apis/Diebold-Nixdorf'
-  x-deployment: customer-deployed / on-premise — the published servers[] block names localhost:8080 because Vynamic
-    Transaction Middleware is installed in the financial institution's own environment; Diebold Nixdorf publishes
-    no shared multi-tenant host for this API.
-  x-base-url: Not published. The specification names http(s)://localhost:8080/pi-api/v1 — a customer-deployment
-    placeholder, not a host. The real base is <the financial institution's Vynamic Transaction Middleware host>/pi-api/v1.
-    No baseURL is recorded here rather than guessing one.
-- name: DN TM Authorization API
-  description: Public TM Authorization API of Diebold Nixdorf used to obtain and manage access tokens for the Vynamic
-    Transaction Middleware. 8 paths with HTTP basic and bearer schemes; OpenAPI 3.0.3, version 1.8.1.
-  humanURL: https://api.swaggerhub.com/apis/Diebold-Nixdorf/DN-TM-Authorization-API/1.8.1
-  baseURL: https://{customer-host}:8080/oauth-api/v1
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/diebold.png
-  tags:
-  - Banking
-  - Payments
-  - ATM
-  - Self-Service
-  - Transaction Middleware
-  - Vynamic
-  - Authorization
-  - OAuth
-  tags_raw:
-  - banking
-  - payments
-  - atm
-  - self-service
-  - transaction-middleware
-  - vynamic
-  - authorization
-  - oauth
-  properties:
-  - type: OpenAPI
-    url: openapi/diebold-dn-tm-authorization-api-openapi.yml
-  - type: APIReference
-    url: https://api.swaggerhub.com/apis/Diebold-Nixdorf/DN-TM-Authorization-API/1.8.1
-  - type: Overlay
-    url: overlays/diebold-dn-tm-authorization-api-overlay.yaml
-  x-version: 1.8.1
-  x-source: 'SwaggerHub registry, owner Diebold-Nixdorf (public, unauthenticated): https://api.swaggerhub.com/apis/Diebold-Nixdorf'
-  x-deployment: customer-deployed / on-premise — the published servers[] block names localhost:8080 because Vynamic
-    Transaction Middleware is installed in the financial institution's own environment; Diebold Nixdorf publishes
-    no shared multi-tenant host for this API.
-  x-base-url: Not published. The specification names http(s)://localhost:8080/oauth-api/v1 — a customer-deployment
-    placeholder, not a host. The real base is <the financial institution's Vynamic Transaction Middleware host>/oauth-api/v1.
-    No baseURL is recorded here rather than guessing one.
-- name: DN Account BC API
-  description: Public API of Diebold Nixdorf for account balance management, exposing balance and account business-component
-    operations to the Vynamic banking stack. 5 paths; OpenAPI 3.0.1, version 1.0.0.
-  humanURL: https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn-account_api/1.0.0
-  baseURL: https://{customer-host}:8080/account/v1
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/diebold.png
-  tags:
-  - Banking
-  - Payments
-  - ATM
-  - Self-Service
-  - Transaction Middleware
-  - Vynamic
-  - Account Balance
-  tags_raw:
-  - banking
-  - payments
-  - atm
-  - self-service
-  - transaction-middleware
-  - vynamic
-  - account-balance
-  properties:
-  - type: OpenAPI
-    url: openapi/diebold-dn-account-bc-api-openapi.yml
-  - type: APIReference
-    url: https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn-account_api/1.0.0
-  - type: Overlay
-    url: overlays/diebold-dn-account-bc-api-overlay.yaml
-  x-version: 1.0.0
-  x-source: 'SwaggerHub registry, owner Diebold-Nixdorf (public, unauthenticated): https://api.swaggerhub.com/apis/Diebold-Nixdorf'
-  x-deployment: customer-deployed / on-premise — the published servers[] block names localhost:8080 because Vynamic
-    Transaction Middleware is installed in the financial institution's own environment; Diebold Nixdorf publishes
-    no shared multi-tenant host for this API.
-  x-base-url: Not published. The specification names http(s)://localhost:8080/account/v1 — a customer-deployment
-    placeholder, not a host. The real base is <the financial institution's Vynamic Transaction Middleware host>/account/v1.
-    No baseURL is recorded here rather than guessing one.
-- name: DN Secure Business Processing API
-  description: Diebold Nixdorf API for invoking predefined, configurable business process flows with a single request
-    (formerly the Pledge API), authorized through an external OpenID Connect provider configured in the OCM configuration.
-    2 paths; OpenAPI 3.0.3, version 3.1.0.
-  humanURL: https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn_pledge_api/3.1.0
-  baseURL: https://{customer-host}:8080/tm-sbp-api/v1
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/diebold.png
-  tags:
-  - Banking
-  - Payments
-  - ATM
-  - Self-Service
-  - Transaction Middleware
-  - Vynamic
-  - Business Process
-  - OpenID Connect
-  tags_raw:
-  - banking
-  - payments
-  - atm
-  - self-service
-  - transaction-middleware
-  - vynamic
-  - business-process
-  - openid-connect
-  properties:
-  - type: OpenAPI
-    url: openapi/diebold-dn-secure-business-processing-api-openapi.yml
-  - type: APIReference
-    url: https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn_pledge_api/3.1.0
-  - type: Overlay
-    url: overlays/diebold-dn-secure-business-processing-api-overlay.yaml
-  x-version: 3.1.0
-  x-source: 'SwaggerHub registry, owner Diebold-Nixdorf (public, unauthenticated): https://api.swaggerhub.com/apis/Diebold-Nixdorf'
-  x-deployment: customer-deployed / on-premise — the published servers[] block names localhost:8080 because Vynamic
-    Transaction Middleware is installed in the financial institution's own environment; Diebold Nixdorf publishes
-    no shared multi-tenant host for this API.
-  x-base-url: Not published. The specification names http(s)://localhost:8080/tm-sbp-api/v1 — a customer-deployment
-    placeholder, not a host. The real base is <the financial institution's Vynamic Transaction Middleware host>/tm-sbp-api/v1.
-    No baseURL is recorded here rather than guessing one.
-- name: TM Pre-Digitization API (Outbound)
-  description: Outbound Diebold Nixdorf API used to inform card issuers of services requested by, or on behalf of,
-    their account holders, so issuers can guide the account holder experience through the token requestor. 3 paths;
-    OpenAPI 3.0.1, version 1.0.0.
-  humanURL: https://api.swaggerhub.com/apis/Diebold-Nixdorf/tm-pre-digitization-api-outbound/1.0.0
-  baseURL: https://{issuer-host}
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/diebold.png
-  tags:
-  - Banking
-  - Payments
-  - ATM
-  - Self-Service
-  - Transaction Middleware
-  - Vynamic
-  - Tokenization
-  - Card Issuing
-  tags_raw:
-  - banking
-  - payments
-  - atm
-  - self-service
-  - transaction-middleware
-  - vynamic
-  - tokenization
-  - card-issuing
-  properties:
-  - type: OpenAPI
-    url: openapi/diebold-tm-pre-digitization-api-outbound-openapi.yml
+    url: openapi/diebold-accessibility-api-api-openapi.yml
   - type: APIReference
     url: https://api.swaggerhub.com/apis/Diebold-Nixdorf/tm-pre-digitization-api-outbound/1.0.0
-  - type: Overlay
-    url: overlays/diebold-tm-pre-digitization-api-outbound-overlay.yaml
   - type: Webhooks
     url: asyncapi/diebold-webhooks.yml
-  x-version: 1.0.0
-  x-source: 'SwaggerHub registry, owner Diebold-Nixdorf (public, unauthenticated): https://api.swaggerhub.com/apis/Diebold-Nixdorf'
-  x-deployment: customer-deployed / on-premise — the published servers[] block names localhost:8080 because Vynamic
-    Transaction Middleware is installed in the financial institution's own environment; Diebold Nixdorf publishes
-    no shared multi-tenant host for this API.
-  x-base-url: 'Not published. This is an OUTBOUND contract: the base URL belongs to the card issuer that implements
-    these endpoints, not to Diebold Nixdorf. The specification lists only the SwaggerHub mock server https://virtserver.swaggerhub.com/Diebold-Nixdorf/tm-pre-digitization-api-outbound/1.0.0.'
+- aid: diebold:diebold-account-bc-api-api
+  name: Diebold Nixdorf Account BC API
+  description: Request processing in Account BC
+  humanURL: https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn-open_backend_api/4.3.0
+  baseURL: https://{customer-host}:8080/OB-API-REST/v2
+  tags:
+  - Account BC API
+  properties:
+  - type: OpenAPI
+    url: openapi/diebold-account-bc-api-api-openapi.yml
+  - type: APIReference
+    url: https://api.swaggerhub.com/apis/Diebold-Nixdorf/tm-pre-digitization-api-outbound/1.0.0
+  - type: Webhooks
+    url: asyncapi/diebold-webhooks.yml
+- aid: diebold:diebold-account-information-api-api
+  name: Diebold Nixdorf Account Information API
+  description: Fetches account information.
+  humanURL: https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn-open_backend_api/4.3.0
+  baseURL: https://{customer-host}:8080/OB-API-REST/v2
+  tags:
+  - Account Information API
+  properties:
+  - type: OpenAPI
+    url: openapi/diebold-account-information-api-api-openapi.yml
+  - type: APIReference
+    url: https://api.swaggerhub.com/apis/Diebold-Nixdorf/tm-pre-digitization-api-outbound/1.0.0
+  - type: Webhooks
+    url: asyncapi/diebold-webhooks.yml
+- aid: diebold:diebold-account-management-api-api
+  name: Diebold Nixdorf Account Management API
+  description: >-
+    The Account Management API API from Diebold Nixdorf — 9 operation(s) for account management api.
+  humanURL: https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn-open_backend_api/4.3.0
+  baseURL: https://{customer-host}:8080/OB-API-REST/v2
+  tags:
+  - Account Management API
+  properties:
+  - type: OpenAPI
+    url: openapi/diebold-account-management-api-api-openapi.yml
+  - type: APIReference
+    url: https://api.swaggerhub.com/apis/Diebold-Nixdorf/tm-pre-digitization-api-outbound/1.0.0
+  - type: Webhooks
+    url: asyncapi/diebold-webhooks.yml
+- aid: diebold:diebold-account-processing-api-api
+  name: Diebold Nixdorf Account Processing API
+  description: Performs a transaction.
+  humanURL: https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn-open_backend_api/4.3.0
+  baseURL: https://{customer-host}:8080/OB-API-REST/v2
+  tags:
+  - Account Processing API
+  properties:
+  - type: OpenAPI
+    url: openapi/diebold-account-processing-api-api-openapi.yml
+  - type: APIReference
+    url: https://api.swaggerhub.com/apis/Diebold-Nixdorf/tm-pre-digitization-api-outbound/1.0.0
+  - type: Webhooks
+    url: asyncapi/diebold-webhooks.yml
+- aid: diebold:diebold-activation-methods-api
+  name: Diebold Nixdorf Activation Methods API
+  description: The Activation Methods API from Diebold Nixdorf — 3 operation(s) for activation methods.
+  humanURL: https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn-open_backend_api/4.3.0
+  baseURL: https://{customer-host}:8080/OB-API-REST/v2
+  tags:
+  - Activation Methods
+  properties:
+  - type: OpenAPI
+    url: openapi/diebold-activation-methods-api-openapi.yml
+  - type: APIReference
+    url: https://api.swaggerhub.com/apis/Diebold-Nixdorf/tm-pre-digitization-api-outbound/1.0.0
+  - type: Webhooks
+    url: asyncapi/diebold-webhooks.yml
+- aid: diebold:diebold-authentication-api-api
+  name: Diebold Nixdorf Authentication API
+  description: Authentication request for a transaction.
+  humanURL: https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn-open_backend_api/4.3.0
+  baseURL: https://{customer-host}:8080/OB-API-REST/v2
+  tags:
+  - Authentication API
+  properties:
+  - type: OpenAPI
+    url: openapi/diebold-authentication-api-api-openapi.yml
+  - type: APIReference
+    url: https://api.swaggerhub.com/apis/Diebold-Nixdorf/tm-pre-digitization-api-outbound/1.0.0
+  - type: Webhooks
+    url: asyncapi/diebold-webhooks.yml
+- aid: diebold:diebold-authorization-processing-api-api
+  name: Diebold Nixdorf Authorization Processing API
+  description: >-
+    The Authorization Processing API API from Diebold Nixdorf — 31 operation(s) for authorization processing
+    api.
+  humanURL: https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn-open_backend_api/4.3.0
+  baseURL: https://{customer-host}:8080/OB-API-REST/v2
+  tags:
+  - Authorization Processing API
+  properties:
+  - type: OpenAPI
+    url: openapi/diebold-authorization-processing-api-api-openapi.yml
+  - type: APIReference
+    url: https://api.swaggerhub.com/apis/Diebold-Nixdorf/tm-pre-digitization-api-outbound/1.0.0
+  - type: Webhooks
+    url: asyncapi/diebold-webhooks.yml
+- aid: diebold:diebold-consumer-information-api-api
+  name: Diebold Nixdorf Consumer Information API
+  description: Fetches consumer information.
+  humanURL: https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn-open_backend_api/4.3.0
+  baseURL: https://{customer-host}:8080/OB-API-REST/v2
+  tags:
+  - Consumer Information API
+  properties:
+  - type: OpenAPI
+    url: openapi/diebold-consumer-information-api-api-openapi.yml
+  - type: APIReference
+    url: https://api.swaggerhub.com/apis/Diebold-Nixdorf/tm-pre-digitization-api-outbound/1.0.0
+  - type: Webhooks
+    url: asyncapi/diebold-webhooks.yml
+- aid: diebold:diebold-device-api-api
+  name: Diebold Nixdorf Device API
+  description: The Device API API from Diebold Nixdorf — 2 operation(s) for device api.
+  humanURL: https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn-open_backend_api/4.3.0
+  baseURL: https://{customer-host}:8080/OB-API-REST/v2
+  tags:
+  - Device API
+  properties:
+  - type: OpenAPI
+    url: openapi/diebold-device-api-api-openapi.yml
+  - type: APIReference
+    url: https://api.swaggerhub.com/apis/Diebold-Nixdorf/tm-pre-digitization-api-outbound/1.0.0
+  - type: Webhooks
+    url: asyncapi/diebold-webhooks.yml
+- aid: diebold:diebold-dn-assist-api-api
+  name: Diebold Nixdorf DN Assist API
+  description: The DN Assist API API from Diebold Nixdorf — 23 operation(s) for dn assist api.
+  humanURL: https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn-open_backend_api/4.3.0
+  baseURL: https://{customer-host}:8080/OB-API-REST/v2
+  tags:
+  - DN Assist API
+  properties:
+  - type: OpenAPI
+    url: openapi/diebold-dn-assist-api-api-openapi.yml
+  - type: APIReference
+    url: https://api.swaggerhub.com/apis/Diebold-Nixdorf/tm-pre-digitization-api-outbound/1.0.0
+  - type: Webhooks
+    url: asyncapi/diebold-webhooks.yml
+- aid: diebold:diebold-miscellaneous-api-api
+  name: Diebold Nixdorf Miscellaneous API
+  description: The Miscellaneous API API from Diebold Nixdorf — 10 operation(s) for miscellaneous api.
+  humanURL: https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn-open_backend_api/4.3.0
+  baseURL: https://{customer-host}:8080/OB-API-REST/v2
+  tags:
+  - Miscellaneous API
+  properties:
+  - type: OpenAPI
+    url: openapi/diebold-miscellaneous-api-api-openapi.yml
+  - type: APIReference
+    url: https://api.swaggerhub.com/apis/Diebold-Nixdorf/tm-pre-digitization-api-outbound/1.0.0
+  - type: Webhooks
+    url: asyncapi/diebold-webhooks.yml
+- aid: diebold:diebold-payment-initiation-api-api
+  name: Diebold Nixdorf Payment Initiation API
+  description: >-
+    Public Payment Initiation API  (PI-API) of DieboldNixdorf to access the
+
+    Transaction Middleware.
+  humanURL: https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn-open_backend_api/4.3.0
+  baseURL: https://{customer-host}:8080/OB-API-REST/v2
+  tags:
+  - Payment Initiation API
+  properties:
+  - type: OpenAPI
+    url: openapi/diebold-payment-initiation-api-api-openapi.yml
+  - type: APIReference
+    url: https://api.swaggerhub.com/apis/Diebold-Nixdorf/tm-pre-digitization-api-outbound/1.0.0
+  - type: Webhooks
+    url: asyncapi/diebold-webhooks.yml
+- aid: diebold:diebold-prestaged-transaction-api-api
+  name: Diebold Nixdorf Prestaged Transaction API
+  description: >-
+    The Prestaged Transaction API API from Diebold Nixdorf — 7 operation(s) for prestaged transaction
+    api.
+  humanURL: https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn-open_backend_api/4.3.0
+  baseURL: https://{customer-host}:8080/OB-API-REST/v2
+  tags:
+  - Prestaged Transaction API
+  properties:
+  - type: OpenAPI
+    url: openapi/diebold-prestaged-transaction-api-api-openapi.yml
+  - type: APIReference
+    url: https://api.swaggerhub.com/apis/Diebold-Nixdorf/tm-pre-digitization-api-outbound/1.0.0
+  - type: Webhooks
+    url: asyncapi/diebold-webhooks.yml
+- aid: diebold:diebold-sbp-api-api
+  name: Diebold Nixdorf SBP API
+  description: The SBP API API from Diebold Nixdorf — 2 operation(s) for sbp api.
+  humanURL: https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn-open_backend_api/4.3.0
+  baseURL: https://{customer-host}:8080/OB-API-REST/v2
+  tags:
+  - SBP API
+  properties:
+  - type: OpenAPI
+    url: openapi/diebold-sbp-api-api-openapi.yml
+  - type: APIReference
+    url: https://api.swaggerhub.com/apis/Diebold-Nixdorf/tm-pre-digitization-api-outbound/1.0.0
+  - type: Webhooks
+    url: asyncapi/diebold-webhooks.yml
+- aid: diebold:diebold-sepa-credit-transfer-instant-api-api
+  name: Diebold Nixdorf SEPA Credit Transfer Instant API
+  description: >-
+    The SEPA Credit Transfer Instant API API from Diebold Nixdorf — 2 operation(s) for sepa credit transfer
+    instant api.
+  humanURL: https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn-open_backend_api/4.3.0
+  baseURL: https://{customer-host}:8080/OB-API-REST/v2
+  tags:
+  - SEPA Credit Transfer Instant API
+  properties:
+  - type: OpenAPI
+    url: openapi/diebold-sepa-credit-transfer-instant-api-api-openapi.yml
+  - type: APIReference
+    url: https://api.swaggerhub.com/apis/Diebold-Nixdorf/tm-pre-digitization-api-outbound/1.0.0
+  - type: Webhooks
+    url: asyncapi/diebold-webhooks.yml
+- aid: diebold:diebold-standing-order-api-api
+  name: Diebold Nixdorf Standing Order API
+  description: The Standing Order API API from Diebold Nixdorf — 4 operation(s) for standing order api.
+  humanURL: https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn-open_backend_api/4.3.0
+  baseURL: https://{customer-host}:8080/OB-API-REST/v2
+  tags:
+  - Standing Order API
+  properties:
+  - type: OpenAPI
+    url: openapi/diebold-standing-order-api-api-openapi.yml
+  - type: APIReference
+    url: https://api.swaggerhub.com/apis/Diebold-Nixdorf/tm-pre-digitization-api-outbound/1.0.0
+  - type: Webhooks
+    url: asyncapi/diebold-webhooks.yml
+- aid: diebold:diebold-tm-authorization-api-api
+  name: Diebold Nixdorf TM Authorization API
+  description: >-
+    The TM Authorization API API from Diebold Nixdorf — 3 operation(s) for tm authorization api.
+  humanURL: https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn-open_backend_api/4.3.0
+  baseURL: https://{customer-host}:8080/OB-API-REST/v2
+  tags:
+  - TM Authorization API
+  properties:
+  - type: OpenAPI
+    url: openapi/diebold-tm-authorization-api-api-openapi.yml
+  - type: APIReference
+    url: https://api.swaggerhub.com/apis/Diebold-Nixdorf/tm-pre-digitization-api-outbound/1.0.0
+  - type: Webhooks
+    url: asyncapi/diebold-webhooks.yml
+- aid: diebold:diebold-tm-oauth-api-api
+  name: Diebold Nixdorf TM OAuth API
+  description: The TM OAuth API API from Diebold Nixdorf — 5 operation(s) for tm oauth api.
+  humanURL: https://api.swaggerhub.com/apis/Diebold-Nixdorf/dn-open_backend_api/4.3.0
+  baseURL: https://{customer-host}:8080/OB-API-REST/v2
+  tags:
+  - TM OAuth API
+  properties:
+  - type: OpenAPI
+    url: openapi/diebold-tm-oauth-api-api-openapi.yml
+  - type: APIReference
+    url: https://api.swaggerhub.com/apis/Diebold-Nixdorf/tm-pre-digitization-api-outbound/1.0.0
+  - type: Webhooks
+    url: asyncapi/diebold-webhooks.yml
 common:
+- type: Overlay
+  url: overlays/diebold-dn-open-backend-api-overlay.yaml
+- type: Overlay
+  url: overlays/diebold-dn-online-mobile-api-overlay.yaml
+- type: Overlay
+  url: overlays/diebold-dn-assist-api-overlay.yaml
+- type: Overlay
+  url: overlays/diebold-dn-payment-initiation-api-overlay.yaml
+- type: Overlay
+  url: overlays/diebold-dn-tm-authorization-api-overlay.yaml
+- type: Overlay
+  url: overlays/diebold-dn-account-bc-api-overlay.yaml
+- type: Overlay
+  url: overlays/diebold-dn-secure-business-processing-api-overlay.yaml
+- type: Overlay
+  url: overlays/diebold-tm-pre-digitization-api-outbound-overlay.yaml
 - type: Authentication
   url: authentication/diebold-authentication.yml
 - type: VulnerabilityDisclosure
