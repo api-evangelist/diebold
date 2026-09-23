@@ -1,7 +1,9 @@
 ---
 title: Diebold Nixdorf declares war on shrink in retail stores with ...
 url: https://retailtechinnovationhub.com/home/2024/1/19/diebold-nixdorf-declares-war-on-shrink-in-retail-stores-with-artificial-intelligence-powered-offering
-date: '2026-05-25'
+published: ''
+date_basis: harvested
+harvested: '2026-05-25'
 query: '"Diebold" press release artificial intelligence'
 position: 3
 source: serpapi-google

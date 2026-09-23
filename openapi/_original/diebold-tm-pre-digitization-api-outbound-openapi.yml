@@ -1,3 +1,5 @@
+# x-archived-from: diebold-tm-pre-digitization-api-outbound-openapi.yml
+# x-archived-on: 2026-09-16
 openapi: 3.0.1
 info:
   title: TM Pre-Digitization API (Outbound)

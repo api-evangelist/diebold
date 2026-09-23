@@ -1,0 +1,393 @@
+openapi: 3.2.0
+info:
+  title: DN TM Authorization TM OAuth API
+  description: Public TM Authorization API of Diebold Nixdorf to access the Transaction Middleware.
+  version: 1.8.1
+  contact:
+    email: thorsten.brinkmann@dieboldnixdorf.com
+servers:
+- url: http://localhost:8080/oauth-api/v1
+- url: https://localhost:8080/oauth-api/v1
+tags:
+- name: TM OAuth API
+paths:
+  /authorization/login:
+    get:
+      tags:
+      - TM OAuth API
+      operationId: login
+      summary: Get redirected to the authorisation URL or retrieve the list of external…
+      description: 'Retrieve the list of external authorisation systems.
+
+
+        It contains an array of authorisation URLs as well as their display names.
+
+
+        An authorisation URL contains state, nonce, login redirect URL and other things.
+
+
+        The login redirect URL contains also the authentication_redirection_endpoint in the
+
+        parameter redirect_uri, which must never be called directly.
+
+
+        For more information on the final result of the authorization process, see the response from the endpoint /authorization.'
+      parameters:
+      - in: query
+        name: login_hint
+        required: false
+        schema:
+          type: string
+        description: 'An optional parameter which maybe contains a user name or something like that.<br>
+
+          This parameter will be added to the <b><l>redirect_url</b></l> as an "application/x-www-form-urlencoded" formatted query component.
+
+          '
+      - in: query
+        name: tenant
+        required: false
+        schema:
+          type: string
+        description: "An optional parameter which contains the tenant id.<br>\nThis parameter will be added to the <b><l>redirect_url</b></l> as an \"application/x-www-form-urlencoded\" formatted query component.<br>\nThis parameter is also used - if given - to find out which authentication server should be used, if there are more than one \nauthentication server configured in the system.\n"
+      responses:
+        '200':
+          description: 'Returns an array of AuthenticationProviderData.
+
+            '
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuthenticationProviderData'
+        '500':
+          $ref: '#/components/responses/InternalServerError500'
+  /authorization:
+    post:
+      summary: Do NOT call this endpoint
+      description: 'This end point is the redirection endpoint as given in the redirect_url of the authorization request.
+
+
+        Do NOT call this endpoint directly, because it''s called by the authorization server via http 302 redirect.'
+      operationId: authenticationRedirectionEndpoint
+      tags:
+      - TM OAuth API
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+              - code
+              - state
+              properties:
+                code:
+                  type: string
+                state:
+                  type: string
+      responses:
+        '200':
+          description: 'Returns the TokenResponseData, which contains the access token, refresh token, expiresIn and token type.<br>
+
+            <br>
+
+            At this point, the user is already logged in and their original hierarchy has been loaded.<br>
+
+            <font color=''red''><b>ATTENTION:</b></font><br>
+
+            The delivered access token has to be used in the <b><l>Authorization</l></b> header attribute <b>of all further requests</b>.<br>
+
+            Moreover, a header attribute <font color=''red''><b><l>nodeID</l></b></font> must be set with the value of the desired node in all further requests!<br>
+
+            Please see: $ref: ''#/components/parameters/nodeID-Param''
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponseData'
+        '400':
+          $ref: '#/components/responses/BadRequest400'
+        '401':
+          $ref: '#/components/responses/Unauthorized401'
+        '500':
+          $ref: '#/components/responses/InternalServerError500'
+  /authorization/logout:
+    delete:
+      tags:
+      - TM OAuth API
+      operationId: logout
+      security:
+      - bearerAuth: []
+      summary: Logout -> gets redirected to the logout URL
+      description: Logout -> gets redirected to the logout URL.
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/BadRequest400'
+        '401':
+          $ref: '#/components/responses/Unauthorized401'
+        '500':
+          $ref: '#/components/responses/InternalServerError500'
+  /token:
+    post:
+      tags:
+      - TM OAuth API
+      operationId: refreshToken
+      security:
+      - bearerAuth: []
+      summary: Refresh the token and retrieve a new access token, as well as a new refresh…
+      description: Retrieve an access token, as well as an refresh token, expiresIn and token type.
+      requestBody:
+        description: The request. It contains only the validation URL, if there is any
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenRequest'
+      responses:
+        '200':
+          description: 'Returns an array of AuthenticationProviderData.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponseData'
+        '400':
+          $ref: '#/components/responses/BadRequest400'
+        '401':
+          $ref: '#/components/responses/Unauthorized401'
+        '500':
+          $ref: '#/components/responses/InternalServerError500'
+    get:
+      tags:
+      - TM OAuth API
+      operationId: exchangeToken
+      security:
+      - bearerAuth: []
+      summary: Exchange an access token for/to an PCEAdminSecurityToken
+      description: 'Exchange an access token for/to an PCEAdminSecurityToken.
+
+
+        The PCEAdminSecurityToken is transmitted as bases64 encoded string, which was previously serialized
+
+
+        using the PCESerializer.
+
+
+        Therefor before you can use the PCEAdminSecurityToken in later calls, the PCEAdminSecurityToken must be decoded and de-serialized in the server!'
+      parameters:
+      - in: query
+        name: login_reason
+        required: false
+        schema:
+          type: string
+        description: 'An optional parameter which maybe contains the login reason which is used to write an audit trails while login in the user.<br>
+
+          '
+      responses:
+        '200':
+          description: 'Returns an array of AuthenticationProviderData.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExchangeTokenResponseData'
+        '400':
+          $ref: '#/components/responses/BadRequest400'
+        '401':
+          $ref: '#/components/responses/Unauthorized401'
+        '500':
+          $ref: '#/components/responses/InternalServerError500'
+  /test:
+    get:
+      tags:
+      - TM OAuth API
+      operationId: sandboxTest
+      security:
+      - basicAuth: []
+      - bearerAuth: []
+      summary: Endpoint to ease the tests of the API implementation
+      description: 'Test the API using a get request.
+
+
+        The functionality depends on the testcase.'
+      parameters:
+      - $ref: '#/components/parameters/nodeID-Param'
+      - in: query
+        name: testcase
+        required: true
+        schema:
+          type: string
+          enum:
+          - TEST_INTERCEPTOR_RIGHTS
+        description: "The name of the testcase.<br>\n<table>\n  <tr >\n    <td>Testcase name</td>\n    <td>Description</td>\n  </tr>\n\n  <tr>\n    <td>TEST_INTERCEPTOR_RIGHTS&nbsp;&nbsp;</td>\n    <td>\n      Tests if the given OAuth token in the authorization header contains the required rights of the annotation.<br>\n      Here: IPCEAdminRights.CREATE_CUSTOMER and IPCEAdminRights.VIEW_CUSTOMER.\n    </td>\n  </tr>\n<table>\n"
+      responses:
+        '200':
+          description: 'Returns a http state 200 in case everything was fine.
+
+            '
+        '400':
+          $ref: '#/components/responses/BadRequest400'
+        '401':
+          $ref: '#/components/responses/Unauthorized401'
+        '500':
+          $ref: '#/components/responses/InternalServerError500'
+components:
+  schemas:
+    TokenResponseData:
+      type: object
+      required:
+      - accessToken
+      - tokenType
+      - accessTokenExpiresIn
+      - refreshToken
+      - refreshTokenExpiresIn
+      properties:
+        accessToken:
+          type: string
+          description: 'The access token.<br>
+
+            See: https://tools.ietf.org/html/rfc6750
+
+            '
+          example: eyJ0eXAiOiJKV1Q...i31s0tcsb3uI3nTMVTagD
+        tokenType:
+          type: string
+          description: 'The access token type. Typically it''s just ''Bearer''.
+
+            '
+          example: Bearer
+        accessTokenExpiresIn:
+          type: integer
+          description: 'Seconds until the access token is valid/duration of time the access token is granted for.
+
+            '
+          example: '3600'
+        refreshToken:
+          type: string
+          description: 'The refresh token.
+
+            '
+          example: eyJ0eXAiOiJKV1Q...CHw16b69bOllpEdlpiALD
+        refreshTokenExpiresIn:
+          type: integer
+          description: 'Seconds until the refresh token is valid.
+
+            '
+          example: '3600'
+        scope:
+          type: string
+          description: 'The (optional) scope.
+
+            '
+    AuthenticationProviderData:
+      type: object
+      required:
+      - displayName
+      - authorizationURL
+      properties:
+        displayName:
+          type: string
+          maxLength: 255
+          description: 'The name of the name of the external authorization system which in human readable form, which can be displayed to the customer.
+
+            '
+          example: Microsoft Azure AD
+        authorizationURL:
+          type: string
+          format: uri
+          description: '''The URI is use to call the external authorization system for to authenticate the user..
+
+            '
+          example: https://login.microsoftonline.com/52846f0f-bc96-4a36-939b-f4d04bb473a0/oauth2/v2.0/authorize
+    RefreshTokenRequest:
+      type: object
+      required:
+      - refreshToken
+      description: 'The RefreshTokenRequest.
+
+        '
+      properties:
+        refreshToken:
+          type: string
+          description: 'The refresh token.
+
+            '
+          example: eyJhb.....ImlzcyI6Imh0dHBzOi8vaG5zaHUud2luY29yLW5peGRvcmYuY2
+    Error:
+      description: "The error property is optional.<br< \nIt is set only if an error has been detected.\n"
+      type: object
+      properties:
+        message:
+          description: An optional, additional message which describes the error.
+          type: string
+          maxLength: 256
+          example: Unauthorized
+        errorCode:
+          description: An error code as outlined in the PI-API documentation.
+          type: string
+          example: REQUEST_DATA_INVALID_ID
+    ExchangeTokenResponseData:
+      type: object
+      required:
+      - pceAdminToken
+      properties:
+        pceAdminToken:
+          type: string
+          description: 'Base64 encoded PCEAdminSecurityToken.
+
+            '
+          example: c3RhdGUKaWRfdG....BhZ2UKCg==
+  responses:
+    Unauthorized401:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    InternalServerError500:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest400:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  parameters:
+    nodeID-Param:
+      name: nodeID
+      in: header
+      required: false
+      description: 'The nodeID of the current node or the node the user wants to get information about.<br>
+
+        The effective rights of the current user are checked against the effective rights of this nodeID.
+
+        '
+      schema:
+        type: string
+        minLength: 1
+      example: '10800'
+  securitySchemes:
+    basicAuth:
+      type: http
+      description: 'When using the basic authentication method, the base64 username and password must be specified in the HTTP authorization header - which is not recommended at all and should only be used for testing purposes during development time.
+
+        '
+      scheme: basic
+    bearerAuth:
+      type: http
+      description: 'When using the bearer authentication method an access token has to be provided in the HTTP authorization header
+
+        '
+      scheme: bearer
+externalDocs:
+  description: Find out more about Swagger
+  url: https://swagger.io

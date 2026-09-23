@@ -1,0 +1,712 @@
+openapi: 3.2.0
+info:
+  title: DN Online & Mobile Prestaged Transaction API
+  description: Diebold Nixdorf Online & Mobile API.
+  version: 3.2.1
+  contact:
+    name: Diebold Nixdorf
+    email: info.de@dieboldnixdorf.com
+servers:
+- url: http://localhost:8080/tm-om-api/v4
+  description: Transaction Middleware (VTE) 3.0+
+- url: https://localhost:8080/tm-om-api/v4
+  description: Transaction Middleware (VTE) 3.0+
+security:
+- bearerAuth: []
+tags:
+- name: Prestaged Transaction API
+paths:
+  /createCashout4Me:
+    post:
+      tags:
+      - Prestaged Transaction API
+      summary: Create a prestaged cashout (withdrawal) transaction
+      description: 'Create a prestaged cashout (withdrawal) transaction request. The server creates the transaction if the request can be validated and processed successfully. It is mapped to the consumerId and has a configurable lifetime after which the transaction expires (via OCM). To execute the transaction at an ATM or with a contact-less mobile application (see __/executePrestagedTransaction__) an accessCode is returned in the response. Optionally this code can be sent by Email or SMS.
+
+
+        The request data payload is described by the __CreateCashout4MeRequestPayload__ schema.
+
+
+        When the transaction was created successfully the server returns details about the transaction (see __CreateCashout4MeResponsePayload__).
+
+        ### Example Response:
+
+
+        {
+
+        "responseStatus": {
+
+        "success": true,
+
+        "error": null
+
+        },
+
+        "cryptoEnvelope": {
+
+        "keyParams": null,
+
+        "payload": "1Dbp80MYqQ/z3+dzIVqxBhHXg6Awu/S1XVbK7OcbHZCw5ubyMrv4TjZLq5+U6bvtiRBWFeitgcWWb8Ng+TjOWQ=="
+
+        }
+
+        }
+
+
+        __Using RSA/AES:__
+
+        The server generates an AES key (256 bit) and iv (128 bit) to encrypt the response payload. After the payload encryption the key parameters are encrypted with the client''s public RSA key (see __clientSecretparam__). The encrypted key parameters and payload are stored in a __CryptoEnvelope__ entity that is attached to the response body.
+
+
+        __Using ECIES:__
+
+        The server uses the client''s EC public key (see __clientSecretParam__) to encrypt the response payload. The encrypted payload is stored in a __CryptoEnvelope__ entity that is attached to the response body.'
+      operationId: createCashout4Me
+      parameters:
+      - $ref: '#/components/parameters/clientSecretParam'
+      - $ref: '#/components/parameters/sessionTokenParam'
+      - $ref: '#/components/parameters/consumerIdParam'
+      requestBody:
+        $ref: '#/components/requestBodies/createCashout4MeRequestBody'
+      responses:
+        '200':
+          $ref: '#/components/responses/createCashout4MeResponse'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        default:
+          $ref: '#/components/responses/defaultResponse'
+  /createCashout2You:
+    post:
+      tags:
+      - Prestaged Transaction API
+      summary: Create a prestaged cash out transaction request
+      description: 'Create a prestaged cashout (withdrawal) transaction request. The server creates the transaction if the request can be validated and processed successfully. It is mapped to the consumerId and has a configurable lifetime after which the transaction expires (via OCM). To execute the transaction at an ATM or with a contact-less mobile application (see __/executePrestagedTransaction__) an accessCode is created and sent to a third party member. This step is __not__ optional for this request type. The accessCode can be sent by Email or SMS.
+
+
+        The request data payload is described by the __CreateCashout2YouRequestPayload__ schema.
+
+
+        When the transaction was created successfully the server returns details about the transaction (see __CreateCashout2YouResponsePayload__).
+
+
+        ### Example Response:
+
+
+        {
+
+        "responseStatus": {
+
+        "success": true,
+
+        "error": null
+
+        },
+
+        "cryptoEnvelope": {
+
+        "keyParams": null,
+
+        "payload": "1Dbp80MYqQ/z3+dzIVqxBhHXg6Awu/S1XVbK7OcbHZCw5ubyMrv4TjZLq5+U6bvtiRBWFeitgcWWb8Ng+TjOWQ=="
+
+        }
+
+        }
+
+
+        __Using RSA/AES:__
+
+        The server generates an AES key (256 bit) and iv (128 bit) to encrypt the response payload. After the payload encryption the key parameters are encrypted with the client''s public RSA key (see __clientSecretparam__). The encrypted key parameters and payload are stored in a __CryptoEnvelope__ entity that is attached to the response body.
+
+
+        __Using ECIES:__
+
+        The server uses the client''s EC public key (see __clientSecretParam__) to encrypt the response payload. The encrypted payload is stored in a __CryptoEnvelope__ entity that is attached to the response body.'
+      operationId: createCashout2You
+      parameters:
+      - $ref: '#/components/parameters/clientSecretParam'
+      - $ref: '#/components/parameters/sessionTokenParam'
+      - $ref: '#/components/parameters/consumerIdParam'
+      requestBody:
+        $ref: '#/components/requestBodies/createCashout2YouRequestBody'
+      responses:
+        '200':
+          $ref: '#/components/responses/createCashout2YouResponse'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        default:
+          $ref: '#/components/responses/defaultResponse'
+  /createDeposit:
+    post:
+      tags:
+      - Prestaged Transaction API
+      summary: Create a prestaged cashin/deposit transaction request
+      description: '## Creating a prestaged cashin/deposit transaction request.'
+      operationId: createDeposit
+      parameters:
+      - $ref: '#/components/parameters/clientSecretParam'
+      - $ref: '#/components/parameters/sessionTokenParam'
+      - $ref: '#/components/parameters/consumerIdParam'
+      requestBody:
+        $ref: '#/components/requestBodies/createDepositRequestBody'
+      responses:
+        '200':
+          $ref: '#/components/responses/createDepositResponse'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        default:
+          $ref: '#/components/responses/defaultResponse'
+  /createBranchDeposit:
+    post:
+      tags:
+      - Prestaged Transaction API
+      summary: Create a prestaged deposit transaction request
+      description: 'Create a branch based prestaged deposit transaction request. The server creates the transaction if the request can be validated and processed successfully. It is mapped to the consumerId and has an __infinite__ lifetime. To execute the transaction at a Cash-Recycler ATM or with a contact-less mobile application (see __/executePrestagedTransaction__) an accessCode is created and sent to a third party member. This step is __not__ optional for this request type. The accessCode can be sent by Email or SMS.
+
+
+        When the transaction was created successfully the server returns details about the transaction (see __CreateBranchDepositResponsePayload__).
+
+        ### Example Response:
+
+
+        {
+
+        "responseStatus": {
+
+        "success": true,
+
+        "error": null
+
+        },
+
+        "cryptoEnvelope": {
+
+        "keyParams": null,
+
+        "payload": "1Dbp80MYqQ/z3+dzIVqxBhHXg6Awu/S1XVbK7OcbHZCw5ubyMrv4TjZLq5+U6bvtiRBWFeitgcWWb8Ng+TjOWQ=="
+
+        }
+
+        }
+
+
+        __Using RSA/AES:__
+
+        The server generates an AES key (256 bit) and iv (128 bit) to encrypt the response payload. After the payload encryption the key parameters are encrypted with the client''s public RSA key (see __clientSecretparam__). The encrypted key parameters and payload are stored in a __CryptoEnvelope__ entity that is attached to the response body.
+
+
+        __Using ECIES:__
+
+        The server uses the client''s EC public key (see __clientSecretParam__) to encrypt the response payload. The encrypted payload is stored in a __CryptoEnvelope__ entity that is attached to the response body.'
+      operationId: createBranchDeposit
+      parameters:
+      - $ref: '#/components/parameters/clientSecretParam'
+      - $ref: '#/components/parameters/sessionTokenParam'
+      - $ref: '#/components/parameters/consumerIdParam'
+      requestBody:
+        $ref: '#/components/requestBodies/createBranchDepositRequestBody'
+      responses:
+        '200':
+          $ref: '#/components/responses/createBranchDepositResponse'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        default:
+          $ref: '#/components/responses/defaultResponse'
+  /deletePrestagedTransaction:
+    post:
+      tags:
+      - Prestaged Transaction API
+      summary: Delete existing prestaged transactions
+      description: 'Delete a prestaged transaction with the given __referenceID__ (see __referenceIdParam__). The transaction can be of any kind of the supported prestaged transactions.
+
+        ### Example Response:
+
+
+        {
+
+        "responseStatus": {
+
+        "success": true,
+
+        "error": null
+
+        }
+
+        }'
+      operationId: deletePrestagedTransaction
+      parameters:
+      - $ref: '#/components/parameters/clientSecretParam'
+      - $ref: '#/components/parameters/sessionTokenParam'
+      - $ref: '#/components/parameters/consumerIdParam'
+      - $ref: '#/components/parameters/referenceIdParam'
+      responses:
+        '200':
+          $ref: '#/components/responses/deletePrestagedTransactionResponse'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        default:
+          $ref: '#/components/responses/defaultResponse'
+  /getPrestagedTransactions:
+    get:
+      tags:
+      - Prestaged Transaction API
+      summary: Returns a list of all prestaged transactions for the given consumerId
+      description: 'Returns a list of all prestaged transactions for the given consumerId (see __GetPrestagedTransactionsResponsePayload__).
+
+        ### Example Response:
+
+
+        {
+
+        "responseStatus": {
+
+        "success": true,
+
+        "error": null
+
+        },
+
+        "cryptoEnvelope": {
+
+        "keyParams": null,
+
+        "payload": "1Dbp80MYqQ/z3+dzIVqxBhHXg6Awu/S1XVbK7OcbHZCw5ubyMrv4TjZLq5+U6bvtiRBWFeitgcWWb8Ng+TjOWQ=="
+
+        }
+
+        }
+
+
+        __Using RSA/AES:__
+
+        The server generates an AES key (256 bit) and iv (128 bit) to encrypt the response payload. After the payload encryption the key parameters are encrypted with the client''s public RSA key (see __clientSecretparam__). The encrypted key parameters and payload are stored in a __CryptoEnvelope__ entity that is attached to the response body.
+
+
+        __Using ECIES:__
+
+        The server uses the client''s EC public key (see __clientSecretParam__) to encrypt the response payload. The encrypted payload is stored in a __CryptoEnvelope__ entity that is attached to the response body.'
+      operationId: getPrestagedTransactions
+      parameters:
+      - $ref: '#/components/parameters/clientSecretParam'
+      - $ref: '#/components/parameters/sessionTokenParam'
+      - $ref: '#/components/parameters/consumerIdParam'
+      - $ref: '#/components/parameters/bankCodeParam'
+      - $ref: '#/components/parameters/accountNumberParam'
+      - $ref: '#/components/parameters/accountTypeParam'
+      responses:
+        '200':
+          $ref: '#/components/responses/getPrestagedTransactionsResponse'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        default:
+          $ref: '#/components/responses/defaultResponse'
+  /executePrestagedTransaction:
+    post:
+      tags:
+      - Prestaged Transaction API
+      summary: Execute a prestaged transaction at an ATM with an accessCode
+      description: 'Execute a prestaged transaction at an ATM with an accessCode. When the customer creates a prestaged transaction or receives an accessCode from a third party member, the transaction (deposit/withdrawal) tied to that accessCode can be executed contact-less at an ATM supporting the feature. The ATM presents a QR-Code that must be scanned by the mobile application. It contains a JSON Web Token (JWT) with information like the ATM''s __nodeId__ and a __tokenUUID__ which both have to be provided in the request together with the __accessCode__ (see __ExecutePrestagedTransactionRequestPayload__).
+
+
+        When two-step-verification is enabled (via OCM) the first request is denied with a RESUBMIT / TWO_STEP_ATM_VALIDATION_REQUIRED response. The ATM will flash lights or play a sound to indicate that the transaction is going to be executed at the ATM next to the customer. The customer then verifies by setting the __additionalSecurity__ property to true. Ideally the customer is guided through the process by his mobile banking application.
+
+        ### Example Response:
+
+
+        {
+
+        "responseStatus": {
+
+        "success": true,
+
+        "error": null
+
+        }
+
+        }'
+      operationId: executePrestagedTransaction
+      parameters:
+      - $ref: '#/components/parameters/clientSecretParam'
+      - $ref: '#/components/parameters/sessionTokenParam'
+      - $ref: '#/components/parameters/consumerIdParam'
+      - $ref: '#/components/parameters/bankCodeParam'
+      requestBody:
+        $ref: '#/components/requestBodies/executePrestagedTransactionRequestBody'
+      responses:
+        '200':
+          $ref: '#/components/responses/executePrestagedTransactionResponse'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        default:
+          $ref: '#/components/responses/defaultResponse'
+components:
+  schemas:
+    CreateBranchDepositResponse:
+      type: object
+      required:
+      - responseStatus
+      description: The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using the schema __CreateBranchDepositResponsePayload__
+      properties:
+        responseStatus:
+          $ref: '#/components/schemas/ResponseBase'
+        cryptoEnvelope:
+          $ref: '#/components/schemas/CryptoEnvelope'
+    ResponseBase:
+      description: "Every number used by OM-API is within a certain number range.<br> The OM-API V4 number range is 2870000 - 2879999.<br> Within that range, every requests group has its number range of 1000: <br>\n  | Request Group | Number Range                       |\n  |---------------|------------------------------------|\n  | Account Management API          | 2870000-2870999  |\n  | Standing Order API              | 2871000-2871999  |\n  | Prestaged Transaction API       | 2872000-2872999  |\n  | Miscellaneous API               | 2873000-2873999  |\n  | Accessibility API               | 2874000-2874999  |\nWithin each group range, every belonging request has its number range of 100:\n  <br>\n  | Request Name  | Number Range                       |\n  |---------------|------------------------------------|\n  | *Account Management API*\n  | getAccounts                     | 2870000-2870099  |\n  | getAccountTypes                 | 2870100-2870199  |\n  | getAccountDetails               | 2870200-2870299  |\n  | getTransactions                 | 2870300-2870399  |\n  | getScheduledTransactions        | 2870400-2870499  |\n  | checkAccount                    | 2870500-2870599  |\n  | createTransfer                  | 2870600-2870699  |\n  | createDispute                   | 2870700-2870799  |\n  | &nbsp;\n  | *Standing Order API*\n  | getStandingOrders               | 2871000-2871099  |\n  | createStandingOrder             | 2871100-2871199  |\n  | updateStandingOrder             | 2871200-2871299  |\n  | deleteStandingOrder             | 2871300-2871399  |\n  | updateAccountNickname           | 2871400-2871499  |\n  | &nbsp;\n  | *Prestaged Transaction API*\n  | createCashout4Me                | 2872000-2872099  |\n  | createCashout2You               | 2872100-2872199  |\n  | createDeposit                   | 2872200-2872299  |\n  | createBranchDeposit             | 2872300-2872399  |\n  | deletePrestagedTransaction      | 2872400-2872499  |\n  | getPrestagedTransactions        | 2872500-2872599  |\n  | executePrestagedTransaction     | 2872600-2872699  |\n  | &nbsp;\n  | *Miscellaneous API*\n  | getCreditors                    | 2874000-2874099  |\n  | getSinglePaymentOrderData       | 2874100-2874199  |\n  | getPreferences                  | 2874200-2874299  |\n  | setPreferences                  | 2874300-2874399  |\n  | getClientBranding               | 2874400-2874499  |\n  | getGenericTransactionOrders     | 2874500-2874599  |\n  | performGenericTransactionOrder  | 2874600-2874699  |\n  | getLocations                    | 2874700-2874799  |\n  | &nbsp;\n  | *Accessibility API*\n  | getRsaKey                       | 2875000-2875099  |\n  | getEcKey                        | 2875100-2875199  |\n  | getVersion                      | 2875200-2875299  |\n  <br>\n  The numbers in the ranges are used primarily for the error codes (see Error schema)."
+      type: object
+      required:
+      - success
+      properties:
+        success:
+          description: 'Returns True or False to indicate the success of the API call.
+
+            The The error property is optional.
+
+            It is set only if an error has been detected.
+
+            '
+          type: boolean
+          example: true
+        error:
+          $ref: '#/components/schemas/Error'
+    CreateCashout2YouResponse:
+      type: object
+      required:
+      - responseStatus
+      description: The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using the schema CreateCashout2YouResponsePayload__
+      properties:
+        responseStatus:
+          $ref: '#/components/schemas/ResponseBase'
+        cryptoEnvelope:
+          $ref: '#/components/schemas/CryptoEnvelope'
+    CreateBranchDepositRequest:
+      type: object
+      required:
+      - cryptoEnvelope
+      description: "With OM-API v3 encryption is used for all endpoints. The request body is therefore specified to contain only on property, the __CryptoEnvelope__:\n\n  CryptoEnvelope:\n    type: object\n    required:\n      - payload\n    description: >-\n      Object holding cryptographically secured request properties.\n    properties:\n      payload:\n        type: string\n        minLength: 1\n        example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+\n\nThe __CryptoEnvelope__ has a __payload__ property which represents an encrypted JSON string of the actual request object which is specified by  the schema __CreateBranchDepositRequestPayload__."
+      properties:
+        cryptoEnvelope:
+          $ref: '#/components/schemas/CryptoEnvelope'
+    GetPrestagedTransactionsResponse:
+      type: object
+      required:
+      - responseStatus
+      description: The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using the schema __GetPrestagedTransactionsResponsePayload__
+      properties:
+        responseStatus:
+          $ref: '#/components/schemas/ResponseBase'
+        cryptoEnvelope:
+          $ref: '#/components/schemas/CryptoEnvelope'
+    AesKeyParams:
+      description: A holder object for AES symmetric key params.
+      required:
+      - key
+      - iv
+      properties:
+        key:
+          description: The Base64 encoded (and encrypted) AES key (256bit).
+          type: string
+          example: MTI4MzI1Mjc2NTI=
+        iv:
+          description: The Base64 encoded (and encrypted) AES iv (128bit).
+          type: string
+          example: MTI4MzI1Mjc2NTI=
+    ExecutePrestagedTransactionRequest:
+      type: object
+      required:
+      - cryptoEnvelope
+      description: "With OM-API v3 encryption is used for all endpoints. The request body is therefore specified to contain only on property, the __CryptoEnvelope__:\n\n  CryptoEnvelope:\n    type: object\n    required:\n      - payload\n    description: >-\n      Object holding cryptographically secured request properties.\n    properties:\n      payload:\n        type: string\n        minLength: 1\n        example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+\n\nThe __CryptoEnvelope__ has a __payload__ property which represents an encrypted JSON string of the actual request object which is specified by  the schema __ExecutePrestagedTransactionRequestPayload__."
+      properties:
+        cryptoEnvelope:
+          $ref: '#/components/schemas/CryptoEnvelope'
+    ExecutePrestagedTransactionResponse:
+      type: object
+      required:
+      - responseStatus
+      properties:
+        responseStatus:
+          $ref: '#/components/schemas/ResponseBase'
+    CreateCashout2YouRequest:
+      type: object
+      required:
+      - cryptoEnvelope
+      description: "With OM-API v3 encryption is used for all endpoints. The request body is therefore specified to contain only on property, the __CryptoEnvelope__:\n\n  CryptoEnvelope:\n    type: object\n    required:\n      - payload\n    description: >-\n      Object holding cryptographically secured request properties.\n    properties:\n      payload:\n        type: string\n        minLength: 1\n        example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+\n\nThe __CryptoEnvelope__ has a __payload__ property which represents an encrypted JSON string of the actual request object which is specified by  the schema __CreateCashout2YouRequestPayload__."
+      properties:
+        cryptoEnvelope:
+          $ref: '#/components/schemas/CryptoEnvelope'
+    CreateDepositResponse:
+      type: object
+      required:
+      - responseStatus
+      description: The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using the schema __CreateDepositResponsePayload__
+      properties:
+        responseStatus:
+          $ref: '#/components/schemas/ResponseBase'
+        cryptoEnvelope:
+          $ref: '#/components/schemas/CryptoEnvelope'
+    CryptoEnvelope:
+      type: object
+      required:
+      - payload
+      description: Object holding a cryptographically secured request properties.
+      properties:
+        keyParams:
+          $ref: '#/components/schemas/AesKeyParams'
+        payload:
+          type: string
+          minLength: 1
+          example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+
+    CreateDepositRequest:
+      type: object
+      required:
+      - cryptoEnvelope
+      description: "With OM-API v3 encryption is used for all endpoints. The request body is therefore specified to contain only on property, the __CryptoEnvelope__:\n\n  CryptoEnvelope:\n    type: object\n    required:\n      - payload\n    description: >-\n      Object holding cryptographically secured request properties.\n    properties:\n      payload:\n        type: string\n        minLength: 1\n        example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+\n\nThe __CryptoEnvelope__ has a __payload__ property which represents an encrypted JSON string of the actual request object which is specified by  the schema __CreateDepositRequestPayload__."
+      properties:
+        cryptoEnvelope:
+          $ref: '#/components/schemas/CryptoEnvelope'
+    CreateCashout4MeRequest:
+      type: object
+      required:
+      - cryptoEnvelope
+      description: "With OM-API v3 encryption is used for all endpoints. The request body is therefore specified to contain only on property, the __CryptoEnvelope__:\n\n  CryptoEnvelope:\n    type: object\n    required:\n      - payload\n    description: >-\n      Object holding cryptographically secured request properties.\n    properties:\n      payload:\n        type: string\n        minLength: 1\n        example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+\n\nThe __CryptoEnvelope__ has a __payload__ property which represents an encrypted JSON string of the actual request object which is specified by  the schema __CreateCashout4MeRequestPayload__."
+      properties:
+        cryptoEnvelope:
+          $ref: '#/components/schemas/CryptoEnvelope'
+    DeletePrestagedTransactionResponse:
+      type: object
+      required:
+      - responseStatus
+      properties:
+        responseStatus:
+          $ref: '#/components/schemas/ResponseBase'
+    CreateCashout4MeResponse:
+      type: object
+      required:
+      - responseStatus
+      description: The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using the schema __CreateCashout4MeResponsePayload__
+      properties:
+        responseStatus:
+          $ref: '#/components/schemas/ResponseBase'
+        cryptoEnvelope:
+          $ref: '#/components/schemas/CryptoEnvelope'
+    Error:
+      type: object
+      description: "The error property is optional. It is set only if an error has been detected. <p> Each request has its number range used for error codes (see ResponseBase schema). This is the list of the actual error codes for each request: <br>\n  | Request Name  | Error | Error Code  |\n  |---------------|-------|-------------|\n  | *Account Management API*\n  | &nbsp; | | |\n  | getAccounts | SERVER_FAILURE | 2870000 |\n  |               | SYSTEM_ERROR | 2870001 |\n  |               | REQUEST_DATA_INVALID | 2870002 |\n  |               | NO_RESULT | 2870003 |\n  |               | HOST_OFFLINE | 2870004 |\n  |               | HOST_COMMUNICATION_ERROR | 2870005 |\n  |               | VERIFICATION_FAILED | 2870015 |\n  | &nbsp; | | |\n  | getAccountTypes | SERVER_FAILURE | 2870100 |\n  |               | VERIFICATION_FAILED | 2870115 |\n  | &nbsp; | | |\n  | getAccountDetails | SERVER_FAILURE | 2870200 |\n  |               | SYSTEM_ERROR | 2870201 |\n  |               | REQUEST_DATA_INVALID | 2870202 |\n  |               | NO_RESULT | 2870203 |\n  |               | HOST_OFFLINE | 2870204 |\n  |               | HOST_COMMUNICATION_ERROR | 2870205 |\n  |               | VERIFICATION_FAILED | 2870215 |\n  | &nbsp; | | |\n  | getTransactions | SERVER_FAILURE | 2870300 |\n  |               | SYSTEM_ERROR | 2870301 |\n  |               | REQUEST_DATA_INVALID | 2870302 |\n  |               | NO_RESULT | 2870303 |\n  |               | HOST_OFFLINE | 2870304 |\n  |               | HOST_COMMUNICATION_ERROR | 2870305 |\n  |               | VERIFICATION_FAILED | 2870315 |\n  | &nbsp; | | |\n  | getScheduledTransactions | SERVER_FAILURE | 2870400 |\n  |               | SYSTEM_ERROR | 2870401 |\n  |               | REQUEST_DATA_INVALID | 2870402 |\n  |               | NO_RESULT | 2870403 |\n  |               | HOST_OFFLINE | 2870404 |\n  |               | HOST_COMMUNICATION_ERROR | 2870405 |\n  |               | VERIFICATION_FAILED | 2870415 |\n  | &nbsp; | | |\n  | checkAccount | SERVER_FAILURE | 2870500 |\n  |               | SYSTEM_ERROR | 2870501 |\n  |               | REQUEST_DATA_INVALID | 2870502 |\n  |               | NO_RESULT | 2870503 |\n  |               | HOST_OFFLINE | 2870504 |\n  |               | HOST_COMMUNICATION_ERROR | 2870505 |\n  |               | VERIFICATION_FAILED | 2870515 |\n  | &nbsp; | | |\n  | createTransfer | SERVER_FAILURE | 2870600 |\n  |               | SYSTEM_ERROR | 2870601 |\n  |               | REQUEST_DATA_INVALID | 2870602 |\n  |               | NO_RESULT | 2870603 |\n  |               | HOST_OFFLINE | 2870604 |\n  |               | HOST_COMMUNICATION_ERROR | 2870605 |\n  |               | LIMIT_EXCEEDED | 2870606 |\n  |               | INSUFFICIENT_FUNDS | 2870607 |\n  |               | ACCOUNT_TYPE_INVALID | 2870608 |\n  |               | VERIFICATION_FAILED | 2870615 |\n  | &nbsp; | | |\n  | createDispute | SERVER_FAILURE | 2870700 |\n  |               | SYSTEM_ERROR | 2870701 |\n  |               | MESSAGE_NOT_SENT | 2870700 |\n  |               | REQUEST_DATA_INVALID | 2870703 |\n  |               | VERIFICATION_FAILED | 2870715 |\n  | &nbsp; | | |\n  | *Standing Order API*\n  | &nbsp; | | |\n  | getStandingOrders | SERVER_FAILURE | 2871000 |\n  |               | REQUEST_DATA_INVALID | 2871002 |\n  |               | CONSUMER_NOT_FOUND | 2871012 |\n  |               | VERIFICATION_FAILED | 2871015 |\n  | &nbsp; | | |\n  | createStandingOrder | SERVER_FAILURE | 2871100 |\n  |               | REQUEST_DATA_INVALID | 2871102 |\n  |               | VERIFICATION_FAILED | 2871115 |\n  | &nbsp; | | |\n  | updateStandingOrder | SERVER_FAILURE | 2871200 |\n  |               | SYSTEM_ERROR | 2871201 |\n  |               | REQUEST_DATA_INVALID | 2871202 |\n  |               | STANDINGORDER_NOT_FOUND | 2871209 |\n  |               | VERIFICATION_FAILED | 2871215 |\n  | &nbsp; | | |\n  | deleteStandingOrder | SERVER_FAILURE | 2871300 |\n  |               | REQUEST_DATA_INVALID | 2871302 |\n  |               | STANDINGORDER_NOT_FOUND | 2871309 |\n  |               | VERIFICATION_FAILED | 2871315 |\n  | &nbsp; | | |\n  | updateAccountNickname | SERVER_FAILURE | 2871400 |\n  |               | SYSTEM_ERROR | 2871401 |\n  |               | REQUEST_DATA_INVALID | 2871402 |\n  |               | NO_RESULT | 2871403 |\n  |               | HOST_OFFLINE | 2871404 |\n  |               | HOST_COMMUNICATION_ERROR | 2871405 |\n  |               | SERVICE_NOT_SUPPORTED | 2871413 |\n  |               | EXT_RESPONSE_NO_MATCHING_RECORD_FOUND | 2871414 |\n  |               | VERIFICATION_FAILED | 2871415 |\n  | &nbsp; | | |\n  | *Prestaged Transaction API*\n  | &nbsp; | | |\n  | createCashout4Me | SERVER_FAILURE | 2872000 |\n  |               | SYSTEM_ERROR | 2872001 |\n  |               | REQUEST_DATA_INVALID | 2872002 |\n  |               | NO_RESULT | 2872003 |\n  |               | HOST_OFFLINE | 2872004 |\n  |               | HOST_COMMUNICATION_ERROR | 2872005 |\n  |               | VERIFICATION_FAILED | 2872015 |\n  | &nbsp; | | |\n  | createCashout2You | SERVER_FAILURE | 2872100 |\n  |               | SYSTEM_ERROR | 2872101 |\n  |               | REQUEST_DATA_INVALID | 2872102 |\n  |               | NO_RESULT | 2872103 |\n  |               | HOST_OFFLINE | 2872104 |\n  |               | HOST_COMMUNICATION_ERROR | 2872105 |\n  |               | VERIFICATION_FAILED | 2872115 |\n  | &nbsp; | | |\n  | createDeposit | SERVER_FAILURE | 2872200 |\n  |               | SYSTEM_ERROR | 2872201 |\n  |               | REQUEST_DATA_INVALID | 2872202 |\n  |               | NO_RESULT | 2872203 |\n  |               | HOST_OFFLINE | 2872204 |\n  |               | HOST_COMMUNICATION_ERROR | 2872205 |\n  |               | VERIFICATION_FAILED | 2872215 |\n  | &nbsp; | | |\n  | createBranchDeposit | SERVER_FAILURE | 2872300 |\n  |               | SYSTEM_ERROR | 2872301 |\n  |               | REQUEST_DATA_INVALID | 2872302 |\n  |               | NO_RESULT | 2872303 |\n  |               | HOST_OFFLINE | 2872304 |\n  |               | HOST_COMMUNICATION_ERROR | 2872305 |\n  |               | VERIFICATION_FAILED | 2872315 |\n  | &nbsp; | | |\n  | deletePrestagedTransaction | SERVER_FAILURE | 2872400 |\n  |               | RESERVED | 2872400 |\n  |               | REQUEST_DATA_INVALID | 2872402 |\n  |               | VERIFICATION_FAILED | 2872415 |\n  | &nbsp; | | |\n  | getPrestagedTransactions | SERVER_FAILURE | 2872500 |\n  |               | SYSTEM_ERROR | 2872501 |\n  |               | REQUEST_DATA_INVALID | 2872502 |\n  |               | NO_RESULT | 2872503 |\n  |               | HOST_OFFLINE | 2872504 |\n  |               | HOST_COMMUNICATION_ERROR | 2872505 |\n  |               | VERIFICATION_FAILED | 2872515 |\n  | &nbsp; | | |\n  | executePrestagedTransaction | SERVER_FAILURE | 2872600 |\n  |               | SYSTEM_ERROR | 2872601 |\n  |               | REQUEST_DATA_INVALID | 2872602 |\n  |               | VERIFICATION_FAILED | 2872615 |\n  | &nbsp; | | |\n  | *Miscellaneous API*\n  | &nbsp; | | |\n  | getCreditors | SERVER_FAILURE | 2874000 |\n  |               | SYSTEM_ERROR | 2874001 |\n  |               | REQUEST_DATA_INVALID | 2874002 |\n  |               | VERIFICATION_FAILED | 2874015 |\n  | &nbsp; | | |\n  | getSinglePaymentOrderData | SERVER_FAILURE | 2874100 |\n  |               | RESERVED | 2874100 |\n  |               | REQUEST_DATA_INVALID | 2874102 |\n  |               | CONSUMER_NOT_FOUND | 2874112 |\n  |               | VERIFICATION_FAILED | 2874115 |\n  | &nbsp; | | |\n  | getPreferences | SERVER_FAILURE | 2874200 |\n  |               | RESERVED | 2874200 |\n  |               | REQUEST_DATA_INVALID | 2874202 |\n  |               | RESPONSE_NO_CONSUMER_ID_AVAILABLE | 2874210 |\n  |               | RESPONSE_NO_PREFERENCES_AVAILABLE | 2874211 |\n  |               | VERIFICATION_FAILED | 2874215 |\n  | &nbsp; | | |\n  | setPreferences | SERVER_FAILURE | 2874300 |\n  |               | RESERVED | 2874300 |\n  |               | REQUEST_DATA_INVALID | 2874302 |\n  |               | VERIFICATION_FAILED | 2874315 |\n  | &nbsp; | | |\n  | getClientBranding | SERVER_FAILURE | 2874400 |\n  |               | RESERVED | 2874400 |\n  |               | REQUEST_DATA_INVALID | 2874402 |\n  |               | VERIFICATION_FAILED | 2874415 |\n  | &nbsp; | | |\n  | getGenericTransactionOrders | SERVER_FAILURE | 2874500 |\n  |               | RESERVED | 2874500 |\n  |               | REQUEST_DATA_INVALID | 2874502 |\n  |               | VERIFICATION_FAILED | 2874515 |\n  | &nbsp; | | |\n  | executeGenericTransactionOrder | SERVER_FAILURE | 2874600 |\n  |               | RESERVED | 2874600 |\n  |               | REQUEST_DATA_INVALID | 2874602 |\n  |               | VERIFICATION_FAILED | 2874615 |\n  | &nbsp; | | |\n  | getLocations | SERVER_FAILURE | 2873000 |\n  |               | SYSTEM_ERROR | 2873001 |\n  |               | REQUEST_DATA_INVALID | 2873002 |\n  |               | NO_RESULT | 2873003 |\n  |               | VERIFICATION_FAILED | 2873015 |\n  | &nbsp; | | |\n  | *Accessibility API*\n  | &nbsp; | | |\n  | getRsaKey | SERVER_FAILURE | 2875000 |\n  |               | VERIFICATION_FAILED | 2875015 |\n  | &nbsp; | | |\n  | getEcKey | SERVER_FAILURE | 2875100 |\n  |               | VERIFICATION_FAILED | 2875115 |\n  | &nbsp; | | |\n  | getVersion | SERVER_FAILURE | 2875200 |\n  |               | VERIFICATION_FAILED | 2875215 |"
+      required:
+      - code
+      properties:
+        code:
+          description: An error code as outlined in the PC/E documentation.
+          type: integer
+          format: int32
+          minimum: 0
+          example: 850004
+        message:
+          description: An optional, additional message which describes the error.
+          type: string
+          maxLength: 255
+          example: Internal server error. A database connection could not be established.
+  responses:
+    createBranchDepositResponse:
+      description: Returns the response status.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateBranchDepositResponse'
+    defaultResponse:
+      description: Unexpected error. Please see/inspect 'code' and 'message' properties of the error for more/detailed informations.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    getPrestagedTransactionsResponse:
+      description: Returns a list of prestaged transactions.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetPrestagedTransactionsResponse'
+    createCashout2YouResponse:
+      description: Returns the response status.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateCashout2YouResponse'
+    createCashout4MeResponse:
+      description: Returns the response status.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateCashout4MeResponse'
+    badRequestResponse:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    executePrestagedTransactionResponse:
+      description: Returns the response status.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ExecutePrestagedTransactionResponse'
+    deletePrestagedTransactionResponse:
+      description: Returns the response status.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DeletePrestagedTransactionResponse'
+    createDepositResponse:
+      description: Returns the response status.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateDepositResponse'
+    notFoundResponse:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    unauthorizedResponse:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  parameters:
+    referenceIdParam:
+      name: Dn-Tm-Omapi-Reference-Id
+      in: header
+      description: A unique identifier referring to a transaction in TM. This parameter should be encrypted and encoded in base64.
+      required: true
+      schema:
+        type: string
+        minLength: 1
+    sessionTokenParam:
+      name: Dn-Tm-Omapi-Session-Token
+      in: header
+      description: A unique identifier of a consumer session (within an external system), which is required to validate the consumer session. The default implementation expects in the sessionToken parameter a valid openId Connect id_token. Moreover, the default implementation expects in the authorization header of the http request the authorization schema "Bearer" followed by a valid openId Connect access token. This parameter should be encrypted and encoded in base64.
+      required: true
+      schema:
+        type: string
+        minLength: 1
+    bankCodeParam:
+      name: Dn-Tm-Omapi-Bankcode
+      in: header
+      required: false
+      description: "Contains the BIC (aka. bank identifier code)\n  The BIC - also known as SWIFT-code - as defined by ISO 9362 is required in/for cross border transfers/transactions.\n  Please see: https://en.wikipedia.org/wiki/ISO_9362\n  This field can also be used to send/receive an ABA RTN (ABA routing transit number) or Canadian TN(Canadian transit number).\n  See also: https://en.wikipedia.org/wiki/Routing_transit_number\n  This parameter should be encrypted and encoded in base64.\n"
+      schema:
+        type: string
+        pattern: ^[A-Za-z0-9]*$
+        minLength: 8
+        maxLength: 11
+    consumerIdParam:
+      name: Dn-Tm-Omapi-Consumer-Id
+      in: header
+      description: A unique identifier of a consumer (within an external system), which is required to identify the consumer. Maybe the consumerId is moreover/also used to authorize the consumer against an external system. This parameter should be encrypted and encoded in base64.
+      required: true
+      schema:
+        type: string
+        minLength: 1
+    accountTypeParam:
+      name: Dn-Tm-Omapi-Account-Type
+      in: header
+      required: true
+      description: 'The default account type is 820000 (NOT_SPECIFIED). Please see: /getAccountTypes for all possible values. This parameter should be encrypted and encoded in base64.
+
+        '
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 64
+    accountNumberParam:
+      name: Dn-Tm-Omapi-Account-Number
+      in: header
+      required: true
+      description: 'The account number. The length varies greatly. In Europe defined by ISO 13616/2007 See also: https://en.wikipedia.org/wiki/International_Bank_Account_Number This parameter should be encrypted and encoded in base64.
+
+        '
+      schema:
+        type: string
+        minLength: 2
+        maxLength: 32
+        example: DE19123412341234123412
+    clientSecretParam:
+      name: Dn-Tm-Omapi-Client-Secret
+      in: header
+      required: true
+      description: "Depending on the crypto scheme (RSA/AES or ECIES) the client intends to use the corresponding properties of the __CryptoParams__ schema defined by OM-API should be filled accordingly and sent back to the server as stringified JSON. For example:\n\n__Using RSA/AES:__\n\n        cryptoParams: {\n            aesKeyParams: {\n                key: \"uMSlxHYT+ttxz0T+nL+A344iP6ujJdodCn6k5MmjWDC0T+MFCXcs1OjXK1DaYFaP3v1mqN9+uh58FE0VxcwFGaRSp6uDfbl9Oaji7v0vDS9mMFa4hzMoiiYBmRKUemTNkJOcgCpDi7kDNHPB+gpqYyc4dMFfPvSCG/SYv7CFXTA=\",\n                iv: \"FgZ/HdtOhroVzRd802X3NgHCuiqBjCM+6Q/6PS0lUrROBe8T+me444KpKt112gLwHck7nmOVkZJPznWf7bpX6dh+mcIQ/3B7PJ3xGEsHbmSXEAK10C+AKwXpI9Sdig8feP2QT+Hd0d1qGk0X93OFaJ/zfqs/MNIesNTVAY2YBIw=\"\n            },\n            rsaPublicKey:\"-----BEGIN PUBLIC KEY-----\\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCeB05D31/zFICpf9JJWDo1ZVXt\\npYwvJa6ka0g0EHN95C8fvMguNDmprslmsOqaJYplmknWpWjbHAtIPpqrtY3H6eWP\\nELkBN2hitJlQQjf1y2jsWHsSH7BsVY5z1hCzJySFE7Q1ae9WuYj3RTsq+4ZZpEk7\\nCjRdjA26emVkCR3vWwIDAQAB\\n-----END PUBLIC KEY-----\"\n            }\n\nThe property __rsaPublicKey__ is used to send the client's public key to the server in order to create encrypted responses. It is recommended to use __rsaPublicKey__ key size of  - at least - 1024 bit.\nThe property __aesKeyParams__ is used to send the client's AES key (256bit) and iv (128bit) to the server. Both values __must__ be encrypted with the servers public RSA key (see __/getRsaKey__).\n\n__Using ECIES:__\n\n        cryptoParams: {\n            \"ecPublicKey\":{\n                \"publicKeyPem\":\"-----BEGIN PUBLIC KEY-----\\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEHPMaBu6d0BR6QFw3VKwPipuAdDPL\\nG36/aoyTx7iTK1xgoi7X9aMmT1x3Qh1+S1zVhBh2LDDEljHkkVyHrl4bOg==\\n-----END PUBLIC KEY-----\\n\"\n                }\n            }\n\nThe property __ecPublicKey__ is used to send the client's public key to the server in order to create encrypted responses."
+      schema:
+        type: string
+        minLength: 1
+  requestBodies:
+    createBranchDepositRequestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateBranchDepositRequest'
+      description: The request body used for /createBranchDeposit requests
+      required: true
+    createDepositRequestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateDepositRequest'
+      description: The request body used for /createDeposit requests
+      required: true
+    executePrestagedTransactionRequestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ExecutePrestagedTransactionRequest'
+      description: The request body used for /executePrestagedTransaction requests
+      required: true
+    createCashout2YouRequestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateCashout2YouRequest'
+      description: The request body used for /createCashout2You requests
+      required: true
+    createCashout4MeRequestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateCashout4MeRequest'
+      description: The request body used for /createCashout4Me requests
+      required: true
+  securitySchemes:
+    bearerAuth:
+      description: When using the bearer authentication method an access token has to be provided in the HTTP authorization header. When using openIdConnect as security scheme the access token has to be provided in the Authorization header with the bearer scheme while the id token has to be provided in the __consumerIdParam__ which must also be encrypted.
+      type: http
+      scheme: bearer
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io

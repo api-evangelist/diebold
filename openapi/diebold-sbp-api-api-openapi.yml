@@ -1,0 +1,228 @@
+openapi: 3.2.0
+info:
+  title: DN Secure Business Processing SBP API
+  description: A Diebold Nixdorf API designed to invoke predefinded and configurable business process flows using a single request.
+  version: 3.1.0
+  contact:
+    name: Diebold Nixdorf
+    email: info.de@dieboldnixdorf.com
+servers:
+- description: SwaggerHub API Auto Mocking
+  url: https://virtserver.swaggerhub.com/Diebold-Nixdorf/dn_pledge_api/3.1.0
+- url: http://localhost:8080/tm-sbp-api/v1
+  description: Transaction Middleware 3.1+
+- url: https://localhost:8080/tm-sbp-api/v1
+  description: Transaction Middleware 3.1+
+security:
+- basicAuth: []
+tags:
+- name: SBP API
+paths:
+  /getEcKey:
+    get:
+      tags:
+      - SBP API
+      summary: Returns the public key (ECIES) of the server system
+      description: 'The client must use the __ECIES__ encryption scheme to communicate in a secured way with the server. The __/getEcKey__ endpoint can be used to obtain the server''s public EC key in PEM format.
+
+
+        This key is used to encrypt request parameters and/or the request body.'
+      operationId: getEcKey
+      responses:
+        '200':
+          $ref: '#/components/responses/getEcKeyResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        default:
+          $ref: '#/components/responses/defaultResponse'
+  /executeProcess:
+    post:
+      tags:
+      - SBP API
+      summary: Get a configurable pledge from the server
+      description: 'The /executeProcess API endpoint can be used to retrieve properties from the server depending on the specified PledgeType and a value called ''secret'' in the ExecuteProcessRequestPayload.
+
+        The supported process types are enumerated in the ProcessType enum in the components section of the API specification.
+
+        For the ProcessType ''CONF'' a configurable flow can be triggered on the server side to retrieve the desired data. The request property ''secret'' acts as a search key to get the data associated with the flow. __REMARK__ Please put the openId token in a http header field named "openIdToken"'
+      operationId: executeProcess
+      parameters:
+      - $ref: '#/components/parameters/cryptoParamsParam'
+      - $ref: '#/components/parameters/processIdentifierParam'
+      requestBody:
+        $ref: '#/components/requestBodies/executeProcessRequestBody'
+      responses:
+        '200':
+          $ref: '#/components/responses/executeProcessResponse'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        default:
+          $ref: '#/components/responses/defaultResponse'
+components:
+  responses:
+    defaultResponse:
+      description: Unexpected error. Please see/inspect 'code' and 'message' properties of the error for more/detailed informations.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    executeProcessResponse:
+      description: Holds the response CryptoEnvelope
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ExecuteProcessResponse'
+    getEcKeyResponse:
+      description: Returns the API's public EC key as PEM.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetEcKeyResponse'
+    badRequestResponse:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    notFoundResponse:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    unauthorizedResponse:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  parameters:
+    processIdentifierParam:
+      name: Dn-Tm-Process-Identifier
+      in: header
+      required: true
+      description: The process identifier is used to find the necessary business case data from the OCM configuration
+      schema:
+        type: string
+        minLength: 1
+    cryptoParamsParam:
+      name: Dn-Tm-Crypto-Params
+      in: header
+      required: true
+      description: "The __CryptoParams__ schema should be filled with the clients public key (EC) and set as value for this header parameter as stringified JSON. An example:\n__Using ECIES:__\n\n        cryptoParams: {\n            \"ecPublicKey\":{\n                \"publicKeyPem\":\"-----BEGIN PUBLIC KEY-----\\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEHPMaBu6d0BR6QFw3VKwPipuAdDPL\\nG36/aoyTx7iTK1xgoi7X9aMmT1x3Qh1+S1zVhBh2LDDEljHkkVyHrl4bOg==\\n-----END PUBLIC KEY-----\\n\"\n                }\n            }\n\nThe property __ecPublicKey__ is used to send the client's public key to the server in order to create encrypted responses."
+      schema:
+        type: string
+        minLength: 1
+  schemas:
+    GetEcKeyResponse:
+      type: object
+      required:
+      - responseStatus
+      - ecKeyAsPem
+      properties:
+        responseStatus:
+          $ref: '#/components/schemas/ResponseBase'
+        ecPublicKey:
+          $ref: '#/components/schemas/EcPublicKey'
+    ResponseBase:
+      description: 'The basic response object used to transmit the response status and errors
+
+        '
+      type: object
+      required:
+      - success
+      properties:
+        success:
+          description: 'Returns True or False to indicate the success of the API call.
+
+            The The error property is optional.
+
+            It is set only if an error has been detected.
+
+            '
+          type: boolean
+          example: true
+        error:
+          $ref: '#/components/schemas/Error'
+    PublicKeyPem:
+      description: A holder object for PEM formatted public keys
+      type: object
+      required:
+      - publicKeyPem
+      properties:
+        publicKeyPem:
+          type: string
+          minLength: 1
+          example: '"-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEt0 GMNz1Geam/Jw4lbIoPcspDbWt2\n84U+yYZqnqMIa5gQZyJNsTRdvDfb2jdP3MUVBJM UoOeuGTF/cJy4uQ587w==\n-----END PUBLIC KEY-----\n"'
+    ExecuteProcessRequest:
+      type: object
+      required:
+      - cryptoEnvelope
+      description: "The request body only holds one property, the __CryptoEnvelope__:\n\n  CryptoEnvelope:\n    type: object\n    required:\n      - payload\n    description: >-\n      Object holding cryptographically secured request/response properties.\n    properties:\n      payload:\n        type: string\n        minLength: 1\n        example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+\n\nThe __CryptoEnvelope__ has a __payload__ property which represents an encrypted JSON string of the actual request object which is specified by  the schema __ExecuteProcessRequestPayload__."
+      properties:
+        cryptoEnvelope:
+          $ref: '#/components/schemas/CryptoEnvelope'
+    EcPublicKey:
+      allOf:
+      - $ref: '#/components/schemas/PublicKeyPem'
+    ExecuteProcessResponse:
+      type: object
+      required:
+      - responseStatus
+      description: "The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using a schema  matching the ProcessType.\n\n  - CONF      -> ConfResponsePayload\n  - CARDDATA  -> CardDataResponsePayload"
+      properties:
+        responseStatus:
+          $ref: '#/components/schemas/ResponseBase'
+        cryptoEnvelope:
+          $ref: '#/components/schemas/CryptoEnvelope'
+    CryptoEnvelope:
+      type: object
+      required:
+      - payload
+      description: Object holding a cryptographically secured request/response properties.
+      properties:
+        payload:
+          type: string
+          minLength: 1
+          example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+
+    Error:
+      type: object
+      description: The error property is optional. It is set only if an error has been detected.
+      required:
+      - code
+      properties:
+        code:
+          description: An error code.
+          type: integer
+          format: int32
+          minimum: 0
+          example: 850004
+        message:
+          description: An optional, additional message which describes the error.
+          type: string
+          maxLength: 255
+          example: Internal server error. A database connection could not be established.
+  requestBodies:
+    executeProcessRequestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ExecuteProcessRequest'
+      description: 'The request body used for /executeProcess requests
+
+        '
+      required: true
+  securitySchemes:
+    basicAuth:
+      description: 'A basic authentication method where the username and a password hash are provided in the Authentication header. The username and password string must be base64 encoded and align to the pattern <username>:<password>.
+
+        '
+      type: http
+      scheme: basic
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io

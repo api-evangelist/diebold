@@ -1,0 +1,682 @@
+openapi: 3.2.0
+info:
+  description: Public API of Diebold Nixdorf for Banking Core Systems integration
+  version: 4.3.0
+  title: DN Open Backend Authentication API
+  contact:
+    name: Thorsten Brinkmann
+    email: Thorsten.Brinkmann@dieboldnixdorf.com
+  termsOfService: /terms-of-use
+servers:
+- url: https://localhost:8080/OB-API-REST/v2
+security:
+- basic: []
+- bearer: []
+tags:
+- name: Authentication API
+  description: Authentication request for a transaction.
+paths:
+  /getToken:
+    get:
+      parameters:
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/initiatingPartyId'
+      - $ref: '#/components/parameters/productName'
+      - $ref: '#/components/parameters/initiatingPartyName'
+      - $ref: '#/components/parameters/timestamp'
+      - $ref: '#/components/parameters/referenceId'
+      - $ref: '#/components/parameters/tokenAuthorization'
+      summary: Get Token for API requests
+      security:
+      - basic: []
+      - jweBearer: []
+      tags:
+      - Authentication API
+      operationId: getToken
+      description: Retrieves a token which can be used for subsequent API requests. A new token is retrieved when expired.
+      responses:
+        '200':
+          description: OK.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tokenResponse'
+        '400':
+          description: Invalid input fields, object invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse'
+              examples:
+                ServiceResponseFailExample:
+                  $ref: '#/components/examples/ServiceResponseFailExample'
+                ServiceResponseFundsExample:
+                  $ref: '#/components/examples/ServiceResponseFundsExample'
+        '500':
+          description: Error while performing operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse'
+              examples:
+                ServiceResponseFailExample:
+                  $ref: '#/components/examples/ServiceResponseFailExample'
+        '401':
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse'
+              examples:
+                ServiceResponseFailExample:
+                  $ref: '#/components/examples/ServiceResponseFailExample'
+        '403':
+          description: Forbidden access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse'
+              examples:
+                ServiceResponseFailExample:
+                  $ref: '#/components/examples/ServiceResponseFailExample'
+  /exchangeKey:
+    post:
+      parameters:
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/initiatingPartyId'
+      - $ref: '#/components/parameters/productName'
+      - $ref: '#/components/parameters/initiatingPartyName'
+      - $ref: '#/components/parameters/timestamp'
+      - $ref: '#/components/parameters/referenceId'
+      - $ref: '#/components/parameters/authorization'
+      summary: Exchange Key with the Backend Host
+      tags:
+      - Authentication API
+      operationId: exchangeKey
+      description: This API is used to exchange the keys with the backend. The key received in the response will be used to encrypt the request payload for subsequent requests. The key sent in the request is used to encrypt the response payload
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/exchangeKeyRequest'
+        description: "TM Key and its Metadata information is send in the request as Signed JWT .<br><br>\n\n       \n  Signed JWT Token structure:\n      \n      Header:\n        alg: Signing algorithm\n        typ: JWT\n        kid: Key Id of the key used for signing\n      Payload:\n        iss: Token Issuer URL\n        iat: Absolute Token issue time (unix epoch time in seconds)\n        exp: Absolute Token expiry time (unix epoch time in seconds)\n        sub: TM Server name \n        key: pem formatted Key to be used for payload encryption\n        keyId: Key Identifier of the TM key\n        keyType: Type of key i.e EC or RSA\n        keyIssueTime: Absolute Issue time (unix epoch time in  seconds)\n        keyExpiryTime: Absolute Expiry time (unix epoch time in seconds)\n       \n      Signature:\n      base64 signature with TM RSA private key\n  \n  Signed JWT Example Value:\n      \n      Header:\n      {\n        \"alg\": \"RS256\",\n        \"typ\": \"JWT\",\n        \"kid\": \"9Bj6hg8-h3vveksiZQr9S33OYMJXelOy31U7faOkHrU\"\n      }\n      \n      Payload:\n      {\n        \"iss\": \"http://10.177.76.114:8080\",\n        \"iat\": 1625723983,\n        \"exp\": 1625724643,\n        \"sub\": \"Alpha.Farm.Cluster.TXMServer01\",\n        \"key\": \"-----BEGIN PUBLIC KEY-----\\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEt7SjiGcIrtepZGwO4Y6AiikhXfMm\\nQlDJMc/DIjpgnCU0Agnpv0UtpbXJqNlo7rOtlmJ1IKalwyxR8ZanavK4kw==\\n-----END PUBLIC KEY----\\n\",\n        \"keyId\": \"7PFu8nPcrnSqJk-cXnX2XOkksxWJp0imi1PWUs74i38\",\n        \"keyType\": \"EC\",\n        \"keyIssueTime\": 1625723983,\n        \"keyExpiryTime\": 1625725771\n      }\n      \n      Signature: oB5BFasR_LOr_blUBaOD0p8Y5JuK0IO__HSD8A5DvUzhzvpccw1kwJj_5Eqab51QY06OPSLbvMIDGFhb1GGknCuVYSU9n5Y2G8ugIVvaG53TpmcF9bCxT3EzcLN1UhNL_yLYpJJLVPZfqE8Pb2zuvhjnUTg1NOUlbWxlMAYUFreWL3I74t7OdVY-7-xKjl2YkoiluQ03QOA4_8hHqn5Z2bxJ-SGxmVokcKpW49fSDNHnDe1c15PdzrkSjo70SHc2CEj6h7GiHrRaF_zqGP5aM6bMW5ztncf9Dp7h387gbck188Mwt9RqnSsJJ37wEGOYtKqEYCE4Vs7fkCg2HsbYlA\n      \n    Note: \n      All Header and Payload parameters in SignedJWT are mandatory in request\n      \n      kid: It is kid from JWK thumbprint computed from the key used for\n      signing. Their computation is specified in RFC 7638. Default hash\n      algorithm SHA-256 used for computation.\n      \n      Signing algorithm: RS256 (RSASSA-PKCS1-v1_5 using SHA-256)\n      Key size: RSA Key Pair used for signing is of size 2048 bit. EC publicKey size is 256 bit\n      \n      "
+      responses:
+        '200':
+          description: "\nBackend Key and its Metadata information is received in response as Signed JWT<br>\n        \n  Signed JWT Token structure:\n    \n    Header:\n      alg: Signing algorithm\n      typ: JWT\n      kid: Key Id of the key used for signing\n    Payload:\n      iss: Token Issuer URL\n      iat: Absolute Token issue time (unix epoch time in seconds)\n      exp: Absolute Token expiry time (unix epoch time in seconds)\n      sub: Backend Server name \n      key: pem formatted Key to be used for payload encryption\n      keyId: Key Identifier of the Backend key\n      keyType: Type of key i.e EC or RSA\n      keyIssueTime: Absolute Issue time (unix epoch time in seconds)\n      keyExpiryTime: Absolute Expiry time (unix epoch time in seconds)\n     \n    Signature:\n    base64 signature with Backend RSA Private Key\n  \n  Signed JWT Example Value:\n    \n    Header:\n    {\n      \"alg\": \"RS256\",\n      \"typ\": \"JWT\",\n      \"kid\": \"LxvenwMisHToXaDUvios__oHeuR-iR-7dkYq-GSPUE4\"\n    }\n    \n    Payload:\n    {\n      \"iss\": \"http://10.184.12.233:8080\",\n      \"iat\": 1625723983,\n      \"exp\": 1625724643,\n      \"sub\": \"BackendHost01\",\n      \"key\": \"-----BEGIN PUBLIC KEY-----\\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEqIQhwENy4XuLP9VgkYKHpALWo3lE\\n5YqZfKW4bdmaXdgMiq2HCiixj/mpQnMZ4pk6sT3JNEhim9oUbpEvyd/vCA==\\n-----END PUBLIC KEY-----\\n\",\n      \"keyId\": \"6K7FNu88LpwYucaZYJkb5snOYZkrruZhgGzq8OfmOE0\",\n      \"keyType\": \"EC\",\n      \"keyIssueTime\": 1625723983,\n      \"keyExpiryTime\": 1625725771\n    }\n    \n    Signature:\n     qA4CDvsN_LOr_blUBaOD0p8Y5JuK0IO__HSD8A5DvUzhzvpccw1kwJj_5Eqab51QY06OPSLbvMIDGFhb1GGknCuVYSU9n5Y2G8ugIVvaG53TpmcF9bCxT3EzcLN1UhNL_yLYpJJLVPZfqE8Pb2zuvhjnUTg1NOUlbWxlMAYUFreWL3I74t7OdVY-7-xKjl2YkoiluQ03QOA4_8hHqn5Z2bxJ-SGxmVokcKpW49fSDNHnDe1c15PdzrkSjo70SHc2CEj6h7GiHrRaF_zqGP5aM6bMW5ztncf9Dp7h387gbck188Mwt9RqnSsJJ37wEGOYtKqEYCE4Vs7asdvasdwQ34\n  \n    Note:\n     Except iss and sub in Payload, all other Header and Payload parameters in SignedJWT are mandatory in response\n     \n     kid: It is kid from JWK thumbprint computed from the key used for\n    signing. Their computation is specified in RFC 7638. Default hash\n    algorithm SHA-256 used for computation.\n     \n     Signing algorithm: RS256 (RSASSA-PKCS1-v1_5 using SHA-256)\n     Key size: RSA Key Pair used for signing is of size 2048 bit. EC publicKey size is 256 bit\n      "
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exchangeKeyResponse'
+        '400':
+          description: Invalid input fields, object invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse'
+              examples:
+                ServiceResponseFailExample:
+                  $ref: '#/components/examples/ServiceResponseFailExample'
+        '401':
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse'
+              examples:
+                ServiceResponseFailExample:
+                  $ref: '#/components/examples/ServiceResponseFailExample'
+        '403':
+          description: Forbidden access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse'
+              examples:
+                ServiceResponseFailExample:
+                  $ref: '#/components/examples/ServiceResponseFailExample'
+        '500':
+          description: Error while performing operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse'
+              examples:
+                ServiceResponseFailExample:
+                  $ref: '#/components/examples/ServiceResponseFailExample'
+  /zpkExchange:
+    post:
+      parameters:
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/initiatingPartyId'
+      - $ref: '#/components/parameters/productName'
+      - $ref: '#/components/parameters/initiatingPartyName'
+      - $ref: '#/components/parameters/timestamp'
+      - $ref: '#/components/parameters/referenceId'
+      - $ref: '#/components/parameters/authorization'
+      summary: Zone PIN Key Exchange
+      tags:
+      - Authentication API
+      operationId: zpkExchange
+      description: Fetches the new Zone Pin Key from backend host
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/zpk.exchange.request'
+        description: "If payload encryption scheme is used, Request body will follow schema __EnvelopeRequest__. <br>Encryption algorithm: ECIES as in IEEE P 1363a<br><br> __Example Value:__<br>\n\n    {\n      \"envelope\": {\n        \"keyId\" : \"6K7FNu88LpwYucaZYJkb5snOYZkrruZhgGzq8OfmOE0\",\n        \"requestor\": \"Alpha.Farm.Cluster.TXMServer01\",\n        \"payload\": \"BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+\"\n      }\n    }\n\nIf payload encryption scheme is not used, Request body will follow schema as mentioned below"
+      responses:
+        '200':
+          description: "If payload encryption scheme is used, Response body will follow schema __EnvelopeResponse__.<br>Encryption algorithm: ECIES as in IEEE P 1363a<br><br> __Example Value:__<br>\n\n      {\n        \"envelope\": {\n            \"keyId\" : \"7PFu8nPcrnSqJk-cXnX2XOkksxWJp0imi1PWUs74i38\",\n            \"payload\": \"WWabWIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPQRs+\"\n          }\n      } \nIf payload encryption scheme is not used, Response body will follow schema as mentioned below "
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/zpk.exchange.response'
+        '400':
+          description: Invalid input fields, object invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse'
+              examples:
+                ServiceResponseFailExample:
+                  $ref: '#/components/examples/ServiceResponseFailExample'
+        '500':
+          description: Error while performing operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse'
+              examples:
+                ServiceResponseFailExample:
+                  $ref: '#/components/examples/ServiceResponseFailExample'
+        '401':
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse'
+              examples:
+                ServiceResponseFailExample:
+                  $ref: '#/components/examples/ServiceResponseFailExample'
+        '403':
+          description: Forbidden access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse'
+              examples:
+                ServiceResponseFailExample:
+                  $ref: '#/components/examples/ServiceResponseFailExample'
+  /keepAlive:
+    get:
+      parameters:
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/initiatingPartyId'
+      - $ref: '#/components/parameters/productName'
+      - $ref: '#/components/parameters/initiatingPartyName'
+      - $ref: '#/components/parameters/timestamp'
+      - $ref: '#/components/parameters/referenceId'
+      - $ref: '#/components/parameters/authorization'
+      summary: Checks availability of OB-API backends
+      tags:
+      - Authentication API
+      operationId: keepAlive
+      description: Checks the availability of backends connected by OB-API by sending a keep-alive message.
+      responses:
+        '200':
+          description: OK.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/keepAliveResponse'
+              example:
+                responseCode: OK
+                extendedResponse:
+                  code: OK
+                  message: OK
+        '400':
+          description: Invalid input fields, object invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse'
+              examples:
+                ServiceResponseFailExample:
+                  $ref: '#/components/examples/ServiceResponseFailExample'
+        '500':
+          description: Error while performing operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse'
+              examples:
+                ServiceResponseFailExample:
+                  $ref: '#/components/examples/ServiceResponseFailExample'
+        '401':
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse'
+              examples:
+                ServiceResponseFailExample:
+                  $ref: '#/components/examples/ServiceResponseFailExample'
+        '403':
+          description: Forbidden access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse'
+              examples:
+                ServiceResponseFailExample:
+                  $ref: '#/components/examples/ServiceResponseFailExample'
+components:
+  schemas:
+    IsStandin:
+      type: boolean
+      description: Standin request indicator
+      example: false
+    ExtendedResponseMessage:
+      type: string
+      description: Extended Response Message
+      example: OK
+    KeyData:
+      type: string
+      description: Hex Encoded value of key
+      example: 4C0EDDA0BC74008A16484FEEFF67EC5FF089826D94402111
+    KeyGenerationIndex:
+      type: string
+      description: Key generation Index
+      example: '1'
+    AdditionalProperties:
+      type: object
+      additionalProperties:
+        type: string
+      description: Additional properties can be provided within this object
+    ServiceResponse:
+      type: object
+      required:
+      - responseCode
+      properties:
+        responseCode:
+          $ref: '#/components/schemas/ResponseCode'
+        extendedResponse:
+          $ref: '#/components/schemas/ExtendedResponse'
+    TransactionBase:
+      type: object
+      required:
+      - id
+      - type
+      - operation
+      properties:
+        id:
+          type: string
+          minLength: 1
+          example: '212423521525'
+        transactionTime:
+          type: string
+          description: Transaction time
+          format: yyyy-MM-dd'T'HH:mm:ssZ
+          example: 2020-09-01T16:40:52+0000
+        poiSettlementDate:
+          $ref: '#/components/schemas/PointOfInteractionSettlementDate'
+        businessCorrelationId:
+          type: string
+          description: Unique ID for a transaction business case
+          maxLength: 50
+          example: 7f2b9fcde28b42abbc10b0b9640f6ede
+        type:
+          $ref: '#/components/schemas/TransactionTypes'
+        operation:
+          type: string
+          minLength: 1
+          description: Operation performed for the given transaction type given by the 'type' property
+        retrievalReferenceNumber:
+          type: string
+          example: '827364775848'
+          description: 'A numeric value containing the unique transaction reference number '
+        authorizationIdentificationResponse:
+          type: string
+          example: '000123'
+          description: A numeric value containing the authorization code
+    KeyName:
+      type: string
+      description: Name of the key requested
+      example: ZPK
+    ExtendedResponse:
+      type: object
+      required:
+      - code
+      properties:
+        code:
+          $ref: '#/components/schemas/ExtendedResponseCode'
+        message:
+          $ref: '#/components/schemas/ExtendedResponseMessage'
+    SupplementaryData:
+      type: object
+      description: 'Additional information incorporated as an extension to the message by mixins based on the transaction type          '
+    exchangeKeyRequest:
+      type: object
+      required:
+      - signedJWT
+      description: '
+
+        signedJwt property represents the signed Jwt Token containing the TM public key'
+      properties:
+        signedJWT:
+          type: string
+          minLength: 1
+          example: eyJraWQiOiIyIiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3Q6ODA4MCIsInN1YiI6IkFscGhhLkZhcm0uQ2x1c3Rlci5pbmlkYy1ha2FzaGMiLCJleHAiOjE2MjA3Mjc3OTQsImlhdCI6MTYyMDcyNzE5NH0.By0BQI9RjVNY5b0TSn6YIV2xjfTsGlWsGp5fDxsTh4npJ1SngQg37cqVPFc9Lepxp0VKi3zKm+fZHcvR6omG34JNUVDW+3pefLjYJxymixZdQTCjAL2FFIt1ei0JzyaSQGCOwpE+TUDkdMkbJ5x69ztAoa0tOSnLWPUJD0ELbV8wX2DhBTyS0sCDqEiht3wxk+3QoI04m+36Nt6zuLazigQzikJxLYllJB2QvM76oWLY3o3lNX77LdkZH6XkNF1w2acCXvbAdy11Bi+dAoSxPvCw5goFuh48I5yfQ/gzziY1RKXpMyxLkF+eMLixfjYx4WVDtZ4YIONdrSVdfQxPZs+A
+    zpk.exchange.request:
+      type: object
+      required:
+      - payload
+      - transaction
+      properties:
+        transaction:
+          $ref: '#/components/schemas/TransactionBase'
+        payload:
+          type: object
+          required:
+          - zoneId
+          - keyType
+          - keyName
+          properties:
+            zoneId:
+              $ref: '#/components/schemas/KeyZoneId'
+            keyType:
+              $ref: '#/components/schemas/KeyType'
+            keyName:
+              $ref: '#/components/schemas/KeyName'
+            additionalProperties:
+              $ref: '#/components/schemas/AdditionalProperties'
+            supplementaryData:
+              $ref: '#/components/schemas/SupplementaryData'
+    TransactionTypes:
+      type: string
+      enum:
+      - sbLogin
+      - sbLogout
+      - sbRelogin
+      - sbOpenConsumer
+      - sbCardlessLogin
+      - sbAccountMovement
+      - sbAccountOverview
+      - sbCheckCashing
+      - sbDeposit
+      - sbMixedMediaPayment
+      - sbTransfer
+      - sbWithdrawal
+      - sbPinChange
+      - sbPrestagedCashOut
+      - sbPrestagedCashIn
+      - sbEReceipt
+      - sbLoadCustomerPreferences
+      - sbSaveCustomerPreferences
+      - sbAssistedWithdrawal
+      - sbAssistedDeposit
+      - sbLimitApproval
+      - sbRequestSupport
+      - sbCreditorSelection
+      - withdrawal
+      - balanceInquiry
+      - transfer
+      - purchase
+      - deposit
+      - payment
+      - refund
+      - purchaseCashback
+      - cashDisbursement
+      - consumerProfile
+      - moneyTransferDebit
+      - moneyTransferCredit
+      - paymentDebit
+      - paymentCredit
+      - adjustmentDebit
+      - adjustmentCredit
+      - financialProfile
+      - quasiCash
+      - requestCurrencyExchangeRates
+      description: Type of Transaction or BusinessCase performed
+    keepAliveResponse:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ServiceResponse'
+    KeyType:
+      type: string
+      description: Type of the key requested
+      example: ZPK
+    tokenResponse:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ServiceResponse'
+      - type: object
+        required:
+        - payload
+        properties:
+          payload:
+            type: object
+            required:
+            - token
+            - validity
+            properties:
+              token:
+                type: string
+                example: '123456789'
+              expirationDate:
+                type: string
+                format: yyyy-MM-dd'T'HH:mm:ssZ
+                description: Expiry timestamp of the generated token.
+                example: 2030-09-23T16:40:52+0530
+    ExtendedResponseCode:
+      type: string
+      enum:
+      - OK
+      - SERVER_FAILURE
+      - NO_RESULT
+      - ACCOUNT_NOT_FOUND
+      - ACCOUNT_CLOSED
+      - ACCOUNT_TYPE_INVALID
+      - LIMIT_EXCEEDED
+      - INSUFFICIENT_FUNDS
+      - REQUEST_DATA_INVALID
+      - TRX_NOT_PERMITTED_TO_ACCOUNT
+      - TRANSACTION_NOT_POSSIBLE
+      - HOST_OFFLINE
+      - HOST_CANCEL
+      - HOST_BUSINESS_ERROR
+      - RESPONSE_FEE_CONFIRM_REQUIRED
+      - OVERDRAFT_CONFIRM_REQUIRED
+      - PIN_VALIDATION_FAILED
+      - FCC_CONFIRM_REQUIRED
+      - DIRECT_CURRENCY_CONVERSION_CONFIRM_REQUIRED
+      - MULTI_CONFIRM_REQUIRED
+      - CARD_NOT_FOUND
+      - CARD_NOT_FOUND_FOR_EXPIRY_DATE
+      - CARD_BLOCKED
+      - CARD_EXPIRED
+      - CARD_MANIPULATED
+      - PIN_INACTIVE
+      - PIN_TRY_LIMIT_EXCEEDED
+      - PINS_DIFFER
+      - OFFLINE_OKAY
+      - SERVER_NOT_READY
+      example: OK
+      description: Extended Response Code Mapping
+    TransactionResponse:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/TransactionWithStandin'
+      description: Exact replica of the request 'transaction' object which must be returned by the host
+    PointOfInteractionSettlementDate:
+      type: string
+      description: 'In Local Timezone <br> For ''selfService'' channel, ATM booking date for the transaction. <br><br>
+
+        For ''network'' channel, data element DE15 - the  month and day funds are transferred between the acquirer and issuer.'
+      format: MMDD
+      example: 0921
+    zpk.exchange.response:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ServiceResponse'
+      - type: object
+        required:
+        - payload
+        properties:
+          payload:
+            type: object
+            required:
+            - keyCheckValue
+            - keyGenerationIndex
+            - key
+            properties:
+              keyCheckValue:
+                $ref: '#/components/schemas/KeyCheckValue'
+              keyGenerationIndex:
+                $ref: '#/components/schemas/KeyGenerationIndex'
+              key:
+                $ref: '#/components/schemas/KeyData'
+              transaction:
+                $ref: '#/components/schemas/TransactionResponse'
+              additionalProperties:
+                $ref: '#/components/schemas/AdditionalProperties'
+              supplementaryData:
+                $ref: '#/components/schemas/SupplementaryData'
+    TransactionWithStandin:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/TransactionBase'
+      - type: object
+        properties:
+          isStandin:
+            $ref: '#/components/schemas/IsStandin'
+    KeyZoneId:
+      type: string
+      description: Zone-id for which the key is requested
+      example: TARGET_ZONE
+    exchangeKeyResponse:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ServiceResponse'
+      - type: object
+        required:
+        - signedJWT
+        properties:
+          signedJWT:
+            type: string
+            minLength: 1
+            example: eyJraWQiOiIyIiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3Q6ODA4MCIsInN1YiI6IkFscGhhLkZhcm0uQ2x1c3Rlci5pbmlkYy1ha2FzaGMiLCJleHAiOjE2MjA3Mjc3OTQsImlhdCI6MTYyMDcyNzE5NH0.By0BQI9RjVNY5b0TSn6YIV2xjfTsGlWsGp5fDxsTh4npJ1SngQg37cqVPFc9Lepxp0VKi3zKm+fZHcvR6omG34JNUVDW+3pefLjYJxymixZdQTCjAL2FFIt1ei0JzyaSQGCOwpE+TUDkdMkbJ5x69ztAoa0tOSnLWPUJD0ELbV8wX2DhBTyS0sCDqEiht3wxk+3QoI04m+36Nt6zuLazigQzikJxLYllJB2QvM76oWLY3o3lNX77LdkZH6XkNF1w2acCXvbAdy11Bi+dAoSxPvCw5goFuh48I5yfQ/gzziY1RKXpMyxLkF+eMLixfjYx4WVDtZ4YIONdrSVdfQxPZs+A
+    KeyCheckValue:
+      type: string
+      description: Key check value
+      example: ABCDE
+    ResponseCode:
+      type: string
+      enum:
+      - OK
+      - FAIL
+      - RESUBMIT
+      example: OK
+  parameters:
+    referenceId:
+      name: referenceId
+      in: header
+      description: Unique identifier for the transaction request.
+      required: true
+      schema:
+        type: string
+        example: A123F34
+    tokenAuthorization:
+      name: Authorization
+      in: header
+      description: "In case the Authentication Type is TOKEN, Authorization will contain base 64 encoded userName:password string using HTTP Basic Authentication.<br> In case the Authentication Type is JWE, Authorization will contain Bearer encryptedJWT. JWT will be encrypted with backend endpoint public key. <br>\n\n__Signed JWT Structure:__ \n\n        Header:\n          alg: Signing algorithm\n          typ: JWT\n          kid: Key Id of the key used for signing\n        Payload:\n          iss: Token Issuer URL\n          iat: Absolute Token issue time (Unix epoch time in seconds)\n          exp: Absolute Token expiry time (Unix epoch time in seconds)\n          sub: TM Server name\n        Signature:\n          base64 signature with TM RSA private key\n\n__JWE Structure:__\n\n        Header:\n          kid: Key Id of the Backend RSA public key used to encrypt signed token \n          cty: JWT\n          enc: Content encryption algorithm\n          alg: Key encryption algorithm\n        Payload:\n          signedJWT\n  \n  __JWT and JWE Example Value:__\n      \n      signedJWT: \n      \n        Header:\n        {\n          \"alg\": \"RS256\",\n          \"typ\": \"JWT\",\n          \"kid\": \"vJ_GkZgf1ApAXRICFscTxeUKu1oBqgjstTgNwhdyjBo\"\n        }\n        Payload:\n        { \n          \"iss\": \"http://10.177.76.114:8080\",\n          \"iat\": 1620727194,\n          \"exp\": 1620727794,\n          \"sub\": \"Alpha.Farm.Cluster.TXMServer01\"\n        }\n        Signature: oB5BFasR_LOr_blUBaOD0p8Y5JuK0IO__HSD8A5DvUzhzvpccw1kwJj_5Eqab51QY06OPSLbvMIDGFhb1GGknCuVYSU9n5Y2G8ugIVvaG53TpmcF9bCxT3EzcLN1UhNL_yLYpJJLVPZfqE8Pb2zuvhjnUTg1NOUlbWxlMAYUFreWL3I74t7OdVY-7-xKjl2YkoiluQ03QOA4_8hHqn5Z2bxJ-SGxmVokcKpW49fSDNHnDe1c15PdzrkSjo70SHc2CEj6h7GiHrRaF_zqGP5aM6bMW5ztncf9Dp7h387gbck188Mwt9RqnSsJJ37wEGOYtKqEYCE4Vs7fkCg2HsbYlA\n      \n      JWE:\n        \n        Header:\n        {\n          \"kid\": \"sTToJZb0bEq5p216E7S3yBB2S6Ci-13uD6mGNhNZaT4\",\n          \"cty\": \"JWT\",\n          \"enc\": \"A256GCM\",\n          \"alg\": \"RSA-OAEP-256\"\n        }\n        Payload:\n          signedJWT\n        \n    Note:\n      \n      kid: It is kid from JWK thumbprint computed from the key used for\n      signing or encryption. Their computation is specified in RFC 7638.\n      Default hash algorithm SHA-256 used for computation.\n      \n      Algorithms used are as mentioned below:\n        Signing algorithm: RS256 (RSASSA-PKCS1-v1_5 using SHA-256)\n        Content encryption algorithm: A256GCM (AES GCM 256)\n        Key encryption algorithm: RSA-OAEP-256 (RSAES OAEP using SHA-256)\n          \n      Key size: RSA Key Pair used for signing and encrypting the token is of size 2048 bit"
+      required: true
+      schema:
+        type: string
+        example: Basic afae1wad213da OR Bearer RA6ICaWwLPLDEcdefg+
+    initiatingPartyName:
+      name: initiatingPartyName
+      in: header
+      description: The name of the initiating party.
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        example: DieboldNixdorf
+    version:
+      name: version
+      in: header
+      description: Version of DN Open Backend API being used.
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        example: 4.3.0
+    initiatingPartyId:
+      name: initiatingPartyId
+      in: header
+      description: Identifier of the party that has initiated this transaction, in this case Diebold Nixdorf's ID.
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        example: DieboldNixdorf
+    authorization:
+      name: Authorization
+      in: header
+      description: 'In case the Authentication type is BASIC_AUTH, Authorization will contain base 64 encoded userName:password string using HTTP Basic Authentication.<br> In case the Authentication Type is JWE/TOKEN, Authorization will contain token received using getToken request as Bearer Token. '
+      schema:
+        type: string
+        example: Basic afae1wad213da OR Bearer T2131241
+    timestamp:
+      name: timestamp
+      in: header
+      description: timestamp of the transaction
+      required: true
+      schema:
+        type: string
+        format: yyyy-MM-dd'T'HH:mm:ssZ
+        description: Timestamp
+        example: 2020-09-01T16:40:52+0000
+    productName:
+      name: productName
+      in: header
+      description: The name of the product which is consuming the service (business product name).
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        example: Transaction Middleware
+  examples:
+    ServiceResponseFailExample:
+      value:
+        responseCode: FAIL
+        extendedResponse:
+          code: SERVER_FAILURE
+          message: SERVER_FAILURE
+    ServiceResponseFundsExample:
+      value:
+        responseCode: FAIL
+        extendedResponse:
+          code: INSUFFICIENT_FUNDS
+          message: SERVER_FAILURE
+  securitySchemes:
+    basic:
+      type: http
+      description: Authorization will contain base 64 encoded userName:password string
+      scheme: basic
+    bearer:
+      type: http
+      description: Authorization will contain token received using getToken request as Bearer Token
+      scheme: bearer
+      bearerFormat: Any string
+    jweBearer:
+      type: http
+      description: Authorization will contain Bearer encryptedJWT. JWT will be encrypted with backend endpoint public key
+      scheme: bearer
+      bearerFormat: Any string
+externalDocs:
+  url: /docs
+  description: Find more information here

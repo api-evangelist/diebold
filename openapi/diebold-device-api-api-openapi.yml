@@ -1,0 +1,569 @@
+openapi: 3.2.0
+info:
+  title: DN Payment Initiation Device API
+  description: 'Public Payment Initiation API (PI-API) of Diebold Nixdorf to access the
+
+    Transaction Middleware.'
+  version: 1.9.11
+  contact:
+    email: ronald.schmieder@dieboldnixdorf.com
+servers:
+- url: http://localhost:8080/pi-api/v1
+- url: https://localhost:8080/pi-api/v1
+security:
+- bearerAuth: []
+- openId: []
+tags:
+- name: Device API
+paths:
+  /{merchantId}/devices:
+    get:
+      tags:
+      - Device API
+      operationId: getDevices
+      summary: Get all devices of a certain merchant
+      description: Used to retrieve all payment devices of a certain merchant.
+      parameters:
+      - $ref: '#/components/parameters/PI-API-Merchant-ID'
+      - $ref: '#/components/parameters/X-Request-ID-Param'
+      - $ref: '#/components/parameters/TimestampParam'
+      - $ref: '#/components/parameters/PSU-IP-AddressParam'
+      - $ref: '#/components/parameters/PSU-User-AgentParam'
+      - $ref: '#/components/parameters/PSU-GEO-LocationParam'
+      - $ref: '#/components/parameters/SessionKeyParam'
+      - $ref: '#/components/parameters/CredentialsTypeParam'
+      - $ref: '#/components/parameters/CredentialsParam'
+      - $ref: '#/components/parameters/RetailUnitParam'
+      responses:
+        '200':
+          description: 'In case of a successful call, the PI-API device data are returned.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DevicesResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized401'
+        '404':
+          $ref: '#/components/responses/NotFound404'
+        '500':
+          $ref: '#/components/responses/InternalServerError500'
+  /device/{merchantId}/{terminalId}:
+    post:
+      tags:
+      - Device API
+      summary: Create a payment device such as a POS terminal or a mobile device
+      description: Used to create and/or initialize a payment device.
+      operationId: initializeDevice
+      parameters:
+      - $ref: '#/components/parameters/PI-API-Merchant-ID'
+      - $ref: '#/components/parameters/Terminal-ID'
+      - $ref: '#/components/parameters/X-Request-ID-Param'
+      - $ref: '#/components/parameters/TimestampParam'
+      - $ref: '#/components/parameters/PSU-IP-AddressParam'
+      - $ref: '#/components/parameters/PSU-User-AgentParam'
+      - $ref: '#/components/parameters/PSU-GEO-LocationParam'
+      - $ref: '#/components/parameters/SessionKeyParam'
+      - $ref: '#/components/parameters/CredentialsTypeParam'
+      - $ref: '#/components/parameters/CredentialsParam'
+      - $ref: '#/components/parameters/StoreIdParam'
+      - $ref: '#/components/parameters/CashierIdParam'
+      - $ref: '#/components/parameters/PaymentProviderParam'
+      - $ref: '#/components/parameters/RetailUnitParam'
+      responses:
+        '201':
+          description: 'In case of a successful call, a PI-API a http status code 201 is returned.
+
+            '
+        '401':
+          $ref: '#/components/responses/Unauthorized401'
+        '404':
+          $ref: '#/components/responses/NotFound404'
+        '500':
+          $ref: '#/components/responses/InternalServerError500'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDeviceRequest'
+        description: The request
+        required: true
+    put:
+      tags:
+      - Device API
+      operationId: updateDevice
+      summary: Update a payment device such as a POS terminal or a mobile device
+      description: Used to get, update or delete a payment device.
+      parameters:
+      - $ref: '#/components/parameters/PI-API-Merchant-ID'
+      - $ref: '#/components/parameters/Terminal-ID'
+      - $ref: '#/components/parameters/X-Request-ID-Param'
+      - $ref: '#/components/parameters/TimestampParam'
+      - $ref: '#/components/parameters/PSU-IP-AddressParam'
+      - $ref: '#/components/parameters/PSU-User-AgentParam'
+      - $ref: '#/components/parameters/PSU-GEO-LocationParam'
+      - $ref: '#/components/parameters/SessionKeyParam'
+      - $ref: '#/components/parameters/CredentialsTypeParam'
+      - $ref: '#/components/parameters/CredentialsParam'
+      - $ref: '#/components/parameters/StoreIdParam'
+      - $ref: '#/components/parameters/CashierIdParam'
+      - $ref: '#/components/parameters/PaymentProviderParam'
+      - $ref: '#/components/parameters/RetailUnitParam'
+      responses:
+        '200':
+          description: 'In case of a successful call, a http status code 200 is returned.
+
+            '
+        '401':
+          $ref: '#/components/responses/Unauthorized401'
+        '404':
+          $ref: '#/components/responses/NotFound404'
+        '500':
+          $ref: '#/components/responses/InternalServerError500'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDeviceRequest'
+        description: The request
+        required: true
+    get:
+      tags:
+      - Device API
+      operationId: getDevice
+      summary: Get device info of a payment device such as a POS terminal or a mobile device
+      description: Used to create and/or initialize a payment device.
+      parameters:
+      - $ref: '#/components/parameters/PI-API-Merchant-ID'
+      - $ref: '#/components/parameters/Terminal-ID'
+      - $ref: '#/components/parameters/X-Request-ID-Param'
+      - $ref: '#/components/parameters/TimestampParam'
+      - $ref: '#/components/parameters/PSU-IP-AddressParam'
+      - $ref: '#/components/parameters/PSU-User-AgentParam'
+      - $ref: '#/components/parameters/PSU-GEO-LocationParam'
+      - $ref: '#/components/parameters/SessionKeyParam'
+      - $ref: '#/components/parameters/CredentialsTypeParam'
+      - $ref: '#/components/parameters/CredentialsParam'
+      - $ref: '#/components/parameters/StoreIdParam'
+      - $ref: '#/components/parameters/CashierIdParam'
+      - $ref: '#/components/parameters/PaymentProviderParam'
+      - $ref: '#/components/parameters/RetailUnitParam'
+      responses:
+        '200':
+          description: 'In case of a successful call, the PI-API device data are returned.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceInfoResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized401'
+        '404':
+          $ref: '#/components/responses/NotFound404'
+        '500':
+          $ref: '#/components/responses/InternalServerError500'
+    delete:
+      tags:
+      - Device API
+      operationId: deleteDevice
+      summary: Delete a payment device such as a POS terminal or a mobile device
+      description: Used to create and/or initialize a payment device.
+      parameters:
+      - $ref: '#/components/parameters/PI-API-Merchant-ID'
+      - $ref: '#/components/parameters/Terminal-ID'
+      - $ref: '#/components/parameters/X-Request-ID-Param'
+      - $ref: '#/components/parameters/TimestampParam'
+      - $ref: '#/components/parameters/PSU-IP-AddressParam'
+      - $ref: '#/components/parameters/PSU-User-AgentParam'
+      - $ref: '#/components/parameters/PSU-GEO-LocationParam'
+      - $ref: '#/components/parameters/SessionKeyParam'
+      - $ref: '#/components/parameters/CredentialsTypeParam'
+      - $ref: '#/components/parameters/CredentialsParam'
+      - $ref: '#/components/parameters/StoreIdParam'
+      - $ref: '#/components/parameters/CashierIdParam'
+      - $ref: '#/components/parameters/PaymentProviderParam'
+      - $ref: '#/components/parameters/RetailUnitParam'
+      responses:
+        '200':
+          description: 'In case of a successful call, a http status code 200 is returned.
+
+            '
+        '401':
+          $ref: '#/components/responses/Unauthorized401'
+        '404':
+          $ref: '#/components/responses/NotFound404'
+        '500':
+          $ref: '#/components/responses/InternalServerError500'
+components:
+  parameters:
+    PSU-User-AgentParam:
+      name: PSU-User-Agent
+      in: header
+      required: false
+      description: 'The user agent string of the client.
+
+        '
+      schema:
+        type: string
+        minLength: 5
+        maxLength: 255
+      example: Mozilla/5.0(IE 11.0; Windows NT 6.3; Trident/7.0; .NET4.0E; .NET4.0C; rv:11.0) like Gecko
+    SessionKeyParam:
+      name: SessionKey
+      in: header
+      required: true
+      description: "<p>The <b>SessionKey</b> parameter contains an base64 encoded AES-128bit\n(AES128) key, which is used to encrypt the <b>AuthorizationType</b> and\n<b>AuthorizationToken</b>.</p> \n\n<p>Moreover, where appropriate, other parts of the request and/or response message are encrypted too, such as\n'buyerIdentityToken' in the 'UserAuthorizationData' of a\nInitiateCardlessPayment request.</p> \n\n<p>If the <b>SessionKey</b> is an <b>empty string</b> (with a zero length), it is assumed, that the\n<b>AuthorizationType</b> and <b>AuthorizationToken</b> are transmitted\n<font color='red'>unencrypted, which is by no means recommended and -\nwhenever possible - should be avoided</font>.</p>\n\n<p>If a part of a request or response message is or can be encrypted, this is explicitly\nindicated in the description.</p> \n\n<p>The key is separated from the InitializationVector using a '-' (Minus sign/Separator) like 'AESKey InitializationVector'.\n"
+      schema:
+        type: string
+      example: QmFzZTY0IGVuY29kaW5nIHNjaGVtZXMgYXJlIGNvbW1vbmx5VGhlIHBhcnRpY3VsYXIgY2hvaWNlIA==
+    CashierIdParam:
+      name: CashierId
+      in: header
+      required: true
+      description: "<p>An unique identifier of a cashier - a natural person - within the\nmerchant's eco-system.</p> \n"
+      schema:
+        type: string
+        minLength: 4
+        maxLength: 256
+      example: cashier1
+    PI-API-Merchant-ID:
+      name: merchantId
+      in: path
+      required: true
+      description: 'ID of the merchant in the PI API.
+
+        '
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 64
+      example: TM-Merchant-ID
+    StoreIdParam:
+      name: StoreId
+      in: header
+      required: true
+      description: '<p>An unique identifier of store within the merchant''s eco-system.</p>
+
+        '
+      schema:
+        type: string
+        minLength: 4
+        maxLength: 256
+      example: '1234'
+    RetailUnitParam:
+      name: RetailUnit
+      in: header
+      required: false
+      description: 'The ID of the retail unit. ISO-3166 2 letter country code as a possibility, e.g. "se" for Sweden, "de" for Germany and "us" for USA.
+
+        '
+      schema:
+        type: string
+        minLength: 2
+        maxLength: 10
+      example: se
+    TimestampParam:
+      name: Timestamp
+      in: header
+      required: true
+      description: 'The timestamp when the PI-API call was initiated by the PI-API client.
+
+        The format is defined by RFC3339 date-time.<br>Please see:
+
+        <a href="https://tools.ietf.org/html/rfc3339">Date and Time on the Internet: Timestamps</a>
+
+        '
+      schema:
+        type: string
+        format: date-time
+      example: '2017-10-02T15:34:12.345Z'
+    PaymentProviderParam:
+      name: PaymentProvider
+      in: header
+      required: true
+      schema:
+        $ref: '#/components/schemas/PaymentProvider'
+      example: HUMM
+    CredentialsParam:
+      name: AuthorizationToken
+      in: header
+      required: true
+      description: "<p>The contents and usage of the <b>AuthorizationToken</b> header field\ndepends on the authentication type as defined by the\n<b>AuthorizationType</b> header field.</p> \n\n<p>When using the <b>OAUTH</b> approach, consequent API requests are being authorized using the\nrespective OAuth Access Token. The access token is sent to the API using the AuthorizationToken header\nfield and the BEARER authentication schema as defined in RFC 6750.\n<br><b>Example:</b> 'Bearer SlAV32hkKG'</p> \n\n<p>If <b>USERNAME_PASSWORD</b> is used as AuthorizationType a JSON object\nlike: { 'username': 'Tester', 'password': 'thePassword' } is expected.\nThe given user must have the an appropriate group to access the system\nusing the CHANNEL_REST. Please see the TM documentation how to create\nand assign right, roles and groups to user.</p>\n"
+      schema:
+        type: string
+        minLength: 4
+        maxLength: 256
+    CredentialsTypeParam:
+      name: AuthorizationType
+      in: header
+      required: true
+      description: 'AuthorizationType describes the kind of CredentialsParam. Based on
+
+        the AuthorizationType the AuthorizationToken is evaluated and
+
+        checked.
+
+        '
+      schema:
+        type: string
+        enum:
+        - OAUTH
+        - USERNAME_PASSWORD
+      example: USERNAME_PASSWORD
+    PSU-IP-AddressParam:
+      name: PSU-IP-Address
+      in: header
+      required: false
+      description: The IP-Address of the client.
+      schema:
+        type: string
+        minLength: 8
+        maxLength: 48
+      example: 192.168.8.1
+    PSU-GEO-LocationParam:
+      name: PSU-GEO-Location
+      in: header
+      required: false
+      description: 'The (optional) GEO location of the client, if available.
+
+        '
+      schema:
+        type: string
+        minLength: 8
+        maxLength: 255
+        pattern: GEO:(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)
+      example: GEO:52.506931,13.144558
+    Terminal-ID:
+      name: terminalId
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 64
+      description: 'UUID (Universally Unique Identifier) for a device, which is used by the PSU, if available.
+
+        UUID identifies either a device or a device dependant application installation.
+
+        In case of an installation identification this ID need to be unaltered until removal from device.
+
+        '
+      example: terminal1
+    X-Request-ID-Param:
+      name: X-Request-ID
+      in: header
+      required: true
+      description: 'ID of the request, <b>unique to the call</b>, as determined by the
+
+        initiating party.<br> he X-Request-ID is used to identify a certain
+
+        PI-API call uniquely.
+
+        '
+      schema:
+        type: string
+        minLength: 6
+        maxLength: 40
+      example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+  responses:
+    InternalServerError500:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized401:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound404:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    KeyValuePair:
+      description: A key value pair to store/retrieve a key and a value as strings in a generic way. Used in some API calls/objects.
+      type: object
+      required:
+      - key
+      - value
+      properties:
+        key:
+          description: A unique key which identifies a certain value.
+          type: string
+          minimum: 1
+          maximum: 255
+          example: this-is-a-sample-key
+        value:
+          description: 'The assigned value of the key. It contains a maximum of 2MB data.
+
+            '
+          type: string
+          minLength: 0
+          maxLength: 2097152
+          example: this-is-a-sample-value
+    DeviceData:
+      type: object
+      description: This data contains all information about an external devices such as an POS or mobile device
+      required:
+      - softwareVersion
+      - vendor
+      properties:
+        externalDeviceIdentifier:
+          type: string
+          minLength: 3
+          maxLength: 255
+          description: A identifier which identifies the device in an/the external eco system.
+          example: 60480F44-413E-47F8-85AF-8B233A9A1680
+        softwareVersion:
+          type: string
+          minLength: 3
+          maxLength: 255
+          description: The software verion of that device.
+          example: 'Darwin Kernel Version 19.6.0: Thu Jun 18 20:49:00 PDT 2020'
+        vendor:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: The vendor of that device.
+          example: DieboldNixdorf
+        addinitonalData:
+          description: 'A list of addtional properties.
+
+            '
+          type: array
+          items:
+            $ref: '#/components/schemas/KeyValuePair'
+    DeviceInfoResponse:
+      type: object
+      required:
+      - deviceData
+      description: 'The Returns the device info.
+
+        '
+      properties:
+        deviceData:
+          $ref: '#/components/schemas/DeviceData'
+    Error:
+      description: "The error property is optional. \nIt is set only if an error has been detected.\n"
+      type: object
+      properties:
+        message:
+          description: An optional, additional message which describes the error.
+          type: string
+          maxLength: 256
+          example: 'Internal server error. A database connection could not be
+
+            established.
+
+            '
+        paymentProviderErrorCode:
+          description: An error code as outlined in the PI-API documentation.
+          type: string
+          example: SysErr#765
+        errorCode:
+          description: An error code as outlined in the PI-API documentation.
+          type: string
+          example: HOST_CANCEL
+        transactionId:
+          $ref: '#/components/schemas/TransactionIdentifier'
+    DevicesResponse:
+      type: object
+      required:
+      - devices
+      description: 'The Transaction Response contains an array with links to the
+
+        transactions
+
+        '
+      properties:
+        devices:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeviceData'
+    UpdateDeviceRequest:
+      type: object
+      required:
+      - deviceData
+      description: 'This request creates and initializes an external device such as a mobile device or a POS terminal.
+
+        '
+      properties:
+        deviceData:
+          $ref: '#/components/schemas/DeviceData'
+    PaymentProvider:
+      type: string
+      description: 'The identifier of the payment provider.<br>
+
+        The payment provider ''TM'' indicates, that the transaction middleware server - aka. the TM server - should decide
+
+        which payment provider has to be used at the end, e.g. based on the card data.
+
+        '
+      enum:
+      - AGOS
+      - ALIPAY
+      - APPLEPAY
+      - BLUECODE
+      - DANISH_MOBILEPAY
+      - GOOGLEPAY
+      - HUMM
+      - IKEAREFUNDCARD
+      - RAIFFEISEN
+      - SATISPAY
+      - SEPAINSTANTPAYMENT
+      - SIMULATOR
+      - SWISH
+      - SWISHMCOMMERCE
+      - SWISSBILLING
+      - TM
+      - VIPPS
+      - VISADIRECT
+      - WECHAT
+      - WOSAIPAY
+      example: ALIPAY
+    CreateDeviceRequest:
+      type: object
+      required:
+      - deviceData
+      description: 'This request creates and initializes an external device such as a mobile device or a POS terminal.
+
+        '
+      properties:
+        deviceData:
+          $ref: '#/components/schemas/DeviceData'
+    TransactionIdentifier:
+      type: string
+      minLength: 6
+      maxLength: 40
+      description: 'A unique identifier of a transaction in the PI-API backend domain.
+
+        <br><br> This transaction number must not be confused with the
+
+        merchantTransactionId. <br><br> This PI-API transaction number is
+
+        generated by the PI-API server and is unique within the whole PI-API
+
+        server domain.  <br>
+
+        '
+      example: '434354659863230244'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      description: 'When using the bearer authentication method an access token has to be provided in the HTTP authorization header
+
+        '
+      scheme: bearer
+    openId:
+      type: openIdConnect
+      openIdConnectUrl: https://login.microsoftonline.com/52846f0f-bc96-4a36-939b-f4d04bb473a0/v2.0/.well-known/openid-configuration
+externalDocs:
+  description: Find out more about Swagger
+  url: https://swagger.io

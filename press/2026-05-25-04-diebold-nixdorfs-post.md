@@ -1,7 +1,9 @@
 ---
 title: Diebold Nixdorf's post
 url: https://www.facebook.com/DieboldNixdorf/posts/ai-driven-efficiency-is-only-the-beginning-the-real-opportunity-lies-in-using-in/1371052748393889/
-date: '2026-05-25'
+published: ''
+date_basis: harvested
+harvested: '2026-05-25'
 query: '"Diebold" press release artificial intelligence'
 position: 4
 source: serpapi-google

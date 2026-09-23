@@ -1,0 +1,786 @@
+openapi: 3.2.0
+info:
+  description: Public API of Diebold Nixdorf for Account Balance Management
+  version: 1.0.0
+  title: DN Account BC Account BC API
+  contact:
+    name: Thorsten Brinkmann
+    email: Thorsten.Brinkmann@dieboldnixdorf.com
+  termsOfService: /terms-of-use
+servers:
+- url: https://localhost:8080/account/v1
+tags:
+- name: Account BC API
+  description: Request processing in Account BC
+paths:
+  /accountInquiry:
+    post:
+      summary: Returns information of an account
+      tags:
+      - Account BC API
+      operationId: accountInquiry
+      description: Checks whether the account is existing, status is active and returns information of an account including balances
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/inquiryRequest'
+            examples:
+              accountInquiryRequestExample:
+                $ref: '#/components/examples/accountInquiryRequestExample'
+      responses:
+        '200':
+          description: OK.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inquiryResponse'
+              examples:
+                accountInquiryResponseExample:
+                  $ref: '#/components/examples/accountInquiryResponseExample'
+  /authorizeTransaction:
+    post:
+      summary: Authorizes a transaction in standin mode
+      tags:
+      - Account BC API
+      operationId: authorizeTransaction
+      description: Check if the account exists and has sufficient balances then create standin advices depending on the transaction operation and transaction amount
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/authorizeRequest'
+            examples:
+              authorizeTransactionRequestExample:
+                $ref: '#/components/examples/authorizeTransactionRequestExample'
+      responses:
+        '200':
+          description: OK.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/authorizeResponse'
+              examples:
+                authorizeTransactionResponseExample:
+                  $ref: '#/components/examples/authorizeTransactionResponseExample'
+  /reverseTransaction:
+    post:
+      summary: Reverses a transaction in standin mode
+      tags:
+      - Account BC API
+      operationId: reverseTransaction
+      description: Performs Reversal of a transaction by deleting standin advices
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/reverseRequest'
+            examples:
+              reverseTransactionRequestExample:
+                $ref: '#/components/examples/reverseTransactionRequestExample'
+      responses:
+        '200':
+          description: Ok response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/reverseResponse'
+              examples:
+                reverseTransactionResponseExample:
+                  $ref: '#/components/examples/reverseTransactionResponseExample'
+  /onlineNotification:
+    post:
+      summary: Notify Account BC about successful online transaction
+      tags:
+      - Account BC API
+      operationId: onlineNotification
+      description: Notify Account BC about successful online transaction. Account BC will store the transaction in transaction history
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/onlineNotificationRequest'
+            examples:
+              onlineNotificationRequestExample:
+                $ref: '#/components/examples/onlineNotificationRequestExample'
+      responses:
+        '200':
+          description: Ok response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/onlineNotificationResponse'
+              examples:
+                onlineNotificationResponseExample:
+                  $ref: '#/components/examples/onlineNotificationResponseExample'
+  /safNotification:
+    post:
+      summary: Notify Account BC about successful SAF record processing
+      tags:
+      - Account BC API
+      operationId: safNotification
+      description: Notify Account BC about successful SAF record processing.Account BC wil delete the standin advice and create a transaction history entry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/safNotificationRequest'
+            examples:
+              safNotificationRequestExample:
+                $ref: '#/components/examples/safNotificationRequestExample'
+      responses:
+        '200':
+          description: OK.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/safNotificationResponse'
+              examples:
+                safNotificationResponseExample:
+                  $ref: '#/components/examples/safNotificationResponseExample'
+components:
+  schemas:
+    AccountAmountType:
+      type: string
+      enum:
+      - LEDGER_BALANCE
+      - AVAILABLE_BALANCE
+      - AVAILABLE_CREDIT
+      - CREDIT_LIMIT
+      - OVERDRAFT_LIMIT
+      - LOAN_BALANCE
+      - INTEREST_AMOUNT
+      - REGULAR_PAYMENT_AMOUNT
+      - REGULAR_PAYMENT_DUE
+      - PRINCIPLE_BALANCE
+      - CURRENT_AMOUNT_DUE
+      - LAST_PAYMENT_AMOUNT
+      - LAST_CHARGE_DUE
+      - INTEREST_PAID_YEAR_TO_DATE
+      - INTEREST_PAID_PREVIOUS_YEAR_TO_DATE
+      - OFF_HOST_DEBIT_AMOUNT
+      - OFF_HOST_CREDIT_AMOUNT
+      - TOTAL_DEBIT_AMOUNT
+      - TOTAL_CREDIT_AMOUNT
+      - PAYOFF_AMOUNT
+      - OWING_AMOUNT
+      - AMOUNT_ALREADY_DRAWN_ON
+      - MEMBER_PROVIDED_FEE_AMOUNT
+      - REMAINING_PREAUTHORIZED_AMOUNT
+      - HEALTHCARE_ELIGIBILITY_AMOUNT
+      - PRESCRIPTION_ELIGIBILITY_AMOUNT
+      - PREPAID_ONLINE_BILL_PAY_FEE_AMOUNT
+      - CASH_BACK
+      - ORIGINAL_AMOUNT
+      - POI_AMOUNT
+      - CO_PAY_AMOUNT
+      - MINIMUM_AMOUNT_DUE
+      - REWARD_BALANCE
+      - LAST_STATEMENT_BALANCE
+      - OUTSTANDING_CREDIT
+      - OUTSTANDING_CASH
+      - CASH_LIMIT
+      - AVAILABLE_CASH
+      - CASH_BALANCE
+      example: AVAILABLE_BALANCE
+      description: Amount types for account
+    AccountStatus:
+      type: string
+      description: The status of the account
+      enum:
+      - ACTIVE
+      - APPROVED
+      - CLOSED
+      - DORMANT
+      - PENDING_CLOSED
+      - CHARGEOFF
+      - INACTIVE
+      - NON_ACCRUAL
+      - MATURED
+      - ESCHEAT
+      - ASSUMED
+      - LOAN_DENIED
+      - ORIGINATING
+      - REDEEMED
+      - MATURED_NOT_REDEEMED
+      - NO_DEBIT
+      - NO_CREDIT
+      - NO_POST
+      - FROZEN_NON_ACCRUAL
+      - CHARGEDOFF_NON_ACCRUAL
+      - OCCUPIED
+      - NOT_AVAILABLE
+      - UNOCCUPIED
+      - ACTIVE_NO_POD
+      - DO_NOT_CLOSE_ON_ZERO_BALANCE
+      - FROZEN_ACCRUAL
+      - OPEN_PRIMARY_ACCOUNT
+      - RESTRICTED_PRIMARY_ACCOUNT
+      - RESTRICTED_TO_DEPOSIT
+      - NOT_SPECIFIED
+      example: ACTIVE
+    authorizeRequest:
+      type: object
+      required:
+      - payload
+      - transaction
+      properties:
+        transaction:
+          $ref: '#/components/schemas/TransactionBase'
+        payload:
+          $ref: '#/components/schemas/AuthorizePayload'
+    AccountRef:
+      type: object
+      required:
+      - accountNumber
+      - accountType
+      - fiid
+      properties:
+        accountNumber:
+          description: Account number
+          type: string
+          minLength: 1
+          example: A0123456789
+        accountType:
+          $ref: '#/components/schemas/AccountType'
+        fiid:
+          $ref: '#/components/schemas/FIID'
+    Amounts:
+      type: array
+      items:
+        $ref: '#/components/schemas/AccountAmount'
+    OriginalOperation:
+      type: string
+      description: Original operation of a transaction
+      example: debit
+    AccountInformationBase:
+      type: object
+      required:
+      - accountNumber
+      properties:
+        accountNumber:
+          description: Account number
+          type: string
+          minLength: 5
+          example: '19023456789'
+        accountCurrency:
+          description: Currency code
+          type: string
+          pattern: '[A-Z]{3,3}'
+          example: USD
+        accountType:
+          $ref: '#/components/schemas/AccountType'
+        accountSubType:
+          $ref: '#/components/schemas/AccountSubType'
+        accountName:
+          $ref: '#/components/schemas/AccountName'
+        fiid:
+          $ref: '#/components/schemas/FIID'
+        amounts:
+          $ref: '#/components/schemas/Amounts'
+    ServiceResponse:
+      type: object
+      required:
+      - responseCode
+      - extendedResponseCode
+      properties:
+        responseCode:
+          $ref: '#/components/schemas/ResponseCode'
+        extendedResponseCode:
+          $ref: '#/components/schemas/ExtendedResponseCode'
+    TransactionBase:
+      type: object
+      required:
+      - id
+      - businessCorrelationId
+      - time
+      - operation
+      properties:
+        id:
+          type: string
+          description: Unique identifier for each request
+          minLength: 1
+          example: 123e4567e89b12d3a456426614174000
+        businessCorrelationId:
+          type: string
+          description: Unique identifier for each transaction. This has to same for all the request of same business transaction
+          minLength: 1
+          example: 7f2b9fcde28b42abbc10b0b9640f6ede
+        time:
+          $ref: '#/components/schemas/DateTime'
+        operation:
+          $ref: '#/components/schemas/Operation'
+    reverseRequest:
+      type: object
+      required:
+      - payload
+      - transaction
+      properties:
+        transaction:
+          $ref: '#/components/schemas/TransactionBase'
+        payload:
+          $ref: '#/components/schemas/ReversePayload'
+    onlineNotificationResponse:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ServiceResponse'
+      properties:
+        transaction:
+          $ref: '#/components/schemas/TransactionBase'
+    SafPayload:
+      type: object
+      properties:
+        ipAccountIdentifier:
+          type: string
+          description: Identifier for instant payment transactions
+          minLength: 1
+          example: 123e4567e89b12d3a456426614174000
+        accountRef:
+          $ref: '#/components/schemas/AccountRef'
+    safNotificationRequest:
+      type: object
+      required:
+      - payload
+      - transaction
+      properties:
+        transaction:
+          $ref: '#/components/schemas/TransactionBase'
+        payload:
+          $ref: '#/components/schemas/SafPayload'
+    InquiryResponsePayload:
+      type: object
+      required:
+      - accountInformation
+      properties:
+        accountInformation:
+          $ref: '#/components/schemas/AccountInfo'
+    inquiryRequest:
+      type: object
+      required:
+      - payload
+      - transaction
+      properties:
+        transaction:
+          $ref: '#/components/schemas/TransactionBase'
+        payload:
+          $ref: '#/components/schemas/InquiryPayload'
+    AccountInfo:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/AccountInformationBase'
+      - type: object
+        properties:
+          accountOwnerName:
+            type: string
+            description: 'The owner of the account. '
+            example: JOHN DOE
+          accountOwnership:
+            $ref: '#/components/schemas/AccountOwnership'
+          accountStatus:
+            $ref: '#/components/schemas/AccountStatus'
+          isStandinPresent:
+            type: boolean
+            description: Indicates whether the standin entries are present or not for an account
+    ExtendedResponseCode:
+      type: string
+      enum:
+      - OK
+      - SERVER_FAILURE
+      - NO_RESULT
+      - ACCOUNT_NOT_FOUND
+      - ACCOUNT_CLOSED
+      - ACCOUNT_TYPE_INVALID
+      - CONTEXT_NOT_FOUND
+      - LIMIT_EXCEEDED
+      - INSUFFICIENT_FUNDS
+      - REQUEST_DATA_INVALID
+      - TRANSACTION_NOT_POSSIBLE
+      - HOST_OFFLINE
+      - HOST_CANCEL
+      - HOST_BUSINESS_ERROR
+      - SERVER_NOT_READY
+      - UNKNOWN_ACCOUNT
+      - ACCOUNT_CHARGEOFF
+      - ACCOUNT_DORMANT
+      - ACCOUNT_FROZEN_ACCRUAL
+      - ACCOUNT_FROZEN_NON_ACCRUAL
+      - ACCOUNT_INACTIVE
+      - ACCOUNT_PENDING_CLOSED
+      example: OK
+      description: Extended Response Code Mapping
+    safNotificationResponse:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ServiceResponse'
+      properties:
+        transaction:
+          $ref: '#/components/schemas/TransactionBase'
+    AccountAmount:
+      type: object
+      properties:
+        amountType:
+          $ref: '#/components/schemas/AccountAmountType'
+        value:
+          description: The amount value of the given currency
+          type: string
+          pattern: '[0-9]{1,13}\.[0-9]{1,3}'
+          minimum: 0
+          example: '100.50'
+        currency:
+          description: Currency code
+          type: string
+          pattern: '[A-Z]{3,3}'
+          example: USD
+    onlineNotificationRequest:
+      type: object
+      required:
+      - payload
+      - transaction
+      properties:
+        transaction:
+          $ref: '#/components/schemas/TransactionBase'
+        payload:
+          $ref: '#/components/schemas/OnlinePayload'
+    AuthorizePayload:
+      type: object
+      required:
+      - transactionAmount
+      properties:
+        ipAccountIdentifier:
+          type: string
+          description: Identifier for instant payment transactions
+          minLength: 1
+          example: 123e4567e89b12d3a456426614174000
+        accountRef:
+          $ref: '#/components/schemas/AccountRef'
+        transactionAmount:
+          $ref: '#/components/schemas/TransactionAmount'
+    Amount:
+      description: The basic type of an amount.
+      type: object
+      required:
+      - value
+      - currency
+      properties:
+        value:
+          description: The amount value of the given currency.
+          type: string
+          pattern: '[0-9]{1,13}\.[0-9]{1,3}'
+          minimum: 0
+          example: '100.00'
+        currency:
+          description: Currency code
+          type: string
+          minLength: 3
+          pattern: '[A-Z]{3,3}'
+          example: USD
+    inquiryResponse:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ServiceResponse'
+      properties:
+        transaction:
+          $ref: '#/components/schemas/TransactionBase'
+        payload:
+          $ref: '#/components/schemas/InquiryResponsePayload'
+    OnlinePayload:
+      type: object
+      required:
+      - transactionAmount
+      properties:
+        ipAccountIdentifier:
+          type: string
+          description: Identifier for instant payment transactions
+          minLength: 1
+          example: 123e4567e89b12d3a456426614174000
+        accountRef:
+          $ref: '#/components/schemas/AccountRef'
+        transactionAmount:
+          $ref: '#/components/schemas/TransactionAmount'
+    reverseResponse:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ServiceResponse'
+      properties:
+        transaction:
+          $ref: '#/components/schemas/TransactionBase'
+    AccountName:
+      type: string
+      description: The account name which is displayed to the user
+      example: Your Savings account
+    AccountOwnership:
+      type: string
+      enum:
+      - PRIMARY
+      - JOINT
+      - NOT_SPECIFIED
+      - CUSTODIAN
+      - TRUSTEE
+      - POWER_OF_ATTORNEY
+      - AUTHORIZED_SIGNER
+      - TRUSTOR
+      - CO_BORROWER
+      - CO_SIGNER
+      - CO_OWNER
+      - CO_MAKER
+      - CORPORATION
+      - BORROWER
+      - CORPORATE_OWNER
+      - JOINT_PRIMARY
+      - JOINT_SECONDARY
+      - JOINT_AND
+      - JOINT_OR
+      - ENDORSER
+      - GUARANTOR
+      - GRANTOR
+      - LANDLORD
+      - SECONDARY
+      - TENANT
+      - SOLE_PROPRIETOR
+      - GUARDIAN
+      - EXECUTOR
+      example: PRIMARY
+    InquiryPayload:
+      type: object
+      properties:
+        ipAccountIdentifier:
+          type: string
+          description: Identifier for instant payment transactions
+          minLength: 1
+          example: 123e4567e89b12d3a456426614174000
+        accountRef:
+          $ref: '#/components/schemas/AccountRef'
+    authorizeResponse:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ServiceResponse'
+      properties:
+        transaction:
+          $ref: '#/components/schemas/TransactionBase'
+    DateTime:
+      type: string
+      description: The date and time expressed in the pattern 'yyyy-MM-dd'T'HH:mm:ssZ', where yyyy is 4-digit year, MM is 2-digit month, dd is 2-digit date of month, HH is hours, mm is minutes, ss is seconds, SSS is milliseconds and Z is timezone offset
+      format: yyyy-MM-dd'T'HH:mm:ss.SSSZ
+      example: 2023-10-01T12:20:01.123+0000
+    TransactionAmount:
+      description: The transaction amount.
+      type: object
+      properties:
+        amount:
+          $ref: '#/components/schemas/Amount'
+    Operation:
+      type: string
+      enum:
+      - DEBIT
+      - CREDIT
+      - INQUIRY
+      - REVERSAL
+      example: DEBIT
+      description: Transaction operation
+    FIID:
+      type: string
+      description: Financial institution Identifier
+      example: '15'
+    ReversePayload:
+      type: object
+      required:
+      - originalOperation
+      properties:
+        ipAccountIdentifier:
+          type: string
+          description: Identifier for instant payment transactions
+          minLength: 1
+          example: 123e4567e89b12d3a456426614174000
+        accountRef:
+          $ref: '#/components/schemas/AccountRef'
+        originalOperation:
+          $ref: '#/components/schemas/OriginalOperation'
+    AccountType:
+      type: string
+      enum:
+      - UNSPECIFIED
+      - GIRO
+      - SAVINGS
+      - SECURITIES_DEPOSIT
+      - SAVINGS_SECURITIES_DEPOSIT
+      - GIRO_SECURITIES_DEPOSIT
+      - FIXED_TERM_DEPOSIT
+      - CREDIT_CARD
+      - LOAN
+      - MORTGAGE
+      - FOREIGN_CURRENCY
+      - EXTERNAL
+      - CHECKING
+      - UNIVERSAL
+      - SPENDING_POWER
+      - FEE_COLLECTION_ACCOUNT
+      - ATM
+      - VENDOR
+      - SHAREHOLDER
+      - GENERAL_LEDGER
+      - CASH_RESERVE
+      - LOAN_DENIAL
+      - LEASE
+      - CONSUMER_LOAN
+      - COMMERCIAL_LOAN
+      - RETIREMENT_LOAN
+      - EXTERNAL_LOAN
+      - SHARE
+      - INDIVIDUAL_RETIREMENT
+      example: SAVINGS
+      description: '| Symbolic name              | Comment                                                        | |----------------------------|----------------------------------------------------------------| | UNSPECIFIED                | Default value for unknown accounts.                              | | GIRO                       | Giro account.                                                  | | SAVINGS                    | Savings account.  | SECURITIES_DEPOSIT         | Depot of securities (shares and so on).                        | | SAVINGS_SECURITIES_DEPOSIT | Savings securities.                                            | | GIRO_SECURITIES_DEPOSIT    | Giro securities.                                               | | FIXED_TERM_DEPOSIT         | Fixed term deposit.                                            | | CREDIT_CARD                | Credit card account. (ISO 8583; MC DE.54->30 / VISA DE.54->30).| | LOAN                       | An account that covers a credit and its balance and movements. | | MORTGAGE                   | Security for a loan.                                           | | FOREIGN_CURRENCY           | An account that holds money in a foreign curreny.              | | EXTERNAL                   | An account that represents an account of a foreign institution.| | CHECKING                   | Checking account. (ISO 8583; MC DE.54->20 / VISA DE.54->20)    |  | UNIVERSAL                  | ISO 8583; VISA DE.54->40)                                      |  | SPENDING_POWER             | ISO 8583; VISA DE.54->64)                                      |  | FEE_COLLECTION_ACCOUNT     | used to collect fees                                           |  | ATM                        | ATM                                                            | | VENDOR                     | Vendor                                                         | | SHAREHOLDER                | Shareholder                                                    | | GENERAL_LEDGER             | General ledger                                                 | | CASH_RESERVE               | Cash Reserve Line of Credit                                    | | LOAN_DENIAL                | Load denial                                                    | | LEASE                      | Lease                                                          | | CONSUMER_LOAN              | Consumer loan                                                  | | COMMERCIAL_LOAN            | Cemercial loan                                                 | | RETIREMENT_LOAN            | Retirement loan                                                | | EXTERNAL_LOAN              | External loan                                                  | | SHARE                      | Share                                                          | | INDIVIDUAL_RETIREMENT      | Individual Retirement Account(IRA)                             |'
+    AccountSubType:
+      description: Represents the SubType of an account for AccountType
+      type: string
+      example: Business Savings
+    ResponseCode:
+      type: string
+      enum:
+      - OK
+      - FAIL
+      - RESUBMIT
+      example: OK
+  examples:
+    reverseTransactionRequestExample:
+      value:
+        transaction:
+          id: 123e4567e89b12d3a456426614174000
+          businessCorrelationId: 7f2b9fcde28b42abbc10b0b9640f6ede
+          time: 2023-10-01T12:20:01.123+0000
+          operation: REVERSAL
+        payload:
+          originalOperation: debit
+          ipAccountIdentifier: DE89370400440532013000
+          accountRef:
+            accountNumber: A0123456789
+            accountType: SAVINGS
+            fiid: '15'
+    safNotificationResponseExample:
+      value:
+        responseCode: OK
+        extendedResponseCode: OK
+        transaction:
+          id: 123e4567e89b12d3a456426614174000
+          businessCorrelationId: 7f2b9fcde28b42abbc10b0b9640f6ede
+          time: 2023-10-01T12:20:01.123+0000
+          operation: DEBIT
+    onlineNotificationRequestExample:
+      value:
+        transaction:
+          id: 123e4567e89b12d3a456426614174000
+          businessCorrelationId: 7f2b9fcde28b42abbc10b0b9640f6ede
+          time: 2023-10-01T12:20:01.123+0000
+          operation: DEBIT
+        payload:
+          ipAccountIdentifier: DE89370400440532013000
+          accountRef:
+            accountNumber: A0123456789
+            accountType: SAVINGS
+            fiid: '15'
+          transactionAmount:
+            amount:
+              value: '100.00'
+              currency: USD
+    onlineNotificationResponseExample:
+      value:
+        responseCode: OK
+        extendedResponseCode: OK
+        transaction:
+          id: 123e4567e89b12d3a456426614174000
+          businessCorrelationId: 7f2b9fcde28b42abbc10b0b9640f6ede
+          time: 2023-10-01T12:20:01.123+0000
+          operation: DEBIT
+    reverseTransactionResponseExample:
+      value:
+        responseCode: OK
+        extendedResponseCode: OK
+        transaction:
+          id: 123e4567e89b12d3a456426614174000
+          businessCorrelationId: 7f2b9fcde28b42abbc10b0b9640f6ede
+          time: 2023-10-01T12:20:01.123+0000
+          operation: REVERSAL
+    accountInquiryRequestExample:
+      value:
+        transaction:
+          id: 123e4567e89b12d3a456426614174000
+          businessCorrelationId: 7f2b9fcde28b42abbc10b0b9640f6ede
+          time: 2023-10-01T12:20:01.123+0000
+          operation: INQUIRY
+        payload:
+          ipAccountIdentifier: DE89370400440532013000
+          accountRef:
+            accountNumber: A0123456789
+            accountType: SAVINGS
+            fiid: '15'
+    accountInquiryResponseExample:
+      value:
+        responseCode: OK
+        extendedResponseCode: OK
+        transaction:
+          id: 123e4567e89b12d3a456426614174000
+          businessCorrelationId: 7f2b9fcde28b42abbc10b0b9640f6ede
+          time: 2023-10-01T12:20:01.123+0000
+          operation: INQUIRY
+        payload:
+          accountInformation:
+            accountNumber: '19023456789'
+            accountCurrency: USD
+            accountType: SAVINGS
+            accountSubType: Business Savings
+            accountName: Your Savings account
+            fiid: '15'
+            amounts:
+            - amountType: AVAILABLE_BALANCE
+              value: '100.50'
+              currency: USD
+            accountOwnerName: JOHN DOE
+            accountOwnership: PRIMARY
+            accountStatus: ACTIVE
+            isStandinPresent: false
+    authorizeTransactionRequestExample:
+      value:
+        transaction:
+          id: 123e4567e89b12d3a456426614174000
+          businessCorrelationId: 7f2b9fcde28b42abbc10b0b9640f6ede
+          time: 2023-10-01T12:20:01.123+0000
+          operation: DEBIT
+        payload:
+          ipAccountIdentifier: DE89370400440532013000
+          accountRef:
+            accountNumber: A0123456789
+            accountType: SAVINGS
+            fiid: '15'
+          transactionAmount:
+            amount:
+              value: '100.00'
+              currency: USD
+    safNotificationRequestExample:
+      value:
+        transaction:
+          id: 123e4567e89b12d3a456426614174000
+          businessCorrelationId: 7f2b9fcde28b42abbc10b0b9640f6ede
+          time: 2023-10-01T12:20:01.123+0000
+          operation: DEBIT
+        payload:
+          ipAccountIdentifier: DE89370400440532013000
+          accountRef:
+            accountNumber: A0123456789
+            accountType: SAVINGS
+            fiid: '15'
+    authorizeTransactionResponseExample:
+      value:
+        responseCode: OK
+        extendedResponseCode: OK
+        transaction:
+          id: 123e4567e89b12d3a456426614174000
+          businessCorrelationId: 7f2b9fcde28b42abbc10b0b9640f6ede
+          time: 2023-10-01T12:20:01.123+0000
+          operation: DEBIT
+externalDocs:
+  url: /docs
+  description: Find more information here

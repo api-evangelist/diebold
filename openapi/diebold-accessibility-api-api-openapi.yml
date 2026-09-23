@@ -1,0 +1,329 @@
+openapi: 3.2.0
+info:
+  title: Diebold Accessibility API
+  version: '1.0'
+  description: 'Operations tagged Accessibility API across 2 of this provider''s published API definitions: diebold-dn-online-mobile-api-openapi.json, diebold-dn-payment-initiation-api-openapi.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: http://localhost:8080/tm-om-api/v4
+  description: Transaction Middleware (VTE) 3.0+
+- url: https://localhost:8080/tm-om-api/v4
+  description: Transaction Middleware (VTE) 3.0+
+- url: http://localhost:8080/pi-api/v1
+- url: https://localhost:8080/pi-api/v1
+tags:
+- name: Accessibility API
+paths:
+  /getRsaKey:
+    get:
+      tags:
+      - Accessibility API
+      summary: Returns the public key (RSA) for API request encryption
+      description: 'If the client decides to use the __RSA/AES__ encryption scheme the __/getRsaKey__ endpoint can be used to obtain the server''s public RSA key in PEM format.
+
+
+        The client is liable to encrypt all security relevant request parameters and parts of the request body (where applicable) with a 256 bit AES key of his own choosing.
+
+
+        The key parameters and initialization vector (128 bit) must be encrypted with the server''s public RSA key and transmitted alongside the request.'
+      operationId: getRsaKey
+      responses:
+        '200':
+          $ref: '#/components/responses/getRsaKeyResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        default:
+          $ref: '#/components/responses/defaultResponse'
+      security:
+      - bearerAuth: []
+    servers:
+    - url: http://localhost:8080/tm-om-api/v4
+      description: Transaction Middleware (VTE) 3.0+
+    - url: https://localhost:8080/tm-om-api/v4
+      description: Transaction Middleware (VTE) 3.0+
+  /getEcKey:
+    get:
+      tags:
+      - Accessibility API
+      summary: Returns the public key (ECIES) of the server system
+      description: 'If the client decides to use the __ECIES__ encryption scheme the __/getEcKey__ endpoint can be used to obtain the servers public EC key in PEM format.
+
+
+        This key is used to encrypt critical request parameters and parts of the request body (where applicable).
+
+
+        ### NOTE:
+
+        The ECIES implementation of iOS is not standard-compliant. At least until now.
+
+        In contrary to the description provided, Apple does not use authentication data in GCM.
+
+        That''s why __for iOS clients the RSA/AES based solution MUST be used__ by using the __/getRsaKey__ endpoint.'
+      operationId: getEcKey
+      responses:
+        '200':
+          $ref: '#/components/responses/getEcKeyResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        default:
+          $ref: '#/components/responses/defaultResponse'
+      security:
+      - bearerAuth: []
+    servers:
+    - url: http://localhost:8080/tm-om-api/v4
+      description: Transaction Middleware (VTE) 3.0+
+    - url: https://localhost:8080/tm-om-api/v4
+      description: Transaction Middleware (VTE) 3.0+
+  /getVersion:
+    get:
+      tags:
+      - Accessibility API
+      summary: Returns API version info
+      description: Returns API version information.
+      operationId: getVersion
+      responses:
+        '200':
+          $ref: '#/components/responses/getVersionResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        default:
+          $ref: '#/components/responses/defaultResponse'
+      security:
+      - bearerAuth: []
+    servers:
+    - url: http://localhost:8080/tm-om-api/v4
+      description: Transaction Middleware (VTE) 3.0+
+    - url: https://localhost:8080/tm-om-api/v4
+      description: Transaction Middleware (VTE) 3.0+
+  /pkiKey:
+    get:
+      summary: Retrive the public (RSA) key of the server system
+      description: 'Retrive the a public (RSA) key, which is used later on to encrypt
+
+        session keys.'
+      operationId: pki
+      tags:
+      - Accessibility API
+      responses:
+        '200':
+          description: 'Returns apublic (RSA) key, which is used later on to encrypt session
+
+            keys.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PKIKeyResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError500'
+      security:
+      - bearerAuth: []
+      - openId: []
+    servers:
+    - url: http://localhost:8080/pi-api/v1
+    - url: https://localhost:8080/pi-api/v1
+components:
+  responses:
+    notFoundResponse:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    defaultResponse:
+      description: Unexpected error. Please see/inspect 'code' and 'message' properties of the error for more/detailed informations.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    getVersionResponse:
+      description: Returns the API's version information.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetVersionResponse'
+    getRsaKeyResponse:
+      description: Returns the API's public RSA key.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetRsaKeyResponse'
+    getEcKeyResponse:
+      description: Returns the API's public EC key as PEM.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetEcKeyResponse'
+    InternalServerError500:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error_2'
+  schemas:
+    GetEcKeyResponse:
+      type: object
+      required:
+      - responseStatus
+      - ecKeyAsPem
+      properties:
+        responseStatus:
+          $ref: '#/components/schemas/ResponseBase'
+        ecPublicKey:
+          $ref: '#/components/schemas/EcPublicKey'
+    ResponseBase:
+      description: "Every number used by OM-API is within a certain number range.<br> The OM-API V4 number range is 2870000 - 2879999.<br> Within that range, every requests group has its number range of 1000: <br>\n  | Request Group | Number Range                       |\n  |---------------|------------------------------------|\n  | Account Management API          | 2870000-2870999  |\n  | Standing Order API              | 2871000-2871999  |\n  | Prestaged Transaction API       | 2872000-2872999  |\n  | Miscellaneous API               | 2873000-2873999  |\n  | Accessibility API               | 2874000-2874999  |\nWithin each group range, every belonging request has its number range of 100:\n  <br>\n  | Request Name  | Number Range                       |\n  |---------------|------------------------------------|\n  | *Account Management API*\n  | getAccounts                     | 2870000-2870099  |\n  | getAccountTypes                 | 2870100-2870199  |\n  | getAccountDetails               | 2870200-2870299  |\n  | getTransactions                 | 2870300-2870399  |\n  | getScheduledTransactions        | 2870400-2870499  |\n  | checkAccount                    | 2870500-2870599  |\n  | createTransfer                  | 2870600-2870699  |\n  | createDispute                   | 2870700-2870799  |\n  | &nbsp;\n  | *Standing Order API*\n  | getStandingOrders               | 2871000-2871099  |\n  | createStandingOrder             | 2871100-2871199  |\n  | updateStandingOrder             | 2871200-2871299  |\n  | deleteStandingOrder             | 2871300-2871399  |\n  | updateAccountNickname           | 2871400-2871499  |\n  | &nbsp;\n  | *Prestaged Transaction API*\n  | createCashout4Me                | 2872000-2872099  |\n  | createCashout2You               | 2872100-2872199  |\n  | createDeposit                   | 2872200-2872299  |\n  | createBranchDeposit             | 2872300-2872399  |\n  | deletePrestagedTransaction      | 2872400-2872499  |\n  | getPrestagedTransactions        | 2872500-2872599  |\n  | executePrestagedTransaction     | 2872600-2872699  |\n  | &nbsp;\n  | *Miscellaneous API*\n  | getCreditors                    | 2874000-2874099  |\n  | getSinglePaymentOrderData       | 2874100-2874199  |\n  | getPreferences                  | 2874200-2874299  |\n  | setPreferences                  | 2874300-2874399  |\n  | getClientBranding               | 2874400-2874499  |\n  | getGenericTransactionOrders     | 2874500-2874599  |\n  | performGenericTransactionOrder  | 2874600-2874699  |\n  | getLocations                    | 2874700-2874799  |\n  | &nbsp;\n  | *Accessibility API*\n  | getRsaKey                       | 2875000-2875099  |\n  | getEcKey                        | 2875100-2875199  |\n  | getVersion                      | 2875200-2875299  |\n  <br>\n  The numbers in the ranges are used primarily for the error codes (see Error schema)."
+      type: object
+      required:
+      - success
+      properties:
+        success:
+          description: 'Returns True or False to indicate the success of the API call.
+
+            The The error property is optional.
+
+            It is set only if an error has been detected.
+
+            '
+          type: boolean
+          example: true
+        error:
+          $ref: '#/components/schemas/Error'
+    PublicKeyPem:
+      description: A holder object for PEM formatted public keys
+      type: object
+      required:
+      - publicKeyPem
+      properties:
+        publicKeyPem:
+          type: string
+          minLength: 1
+          example: '"-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEt0 GMNz1Geam/Jw4lbIoPcspDbWt2\n84U+yYZqnqMIa5gQZyJNsTRdvDfb2jdP3MUVBJM UoOeuGTF/cJy4uQ587w==\n-----END PUBLIC KEY-----\n"'
+    GetRsaKeyResponse:
+      type: object
+      required:
+      - responseStatus
+      - rsaPublicKey
+      properties:
+        responseStatus:
+          $ref: '#/components/schemas/ResponseBase'
+        rsaPublicKey:
+          $ref: '#/components/schemas/RsaPublicKey'
+    EcPublicKey:
+      allOf:
+      - $ref: '#/components/schemas/PublicKeyPem'
+    RsaPublicKey:
+      allOf:
+      - $ref: '#/components/schemas/PublicKeyPem'
+    Error:
+      type: object
+      description: "The error property is optional. It is set only if an error has been detected. <p> Each request has its number range used for error codes (see ResponseBase schema). This is the list of the actual error codes for each request: <br>\n  | Request Name  | Error | Error Code  |\n  |---------------|-------|-------------|\n  | *Account Management API*\n  | &nbsp; | | |\n  | getAccounts | SERVER_FAILURE | 2870000 |\n  |               | SYSTEM_ERROR | 2870001 |\n  |               | REQUEST_DATA_INVALID | 2870002 |\n  |               | NO_RESULT | 2870003 |\n  |               | HOST_OFFLINE | 2870004 |\n  |               | HOST_COMMUNICATION_ERROR | 2870005 |\n  |               | VERIFICATION_FAILED | 2870015 |\n  | &nbsp; | | |\n  | getAccountTypes | SERVER_FAILURE | 2870100 |\n  |               | VERIFICATION_FAILED | 2870115 |\n  | &nbsp; | | |\n  | getAccountDetails | SERVER_FAILURE | 2870200 |\n  |               | SYSTEM_ERROR | 2870201 |\n  |               | REQUEST_DATA_INVALID | 2870202 |\n  |               | NO_RESULT | 2870203 |\n  |               | HOST_OFFLINE | 2870204 |\n  |               | HOST_COMMUNICATION_ERROR | 2870205 |\n  |               | VERIFICATION_FAILED | 2870215 |\n  | &nbsp; | | |\n  | getTransactions | SERVER_FAILURE | 2870300 |\n  |               | SYSTEM_ERROR | 2870301 |\n  |               | REQUEST_DATA_INVALID | 2870302 |\n  |               | NO_RESULT | 2870303 |\n  |               | HOST_OFFLINE | 2870304 |\n  |               | HOST_COMMUNICATION_ERROR | 2870305 |\n  |               | VERIFICATION_FAILED | 2870315 |\n  | &nbsp; | | |\n  | getScheduledTransactions | SERVER_FAILURE | 2870400 |\n  |               | SYSTEM_ERROR | 2870401 |\n  |               | REQUEST_DATA_INVALID | 2870402 |\n  |               | NO_RESULT | 2870403 |\n  |               | HOST_OFFLINE | 2870404 |\n  |               | HOST_COMMUNICATION_ERROR | 2870405 |\n  |               | VERIFICATION_FAILED | 2870415 |\n  | &nbsp; | | |\n  | checkAccount | SERVER_FAILURE | 2870500 |\n  |               | SYSTEM_ERROR | 2870501 |\n  |               | REQUEST_DATA_INVALID | 2870502 |\n  |               | NO_RESULT | 2870503 |\n  |               | HOST_OFFLINE | 2870504 |\n  |               | HOST_COMMUNICATION_ERROR | 2870505 |\n  |               | VERIFICATION_FAILED | 2870515 |\n  | &nbsp; | | |\n  | createTransfer | SERVER_FAILURE | 2870600 |\n  |               | SYSTEM_ERROR | 2870601 |\n  |               | REQUEST_DATA_INVALID | 2870602 |\n  |               | NO_RESULT | 2870603 |\n  |               | HOST_OFFLINE | 2870604 |\n  |               | HOST_COMMUNICATION_ERROR | 2870605 |\n  |               | LIMIT_EXCEEDED | 2870606 |\n  |               | INSUFFICIENT_FUNDS | 2870607 |\n  |               | ACCOUNT_TYPE_INVALID | 2870608 |\n  |               | VERIFICATION_FAILED | 2870615 |\n  | &nbsp; | | |\n  | createDispute | SERVER_FAILURE | 2870700 |\n  |               | SYSTEM_ERROR | 2870701 |\n  |               | MESSAGE_NOT_SENT | 2870700 |\n  |               | REQUEST_DATA_INVALID | 2870703 |\n  |               | VERIFICATION_FAILED | 2870715 |\n  | &nbsp; | | |\n  | *Standing Order API*\n  | &nbsp; | | |\n  | getStandingOrders | SERVER_FAILURE | 2871000 |\n  |               | REQUEST_DATA_INVALID | 2871002 |\n  |               | CONSUMER_NOT_FOUND | 2871012 |\n  |               | VERIFICATION_FAILED | 2871015 |\n  | &nbsp; | | |\n  | createStandingOrder | SERVER_FAILURE | 2871100 |\n  |               | REQUEST_DATA_INVALID | 2871102 |\n  |               | VERIFICATION_FAILED | 2871115 |\n  | &nbsp; | | |\n  | updateStandingOrder | SERVER_FAILURE | 2871200 |\n  |               | SYSTEM_ERROR | 2871201 |\n  |               | REQUEST_DATA_INVALID | 2871202 |\n  |               | STANDINGORDER_NOT_FOUND | 2871209 |\n  |               | VERIFICATION_FAILED | 2871215 |\n  | &nbsp; | | |\n  | deleteStandingOrder | SERVER_FAILURE | 2871300 |\n  |               | REQUEST_DATA_INVALID | 2871302 |\n  |               | STANDINGORDER_NOT_FOUND | 2871309 |\n  |               | VERIFICATION_FAILED | 2871315 |\n  | &nbsp; | | |\n  | updateAccountNickname | SERVER_FAILURE | 2871400 |\n  |               | SYSTEM_ERROR | 2871401 |\n  |               | REQUEST_DATA_INVALID | 2871402 |\n  |               | NO_RESULT | 2871403 |\n  |               | HOST_OFFLINE | 2871404 |\n  |               | HOST_COMMUNICATION_ERROR | 2871405 |\n  |               | SERVICE_NOT_SUPPORTED | 2871413 |\n  |               | EXT_RESPONSE_NO_MATCHING_RECORD_FOUND | 2871414 |\n  |               | VERIFICATION_FAILED | 2871415 |\n  | &nbsp; | | |\n  | *Prestaged Transaction API*\n  | &nbsp; | | |\n  | createCashout4Me | SERVER_FAILURE | 2872000 |\n  |               | SYSTEM_ERROR | 2872001 |\n  |               | REQUEST_DATA_INVALID | 2872002 |\n  |               | NO_RESULT | 2872003 |\n  |               | HOST_OFFLINE | 2872004 |\n  |               | HOST_COMMUNICATION_ERROR | 2872005 |\n  |               | VERIFICATION_FAILED | 2872015 |\n  | &nbsp; | | |\n  | createCashout2You | SERVER_FAILURE | 2872100 |\n  |               | SYSTEM_ERROR | 2872101 |\n  |               | REQUEST_DATA_INVALID | 2872102 |\n  |               | NO_RESULT | 2872103 |\n  |               | HOST_OFFLINE | 2872104 |\n  |               | HOST_COMMUNICATION_ERROR | 2872105 |\n  |               | VERIFICATION_FAILED | 2872115 |\n  | &nbsp; | | |\n  | createDeposit | SERVER_FAILURE | 2872200 |\n  |               | SYSTEM_ERROR | 2872201 |\n  |               | REQUEST_DATA_INVALID | 2872202 |\n  |               | NO_RESULT | 2872203 |\n  |               | HOST_OFFLINE | 2872204 |\n  |               | HOST_COMMUNICATION_ERROR | 2872205 |\n  |               | VERIFICATION_FAILED | 2872215 |\n  | &nbsp; | | |\n  | createBranchDeposit | SERVER_FAILURE | 2872300 |\n  |               | SYSTEM_ERROR | 2872301 |\n  |               | REQUEST_DATA_INVALID | 2872302 |\n  |               | NO_RESULT | 2872303 |\n  |               | HOST_OFFLINE | 2872304 |\n  |               | HOST_COMMUNICATION_ERROR | 2872305 |\n  |               | VERIFICATION_FAILED | 2872315 |\n  | &nbsp; | | |\n  | deletePrestagedTransaction | SERVER_FAILURE | 2872400 |\n  |               | RESERVED | 2872400 |\n  |               | REQUEST_DATA_INVALID | 2872402 |\n  |               | VERIFICATION_FAILED | 2872415 |\n  | &nbsp; | | |\n  | getPrestagedTransactions | SERVER_FAILURE | 2872500 |\n  |               | SYSTEM_ERROR | 2872501 |\n  |               | REQUEST_DATA_INVALID | 2872502 |\n  |               | NO_RESULT | 2872503 |\n  |               | HOST_OFFLINE | 2872504 |\n  |               | HOST_COMMUNICATION_ERROR | 2872505 |\n  |               | VERIFICATION_FAILED | 2872515 |\n  | &nbsp; | | |\n  | executePrestagedTransaction | SERVER_FAILURE | 2872600 |\n  |               | SYSTEM_ERROR | 2872601 |\n  |               | REQUEST_DATA_INVALID | 2872602 |\n  |               | VERIFICATION_FAILED | 2872615 |\n  | &nbsp; | | |\n  | *Miscellaneous API*\n  | &nbsp; | | |\n  | getCreditors | SERVER_FAILURE | 2874000 |\n  |               | SYSTEM_ERROR | 2874001 |\n  |               | REQUEST_DATA_INVALID | 2874002 |\n  |               | VERIFICATION_FAILED | 2874015 |\n  | &nbsp; | | |\n  | getSinglePaymentOrderData | SERVER_FAILURE | 2874100 |\n  |               | RESERVED | 2874100 |\n  |               | REQUEST_DATA_INVALID | 2874102 |\n  |               | CONSUMER_NOT_FOUND | 2874112 |\n  |               | VERIFICATION_FAILED | 2874115 |\n  | &nbsp; | | |\n  | getPreferences | SERVER_FAILURE | 2874200 |\n  |               | RESERVED | 2874200 |\n  |               | REQUEST_DATA_INVALID | 2874202 |\n  |               | RESPONSE_NO_CONSUMER_ID_AVAILABLE | 2874210 |\n  |               | RESPONSE_NO_PREFERENCES_AVAILABLE | 2874211 |\n  |               | VERIFICATION_FAILED | 2874215 |\n  | &nbsp; | | |\n  | setPreferences | SERVER_FAILURE | 2874300 |\n  |               | RESERVED | 2874300 |\n  |               | REQUEST_DATA_INVALID | 2874302 |\n  |               | VERIFICATION_FAILED | 2874315 |\n  | &nbsp; | | |\n  | getClientBranding | SERVER_FAILURE | 2874400 |\n  |               | RESERVED | 2874400 |\n  |               | REQUEST_DATA_INVALID | 2874402 |\n  |               | VERIFICATION_FAILED | 2874415 |\n  | &nbsp; | | |\n  | getGenericTransactionOrders | SERVER_FAILURE | 2874500 |\n  |               | RESERVED | 2874500 |\n  |               | REQUEST_DATA_INVALID | 2874502 |\n  |               | VERIFICATION_FAILED | 2874515 |\n  | &nbsp; | | |\n  | executeGenericTransactionOrder | SERVER_FAILURE | 2874600 |\n  |               | RESERVED | 2874600 |\n  |               | REQUEST_DATA_INVALID | 2874602 |\n  |               | VERIFICATION_FAILED | 2874615 |\n  | &nbsp; | | |\n  | getLocations | SERVER_FAILURE | 2873000 |\n  |               | SYSTEM_ERROR | 2873001 |\n  |               | REQUEST_DATA_INVALID | 2873002 |\n  |               | NO_RESULT | 2873003 |\n  |               | VERIFICATION_FAILED | 2873015 |\n  | &nbsp; | | |\n  | *Accessibility API*\n  | &nbsp; | | |\n  | getRsaKey | SERVER_FAILURE | 2875000 |\n  |               | VERIFICATION_FAILED | 2875015 |\n  | &nbsp; | | |\n  | getEcKey | SERVER_FAILURE | 2875100 |\n  |               | VERIFICATION_FAILED | 2875115 |\n  | &nbsp; | | |\n  | getVersion | SERVER_FAILURE | 2875200 |\n  |               | VERIFICATION_FAILED | 2875215 |"
+      required:
+      - code
+      properties:
+        code:
+          description: An error code as outlined in the PC/E documentation.
+          type: integer
+          format: int32
+          minimum: 0
+          example: 850004
+        message:
+          description: An optional, additional message which describes the error.
+          type: string
+          maxLength: 255
+          example: Internal server error. A database connection could not be established.
+    GetVersionResponse:
+      type: object
+      required:
+      - encryptionRequired
+      - responseStatus
+      properties:
+        encryptionRequired:
+          type: boolean
+          description: true, if enrcryption of request and response payloads is required.
+          example: true
+        versionInfo:
+          type: array
+          items:
+            type: string
+            minLength: 1
+          description: OM-API version info
+        responseStatus:
+          $ref: '#/components/schemas/ResponseBase'
+    TransactionIdentifier:
+      type: string
+      minLength: 6
+      maxLength: 40
+      description: 'A unique identifier of a transaction in the PI-API backend domain.
+
+        <br><br> This transaction number must not be confused with the
+
+        merchantTransactionId. <br><br> This PI-API transaction number is
+
+        generated by the PI-API server and is unique within the whole PI-API
+
+        server domain.  <br>
+
+        '
+      example: '434354659863230244'
+    PKIPublicKey:
+      description: A public (RSA) key.
+      type: object
+      required:
+      - modulus
+      - exponent
+      properties:
+        modulus:
+          description: The base64 encoded modulus part off the public key.
+          type: string
+          example: MTI4MzI1Mjc2NTI=
+        exponent:
+          description: The base64 encoded exponent of the public key.
+          type: string
+          example: OTYyMzgz
+    PKIKeyResponse:
+      type: object
+      required:
+      - publicKey
+      description: 'The GetTransactionsResponse contains a set of already processed payment
+
+        transactions in the given timeframe.
+
+        '
+      properties:
+        publicKey:
+          $ref: '#/components/schemas/PKIPublicKey'
+    Error_2:
+      description: "The error property is optional. \nIt is set only if an error has been detected.\n"
+      type: object
+      properties:
+        message:
+          description: An optional, additional message which describes the error.
+          type: string
+          maxLength: 256
+          example: 'Internal server error. A database connection could not be
+
+            established.
+
+            '
+        paymentProviderErrorCode:
+          description: An error code as outlined in the PI-API documentation.
+          type: string
+          example: SysErr#765
+        errorCode:
+          description: An error code as outlined in the PI-API documentation.
+          type: string
+          example: HOST_CANCEL
+        transactionId:
+          $ref: '#/components/schemas/TransactionIdentifier'
+  securitySchemes:
+    bearerAuth:
+      description: When using the bearer authentication method an access token has to be provided in the HTTP authorization header. When using openIdConnect as security scheme the access token has to be provided in the Authorization header with the bearer scheme while the id token has to be provided in the __consumerIdParam__ which must also be encrypted.
+      type: http
+      scheme: bearer
+    openId:
+      type: openIdConnect
+      openIdConnectUrl: https://login.microsoftonline.com/52846f0f-bc96-4a36-939b-f4d04bb473a0/v2.0/.well-known/openid-configuration
+x-refined-from:
+- diebold-dn-online-mobile-api-openapi.json
+- diebold-dn-payment-initiation-api-openapi.json
