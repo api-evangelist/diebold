@@ -102,8 +102,8 @@ paths:
           $ref: '#/components/responses/InternalServerError500'
 components:
   responses:
-    Unauthorized401:
-      description: Unauthorized
+    BadRequest400:
+      description: Bad Request
       content:
         application/json:
           schema:
@@ -114,22 +114,50 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    BadRequest400:
-      description: Bad Request
+    Unauthorized401:
+      description: Unauthorized
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
   schemas:
-    TmGetKeysResponse:
+    TmRight:
       type: object
+      description: 'Describes a right as integer values as well as in a readable form.
+
+        '
       required:
-      - keys
+      - rightId
+      - rightName
       properties:
-        keys:
-          type: array
-          items:
-            $ref: '#/components/schemas/TmKeyInfo'
+        rightId:
+          type: string
+          description: 'The id of the right.
+
+            '
+        rightName:
+          type: string
+          description: 'The right in a human readable form.
+
+            '
+        rightDescription:
+          type: string
+          description: 'The description of the right in a human readable form.
+
+            '
+    Error:
+      description: "The error property is optional.<br< \nIt is set only if an error has been detected.\n"
+      type: object
+      properties:
+        message:
+          description: An optional, additional message which describes the error.
+          type: string
+          maxLength: 256
+          example: Unauthorized
+        errorCode:
+          description: An error code as outlined in the PI-API documentation.
+          type: string
+          example: REQUEST_DATA_INVALID_ID
     TmKeyInfo:
       type: object
       required:
@@ -190,6 +218,51 @@ components:
           type: string
           description: The y coordinate of an Elliptic Curve public key. (base64url encoded)
           example: pZ_2dqtMh7M..._k9blCwC6nQ
+    TmAuthenticationRequest:
+      type: object
+      required:
+      - username
+      - password
+      properties:
+        username:
+          type: string
+          description: name of the user to authenticate
+          example: qauser
+        password:
+          type: string
+          format: base64
+          description: password base64 encoded
+          example: base64-encode(my-password)
+        language:
+          type: string
+          format: ISO 639
+          description: 'sets the language for this session. This will override the "Accept-Language" HTTP header.
+
+            '
+          example: de
+        timezone:
+          type: string
+          format: tz database
+          description: 'set the timezone for this session.
+
+            '
+          example: Europe/Berlin
+        country:
+          type: string
+          format: ISO 3166-1
+          description: 'The time zone is determined based on the country if the timezone attribute is not set.
+
+            '
+          example: DE
+    TmGetKeysResponse:
+      type: object
+      required:
+      - keys
+      properties:
+        keys:
+          type: array
+          items:
+            $ref: '#/components/schemas/TmKeyInfo'
     TmAuthenticationResponse:
       type: object
       description: 'Describes the response of the authentication request.
@@ -249,79 +322,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TmRight'
-    TmAuthenticationRequest:
-      type: object
-      required:
-      - username
-      - password
-      properties:
-        username:
-          type: string
-          description: name of the user to authenticate
-          example: qauser
-        password:
-          type: string
-          format: base64
-          description: password base64 encoded
-          example: base64-encode(my-password)
-        language:
-          type: string
-          format: ISO 639
-          description: 'sets the language for this session. This will override the "Accept-Language" HTTP header.
-
-            '
-          example: de
-        timezone:
-          type: string
-          format: tz database
-          description: 'set the timezone for this session.
-
-            '
-          example: Europe/Berlin
-        country:
-          type: string
-          format: ISO 3166-1
-          description: 'The time zone is determined based on the country if the timezone attribute is not set.
-
-            '
-          example: DE
-    Error:
-      description: "The error property is optional.<br< \nIt is set only if an error has been detected.\n"
-      type: object
-      properties:
-        message:
-          description: An optional, additional message which describes the error.
-          type: string
-          maxLength: 256
-          example: Unauthorized
-        errorCode:
-          description: An error code as outlined in the PI-API documentation.
-          type: string
-          example: REQUEST_DATA_INVALID_ID
-    TmRight:
-      type: object
-      description: 'Describes a right as integer values as well as in a readable form.
-
-        '
-      required:
-      - rightId
-      - rightName
-      properties:
-        rightId:
-          type: string
-          description: 'The id of the right.
-
-            '
-        rightName:
-          type: string
-          description: 'The right in a human readable form.
-
-            '
-        rightDescription:
-          type: string
-          description: 'The description of the right in a human readable form.
-
-            '
   securitySchemes:
     basicAuth:
       type: http

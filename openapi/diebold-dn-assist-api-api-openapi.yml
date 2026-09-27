@@ -798,10 +798,714 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    Category:
+    WorkstationTransaction:
+      type: object
+      properties:
+        transactionId:
+          type: integer
+          description: Transaction Id
+          example: 1
+        transactionName:
+          type: string
+          description: Transaction name
+          example: SB Open workstation
+        transactionDisabledByCommand:
+          type: boolean
+          description: Transaction disabled by command.
+          example: 'false'
+        transactionDisabledByDevice:
+          type: boolean
+          description: Transaction disabled by device.
+          example: 'false'
+        transactionDisabledByRestriction:
+          type: boolean
+          description: Transaction disabled by restriction.
+          example: 'false'
+        transactionDisabledByCommonComponentState:
+          type: boolean
+          description: Transaction disabled by common component state.
+          example: 'false'
+      description: Returns workstation transaction data
+    CheckImage:
+      required:
+      - image
+      type: object
+      properties:
+        image:
+          type: string
+          description: Base 64 Image
+          example: SUkqAAgAAAASAAABBAABAAAAsAYAAAEBBAABAAAAqQIAAAIBAwABAAAAAQAAAAMBAwABAAAABAAAAAYBAwABAAAAAAAAAAoBAwABAAAAAQAAABEBBAABAAAA9gAAABIBAwABAAAAAQAAABUBAwABAAAAAQAAABYBBAABAAAAqQIAABcBBAABAAAAEhkAABoBBQABAAAA5gAAABsBBQABAAAA7gAAABwBAwABAAAAAQAAACQBBAABAAAAAAAAACUBBAABAAAAAAAAACgBAwABAAAAAgAAACkBAwACAAAAAAAAAAAAAADIAAAAAQAAAMgAAAABAAAAJqJoul9///19///19//6/+8ev/+/r9v/X///39f/f+v7///+u//rv/X9//X9////Xf+u//87CoquVOOxSLNGf700ybGAyQ39+/IHhnd+vrnkl/r///v39///f/NhkAb//r5A8MO///ypKnX+7/9/////r//9L///v//rf//3pp////52ax2Bj///5S+0ev//X6QIuq//d////+v4pYf///fkVH/1/iLBf//////52a0P/9/5S+0Z3//v+kCLqn////+////iv///+62F/v/+SvEWK//7/DH///hkwyWwr9f/2GFO1YX//r9ynKedii/v/+CLzi//+q/hDggWdpDX///jcaH/X/99hf//8lIgidgb///6w/79/4Z9SE2Bf//+9L///5HUpTgi6//7/O6/////Qk/dsf///VJt3//3+3uI///+RzV///9gujtWF///2N4//6/bU0f//+iVjigmd65e//3+QtBhI/FbDQf///2NX//+v9Iwn////+wWx//7/JWPrr///sFhdr///wmP//1+ptFCmun///6u3qVb//3v7sjoEr////xJC//7/+ub////7R1Sux///9hAiNG2v//k2GL6QIuujvT//+TZHDH5URdf//6d4UuvaO0JP//6T8ECsrSXQYQwRdf//p/+POyEv///zyH8NBBx////41FFW2l///+xRDRdJOI///tdhFAT//r7Hm05qV52cf/39r72wsp///2vJRponoKWCLr//4/ygZWwIf///0s2uv//5Nhi8hEeX+aBNf/9ZNkd4oel4j///TvSfSX//3pXm0GVqNQQRDR5Bf//0/iwqEIYIL//+/lQMRaCX///9ImDFGj////lCZUP///2v65q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
+        imageType:
+          $ref: '#/components/schemas/ImageType'
+      description: Check Image
+    CancelGroupTaskRequestPayload:
+      properties:
+        payload:
+          type: object
+          required:
+          - groupTaskSid
+          properties:
+            groupTaskSid:
+              type: string
+              example: WT9843f5655eccaf609339dc6cae16a5a5
+              description: Group call task sid
+            cancellationReason:
+              type: string
+              description: Reason for cancelling the call
+              example: User not available
+    SaveConsumerResponse:
+      properties:
+        responseCode:
+          $ref: '#/components/schemas/ResponseCode'
+        extendedResponse:
+          $ref: '#/components/schemas/ExtendedResponse'
+    ImageData:
       type: string
-      description: Exception limit category
-      example: Exception_limit_withdrawal
+      description: Base64 image data
+      example: VyXC/Vr7/yURd0FyoRz/j9f6EEXWl/9//XndXa//ySj//6+RRHtL+n//XuGU4S8f9H9/9f+OiE/hhfWm//9O1CaC//r/b38RhOvRGf3/6/2kfGl6X9/9d7H6+U4IuvrrXb/9VmZ/2/4aX/+2vpmH//2K+l14r0Ptr+wv/fH/Gv4///+P/7/ys/+Qb/klH/WvmF7JZ0/6M4f///tDyo/0Ef76v/7x9/9P//X3//+///tv////13ElW/7//9++7D+JJH///4sg79r/H/67Hj/ZN1+9+//Ef/98q0X//6/h8IIW/5VQ7/74fH///+diQYMZjPCkGgQRdfytmv/52Lhpdf+F///69wl//4ob/QX/+0EeF9Qgmv/xev6//4YX+Q4X//H/V+//8Uv//7/6/8qqNMlqv/f/5tZEtf///rwwv/+vffj////7C//kDwa7Kshmv/r//5Tsl0Ij/v//xH8RoP///Nn//qNB6/47iIiI0yoJ6mwqhNOUgqCWFWVBRUVZ7Kwh3BcRERERERERER/rf+vh/61vf19//4AIAIAA==
+    ImageRequest:
+      properties:
+        payload:
+          type: object
+          required:
+          - terminalId
+          - transactionId
+          - documentType
+          - validationStatus
+          - frontImage
+          properties:
+            terminalId:
+              $ref: '#/components/schemas/TerminalId'
+            transactionId:
+              $ref: '#/components/schemas/TransactionId'
+            documentType:
+              $ref: '#/components/schemas/DocumentType'
+            frontImage:
+              $ref: '#/components/schemas/FrontImage'
+            backImage:
+              $ref: '#/components/schemas/BackImage'
+            validationStatus:
+              $ref: '#/components/schemas/ImageValidationStatus'
+            remarks:
+              $ref: '#/components/schemas/Remarks'
+    TellerReadinessRequest:
+      properties:
+        payload:
+          type: object
+          required:
+          - tellerStatus
+          - tellerName
+          - tenantName
+          properties:
+            tellerStatus:
+              $ref: '#/components/schemas/TellerStatus'
+            tellerName:
+              $ref: '#/components/schemas/TellerName'
+            tenantName:
+              $ref: '#/components/schemas/TenantName'
+    ConsumerInfo:
+      required:
+      - consumerId
+      type: object
+      properties:
+        taxId:
+          $ref: '#/components/schemas/TaxId'
+        consumerId:
+          $ref: '#/components/schemas/ConsumerId'
+        addresses:
+          type: array
+          description: Consumer addresses
+          items:
+            $ref: '#/components/schemas/Address'
+        name:
+          $ref: '#/components/schemas/ConsumerName'
+        email:
+          $ref: '#/components/schemas/Email'
+        dateOfBirth:
+          $ref: '#/components/schemas/DateOfBirth'
+        consumerType:
+          $ref: '#/components/schemas/ConsumerType'
+        phoneNumbers:
+          type: array
+          example:
+          - phoneNumber: 4172359612
+            phoneType: Home
+          - phoneNumber: 4172354621
+            phoneType: Business
+          items:
+            $ref: '#/components/schemas/ConsumerPhone'
+    CheckDetails:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the check record maintained by the client. This value needs to be mirrored and returned by the host while passing details for this same check in the response
+          example: 7892480d0a1948099c71beffa823ed0e
+        hostId:
+          type: string
+          description: Transaction identifier provided by the check processing system after validation
+          example: 442347823ebfad58676644aaaa432323
+        checkActionCode:
+          type: string
+          description: Action to be taken post the check recognition
+          example: NONE
+          enum:
+          - NONE
+          - CORRECT
+          - VERIFY_IMAGE
+          - SUSPECTED_DUPLICATE
+          - REMOVE
+        deleted:
+          $ref: '#/components/schemas/Deleted'
+        suspectedFraud:
+          type: boolean
+          description: Flag to indicate if the check is suspected to be a fraud
+          example: false
+        micrReadIntegrity:
+          type: string
+          description: Defines the integrity of the MICR which is read
+          example: GOOD
+          enum:
+          - GOOD
+          - PARTIAL
+          - BAD
+        micr:
+          type: string
+          description: Contains the MICR (Magnetic Ink Character Recognition) as raw string as scanned and recognized from the check
+          example: '*192307*T06300277T41442*'
+        routingTransitNumber:
+          type: string
+          description: Identifies the bank on which the document is drawn. For instance, in the US this is the Routing and Transit number, and in the UK it is the Sort Code
+          example: '063100277'
+        mediaState:
+          $ref: '#/components/schemas/MediaState'
+        printData:
+          type: string
+          description: The string that should be printed on the back of the check
+          example: Dated July 17th, 2020
+        date:
+          $ref: '#/components/schemas/CheckUpdateDate'
+        score:
+          type: integer
+          description: Score of the Optical character recognition (OCR)
+          example: 0
+        accountNumber:
+          type: string
+          description: Identifies the account on which the check is drawn
+          example: A0123456789
+        checkNumber:
+          type: string
+          description: Check number as provided by MICR line
+          example: '123456'
+        courtesyAmount:
+          $ref: '#/components/schemas/CourtesyAmount'
+        micrAmount:
+          $ref: '#/components/schemas/MICRAmount'
+        userAmount:
+          $ref: '#/components/schemas/UserAmount'
+        validatedAmount:
+          $ref: '#/components/schemas/ValidatedAmount'
+        documentSequenceNumber:
+          type: integer
+          description: The document sequence number. Order number of the entered checks
+          example: 1
+        rejectedBy:
+          $ref: '#/components/schemas/RejectedBy'
+        externalProcessingCode:
+          type: string
+          description: Processing Code read from the MICR line. (a.k.a. Transaction Code (UK), Trancode (AU))
+          example: '4'
+        checkType:
+          $ref: '#/components/schemas/CheckType'
+        checkState:
+          $ref: '#/components/schemas/CheckState'
+      description: Details of checks
+    CheckDetailsWithImage:
+      type: object
+      description: Check details with image
+      allOf:
+      - $ref: '#/components/schemas/CheckDetails'
+      - type: object
+        properties:
+          checkImageBack:
+            $ref: '#/components/schemas/CheckImage'
+          checkImageFront:
+            $ref: '#/components/schemas/CheckImage'
+    CommandSendStatus:
+      type: string
+      description: Status to show if command has been sent successfully to terminal
+      example: success
+      enum:
+      - success
+      - failure
+    Address:
+      properties:
+        city:
+          $ref: '#/components/schemas/City'
+        country:
+          $ref: '#/components/schemas/Country'
+        postalCode:
+          $ref: '#/components/schemas/PostalCode'
+        stateCode:
+          $ref: '#/components/schemas/StateCode'
+        street:
+          $ref: '#/components/schemas/Street'
+        streetNo:
+          $ref: '#/components/schemas/StreetNo'
+    CourtesyAmount:
+      type: object
+      description: Amount read by Optical Character Recognition (OCR) from the check image
+      allOf:
+      - $ref: '#/components/schemas/Amount'
+    BackImage:
+      type: object
+      description: Back part of document image
+      properties:
+        imageData:
+          $ref: '#/components/schemas/ImageData'
+        imageType:
+          $ref: '#/components/schemas/ImageType'
+    DeleteImageResponse:
+      properties:
+        responseCode:
+          $ref: '#/components/schemas/ResponseCode'
+        extendedResponse:
+          $ref: '#/components/schemas/ExtendedResponse'
+    TimeZone:
+      type: string
+      description: ATM/Workstation Timezone
+      example: Asia/Calcutta
+    UserAmount:
+      type: object
+      description: The amount which is entered by the User
+      allOf:
+      - $ref: '#/components/schemas/Amount'
+    Host:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Jxchange
+        status:
+          type: string
+          example: UP
+        description:
+          type: string
+          x-field-extra-annotation: '@com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)'
+          example: operational
+      description: Get host status
+    CategoryDefinition:
+      type: object
+      description: Exception Limit categories with description
+      properties:
+        name:
+          type: string
+          example: Exception_limit_card_withdrawal
+        description:
+          type: string
+          example: one exception limit for a card based withdrawal
+    Command:
+      description: Command to be sent
+      type: object
+      properties:
+        commandType:
+          $ref: '#/components/schemas/CommandType'
+        commandName:
+          $ref: '#/components/schemas/CommandName'
+        commandParameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/CommandParameter'
+    Date:
+      type: string
+      description: The date pattern is defined 'yyyy-MM-dd', with yyyy as 4-digit year, MM as 2-digit month and dd as 2-digit date of month
+      format: yyyy-MM-dd
+      example: '2020-07-23'
+    WorkstationData:
+      type: object
+      properties:
+        profileID:
+          type: string
+          description: Profile ID
+          example: WS_CLIENT_CONNECTOR_ATM
+        currentProcessingCenter:
+          type: string
+          description: Current processing center
+          example: Alpha
+        customerStatus:
+          type: string
+          description: Status of Customer
+          example: Open consumer with indication
+        reasonForLastStatusChange:
+          type: string
+          description: Reason for last status change
+          example: state of a device or subdevice changed
+        lastStatusUpdate:
+          type: string
+          description: Last status update date-time
+          example: '1713770559563'
+        doorStatus:
+          type: string
+          description: Door status
+          example: The doors are closed.
+        softwareVersion:
+          type: string
+          description: Software version
+          example: RichClientManager 13.50.0
+        retainedCards:
+          type: integer
+          description: Retained cards
+          example: 0
+        retractedMoneyCashOut:
+          type: integer
+          description: Retracted money cash-out
+          example: 8
+        retractedMoneyCashIn:
+          type: integer
+          description: Retracted money cash-in
+          example: 228
+        retractedChecks:
+          type: integer
+          description: Retracted checks
+          example: 12
+        retainedDocuments:
+          type: integer
+          description: Retained documents
+          example: 12
+        retractedPassbooks:
+          type: integer
+          description: Retracted passbooks
+          example: 12
+        retractedScannedDocuments:
+          type: integer
+          description: Retracted scanned documents
+          example: 12
+        maxRetractCounter:
+          type: integer
+          description: Max retract counter
+          example: 12
+        timeZone:
+          $ref: '#/components/schemas/TimeZone'
+        referenceCurrency:
+          pattern: '[A-Z]{3,3}'
+          type: string
+          description: Reference currency code
+          example: USD
+      description: Workstation status
+    Deleted:
+      type: boolean
+      description: Flag to indicate that the check is rejected or should be returned to the consumer
+    ServiceResponse:
+      required:
+      - responseCode
+      - extendedResponseCode
+      type: object
+      properties:
+        responseCode:
+          $ref: '#/components/schemas/ResponseCode'
+        extendedResponseCode:
+          $ref: '#/components/schemas/ExtendedResponseCode'
+    SendCommandResponse:
+      properties:
+        responseCode:
+          $ref: '#/components/schemas/ResponseCode'
+        extendedResponse:
+          $ref: '#/components/schemas/ExtendedResponse'
+        payload:
+          $ref: '#/components/schemas/SendCommandResponsePayload'
+    ConsumerName:
+      properties:
+        firstName:
+          $ref: '#/components/schemas/FirstName'
+        middleName:
+          $ref: '#/components/schemas/MiddleName'
+        lastName:
+          $ref: '#/components/schemas/LastName'
+        fullName:
+          $ref: '#/components/schemas/FullName'
+    Image:
+      type: object
+      properties:
+        imageId:
+          $ref: '#/components/schemas/ImageId'
+        documentType:
+          $ref: '#/components/schemas/DocumentType'
+        frontImage:
+          $ref: '#/components/schemas/FrontImage'
+        backImage:
+          $ref: '#/components/schemas/BackImage'
+        validationStatus:
+          $ref: '#/components/schemas/ImageValidationStatus'
+        dateTime:
+          $ref: '#/components/schemas/dateTime'
+    SaveImageResponse:
+      properties:
+        responseCode:
+          $ref: '#/components/schemas/ResponseCode'
+        extendedResponse:
+          $ref: '#/components/schemas/ExtendedResponse'
+        payload:
+          type: object
+          properties:
+            imageId:
+              type: string
+              example: 123-456-7890
+    CheckState:
+      type: string
+      description: State of the check
+      example: ENDORSED
+      enum:
+      - OPEN
+      - RETURNED
+      - RETAINED
+      - ENDORSED
+      - CONFIRMED
+      - AMENDED
+      - REJECTED
+      - PROCESSED_OK
+      - PROCESSED_ERROR
+    CassCounter:
+      description: Cassette counter details
+      type: object
+      properties:
+        counterType:
+          type: string
+          example: Total
+        counterData:
+          type: array
+          items:
+            $ref: '#/components/schemas/CounterData'
+    CheckDetailsRequest:
+      type: object
+      properties:
+        payload:
+          type: object
+          required:
+          - workstationId
+          - transactionId
+          - checks
+          properties:
+            workstationId:
+              $ref: '#/components/schemas/WorkstationId'
+            transactionId:
+              $ref: '#/components/schemas/TransactionId'
+            checks:
+              type: array
+              items:
+                $ref: '#/components/schemas/CheckStatus'
+              example:
+              - id: 7892480d0a1948099c71beffa823ed0e
+                micr: '*192307*T06300277T41442*'
+                routingTransitNumber: '13402303'
+                accountNumber: A0123456789
+                checkNumber: '123456'
+                checkState: OPEN
+                validatedAmount:
+                  value: '100.00'
+                  currency: USD
+                remarks: Updating check details
+              - id: 7892480d0a1948099c71beffa823ed0f
+                micr: '*192307*T06300277T41442*'
+                routingTransitNumber: '13402303'
+                accountNumber: A0123456789
+                checkNumber: '123456'
+                checkState: OPEN
+                validatedAmount:
+                  value: '100.00'
+                  currency: USD
+                remarks: Updating check details
+    ExtendedResponseCode:
+      type: string
+      description: Extended response code mapping
+      example: SERVER_FAILURE
+      enum:
+      - OK
+      - SERVER_FAILURE
+      - NO_RESULT
+      - ACCOUNT_NOT_FOUND
+      - ACCOUNT_CLOSED
+      - ACCOUNT_TYPE_INVALID
+      - LIMIT_EXCEEDED
+      - INSUFFICIENT_FUNDS
+      - SERVER_NOT_READY
+      - REQUEST_DATA_INVALID
+      - TRX_NOT_PERMITTED_TO_ACCOUNT
+      - TRANSACTION_NOT_POSSIBLE
+      - HOST_OFFLINE
+      - HOST_CANCEL
+      - HOST_BUSINESS_ERROR
+      - RESPONSE_FEE_CONFIRM_REQUIRED
+      - OVERDRAFT_CONFIRM_REQUIRED
+      - PIN_VALIDATION_FAILED
+      - FCC_CONFIRM_REQUIRED
+      - DIRECT_CURRENCY_CONVERSION_CONFIRM_REQUIRED
+      - MULTI_CONFIRM_REQUIRED
+      - CARD_NOT_FOUND
+      - CARD_NOT_FOUND_FOR_EXPIRY_DATE
+      - CARD_BLOCKED
+      - CARD_EXPIRED
+      - CARD_MANIPULATED
+      - PIN_INACTIVE
+      - PIN_TRY_LIMIT_EXCEEDED
+      - PINS_DIFFER
+      - OFFLINE_OKAY
+      - PARTIALLY_FAILED
+      - FAILED
+    TaskTimeOut:
+      type: integer
+      description: Task time out for group call in seconds
+      example: 60
+    ConsumerPhone:
+      properties:
+        phoneNumber:
+          $ref: '#/components/schemas/PhoneNumber'
+        phoneType:
+          $ref: '#/components/schemas/PhoneType'
+    City:
+      type: string
+      description: City
+      example: Monett
+    AccountSubType:
+      type: string
+      description: Represents the SubType of an account for AccountType
+      example: Business Savings
+    PostalCode:
+      type: string
+      description: Postal code
+      example: '657080000'
+    CheckUpdateDate:
+      type: object
+      description: Creation date or date of last update for this record
+      allOf:
+      - $ref: '#/components/schemas/Date'
+    LastName:
+      type: string
+      description: Consumer last name
+      example: Lock
+    ResponseCode:
+      type: string
+      example: OK
+      enum:
+      - OK
+      - FAIL
+      - RESUBMIT
+    WorkstationRestriction:
+      type: object
+      properties:
+        restrictionId:
+          type: integer
+          description: Restriction Id
+          example: 1520001
+        restrictionName:
+          type: string
+          description: Restriction name
+          example: TOO_MANY_TAN_ENTRY_FAILURES
+      description: Returns workstation restriction data
+    TwilioTaskRouterResponse:
+      required:
+      - payload
+      - responseCode
+      type: object
+      properties:
+        responseCode:
+          $ref: '#/components/schemas/ResponseCode'
+        extendedResponse:
+          $ref: '#/components/schemas/ExtendedResponse'
+        payload:
+          $ref: '#/components/schemas/TwilioTaskRouterResponsePayload'
+      description: Twillio Task Router Token
+    RejectedBy:
+      type: string
+      description: Indicates who has rejected the check
+      example: SYSTEM
+      enum:
+      - UNDEFINED
+      - CONSUMER
+      - SYSTEM
+      - TELLER
+    TellerStatus:
+      type: string
+      description: Teller Status Type
+      example: READY_TO_SERVE
+      enum:
+      - READY_TO_SERVE
+      - PAUSED_TO_SERVE
+    ImageListResponse:
+      required:
+      - payload
+      - responseCode
+      type: object
+      properties:
+        responseCode:
+          $ref: '#/components/schemas/ResponseCode'
+        extendedResponse:
+          $ref: '#/components/schemas/ExtendedResponse'
+        payload:
+          $ref: '#/components/schemas/ImageListResponsePayload'
+      description: Get Image response
+    TerminalStatusPayload:
+      required:
+      - workstation
+      properties:
+        workstationDetails:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkstationDetails'
+    StateCode:
+      type: string
+      description: State code
+      example: MO
+    PhoneType:
+      type: string
+      description: Consumer phone type
+    ConsumerResponse:
+      required:
+      - payload
+      - responseCode
+      properties:
+        responseCode:
+          $ref: '#/components/schemas/ResponseCode'
+        extendedResponse:
+          $ref: '#/components/schemas/ExtendedResponse'
+        payload:
+          $ref: '#/components/schemas/ConsumerResponsePayload'
+    TransactionNo:
+      type: string
+      description: TM Transaction Number
+      example: '108'
+    ImageListResponsePayload:
+      required:
+      - imageList
+      properties:
+        transactionId:
+          $ref: '#/components/schemas/TransactionId'
+        imageList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Image'
+    DocumentType:
+      type: string
+      description: Name of an image document
+      example: Driver license
+    TokenZoomTellerResponse:
+      properties:
+        responseCode:
+          $ref: '#/components/schemas/ResponseCode'
+        extendedResponse:
+          $ref: '#/components/schemas/ExtendedResponse'
+        payload:
+          type: object
+          properties:
+            zoomToken:
+              type: string
+              example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiVklERU9fU0RLX0tFWSIsImlhdCI6MTY0NjI0ODc5NiwiZXhwIjoxNjQ2MjU1OTk2LCJ0cGMiOiJDb29sIENhcnMiLCJ1c2VyX2lkZW50aXR5IjoidXNlcjEyMyIsInNlc3Npb25fa2V5Ijoic2Vzc2lvbjEyMyIsInJvbGVfdHlwZSI6MH0.Y6C65mZUxTZFeGiOI6oW5q2UkIXe3nLTK0MVNkfiJ9c
+    TellerToken:
+      type: string
+      x-field-extra-annotation: '@com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)'
+      description: Base64 encoded tellerToken.
+      example: Bearer eyJhbGciO....xMlv3NLDw
     AccountAmountType:
       type: string
       description: Amount types for account
@@ -841,10 +1545,78 @@ components:
       - MINIMUM_AMOUNT_DUE
       - REWARD_BALANCE
       - LAST_STATEMENT_BALANCE
-    Count:
-      type: integer
-      description: Count Limit specifies the aggregated business cases to be count within a defined period of time.
-      example: 100
+    CheckDetailsResponse:
+      required:
+      - responseCode
+      type: object
+      properties:
+        responseCode:
+          $ref: '#/components/schemas/ResponseCode'
+        extendedResponse:
+          $ref: '#/components/schemas/ExtendedResponse'
+      description: Check image response
+    Config:
+      type: object
+      additionalProperties:
+        type: string
+    CommandParameter:
+      description: Command parameter
+      type: object
+      properties:
+        key:
+          $ref: '#/components/schemas/ParameterKey'
+        value:
+          $ref: '#/components/schemas/ParameterValue'
+    UpdateImageRequest:
+      properties:
+        payload:
+          type: object
+          required:
+          - imageId
+          properties:
+            imageId:
+              $ref: '#/components/schemas/ImageId'
+            documentType:
+              $ref: '#/components/schemas/DocumentType'
+            validationStatus:
+              $ref: '#/components/schemas/ImageValidationStatus'
+            remarks:
+              $ref: '#/components/schemas/Remarks'
+    TerminalStatus:
+      description: Get Workstation Status
+      required:
+      - payload
+      - responseCode
+      type: object
+      properties:
+        responseCode:
+          $ref: '#/components/schemas/ResponseCode'
+        extendedResponse:
+          $ref: '#/components/schemas/ExtendedResponse'
+        payload:
+          $ref: '#/components/schemas/TerminalStatusPayload'
+    IDToken:
+      type: string
+      description: ID Token
+      example: eyJhbGciO....xMlv3NLDw
+    MiddleName:
+      type: string
+      description: Consumer middle name
+      example: W
+    dateTimeWithoutSeconds:
+      type: string
+      description: Timestamp of the description
+      format: yyyy-MM-dd'T'HH:mmZ
+      example: 2024-07-05T15:25Z
+    AddCheckResponsePayload:
+      required:
+      - check
+      - transaction
+      properties:
+        check:
+          type: array
+          items:
+            $ref: '#/components/schemas/CheckDetailsWithImage'
     AccountStatus:
       type: string
       description: The status of the account
@@ -884,149 +1656,6 @@ components:
       - OPEN_PRIMARY_ACCOUNT
       - RESTRICTED_PRIMARY_ACCOUNT
       - RESTRICTED_TO_DEPOSIT
-    AccountRef:
-      type: object
-      properties:
-        accountNumber:
-          $ref: '#/components/schemas/AccountNumber'
-        accountType:
-          $ref: '#/components/schemas/AccountType'
-    Amounts:
-      type: array
-      description: Account amount
-      items:
-        $ref: '#/components/schemas/AccountAmount'
-    InstituteConfiguration:
-      required:
-      - payload
-      - responseCode
-      type: object
-      properties:
-        responseCode:
-          $ref: '#/components/schemas/ResponseCode'
-        extendedResponse:
-          $ref: '#/components/schemas/ExtendedResponse'
-        payload:
-          $ref: '#/components/schemas/InstituteConfigurationPayload'
-      description: Institute Configuration
-    TerminalDataResponse:
-      required:
-      - payload
-      - responseCode
-      type: object
-      properties:
-        responseCode:
-          $ref: '#/components/schemas/ResponseCode'
-        extendedResponse:
-          $ref: '#/components/schemas/ExtendedResponse'
-        payload:
-          $ref: '#/components/schemas/WorkstationDataResponsePayload'
-      description: Get workstation Data
-    TellerStatus:
-      type: string
-      description: Teller Status Type
-      example: READY_TO_SERVE
-      enum:
-      - READY_TO_SERVE
-      - PAUSED_TO_SERVE
-    FailResponseCode:
-      type: string
-      example: FAIL
-      enum:
-      - OK
-      - FAIL
-      - RESUBMIT
-    ExceptionLimitTime:
-      required:
-      - validfrom
-      - validto
-      type: object
-      properties:
-        validfrom:
-          $ref: '#/components/schemas/dateTimeWithoutSeconds'
-        validto:
-          $ref: '#/components/schemas/dateTimeWithoutSeconds'
-      description: Exception limit time. Difference between from and to dates should be less than or equal to 24 hrs.
-    PhoneNumber:
-      type: string
-      description: Consumer phone number
-      example: '4172359612'
-    TokenZoomTellerResponse:
-      properties:
-        responseCode:
-          $ref: '#/components/schemas/ResponseCode'
-        extendedResponse:
-          $ref: '#/components/schemas/ExtendedResponse'
-        payload:
-          type: object
-          properties:
-            zoomToken:
-              type: string
-              example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiVklERU9fU0RLX0tFWSIsImlhdCI6MTY0NjI0ODc5NiwiZXhwIjoxNjQ2MjU1OTk2LCJ0cGMiOiJDb29sIENhcnMiLCJ1c2VyX2lkZW50aXR5IjoidXNlcjEyMyIsInNlc3Npb25fa2V5Ijoic2Vzc2lvbjEyMyIsInJvbGVfdHlwZSI6MH0.Y6C65mZUxTZFeGiOI6oW5q2UkIXe3nLTK0MVNkfiJ9c
-    TellerStatusResponse:
-      properties:
-        responseCode:
-          $ref: '#/components/schemas/ResponseCode'
-        extendedResponse:
-          $ref: '#/components/schemas/ExtendedResponse'
-    DeleteImageResponse:
-      properties:
-        responseCode:
-          $ref: '#/components/schemas/ResponseCode'
-        extendedResponse:
-          $ref: '#/components/schemas/ExtendedResponse'
-    TerminalStatusPayload:
-      required:
-      - workstation
-      properties:
-        workstationDetails:
-          type: array
-          items:
-            $ref: '#/components/schemas/WorkstationDetails'
-    FrontImage:
-      type: object
-      description: Front part of document image
-      properties:
-        imageData:
-          $ref: '#/components/schemas/ImageData'
-        imageType:
-          $ref: '#/components/schemas/ImageType'
-    DocumentType:
-      type: string
-      description: Name of an image document
-      example: Driver license
-    Image:
-      type: object
-      properties:
-        imageId:
-          $ref: '#/components/schemas/ImageId'
-        documentType:
-          $ref: '#/components/schemas/DocumentType'
-        frontImage:
-          $ref: '#/components/schemas/FrontImage'
-        backImage:
-          $ref: '#/components/schemas/BackImage'
-        validationStatus:
-          $ref: '#/components/schemas/ImageValidationStatus'
-        dateTime:
-          $ref: '#/components/schemas/dateTime'
-    TerminalStatus:
-      description: Get Workstation Status
-      required:
-      - payload
-      - responseCode
-      type: object
-      properties:
-        responseCode:
-          $ref: '#/components/schemas/ResponseCode'
-        extendedResponse:
-          $ref: '#/components/schemas/ExtendedResponse'
-        payload:
-          $ref: '#/components/schemas/TerminalStatusPayload'
-    IDToken:
-      type: string
-      description: ID Token
-      example: eyJhbGciO....xMlv3NLDw
     DocumentCounter:
       type: object
       properties:
@@ -1054,66 +1683,172 @@ components:
         weight:
           type: string
           example: 2.444 kg
-    RejectedBy:
-      type: string
-      description: Indicates who has rejected the check
-      example: SYSTEM
-      enum:
-      - UNDEFINED
-      - CONSUMER
-      - SYSTEM
-      - TELLER
-    Address:
+    GetExceptionLimitCategoriesResponse:
       properties:
-        city:
-          $ref: '#/components/schemas/City'
-        country:
-          $ref: '#/components/schemas/Country'
-        postalCode:
-          $ref: '#/components/schemas/PostalCode'
-        stateCode:
-          $ref: '#/components/schemas/StateCode'
-        street:
-          $ref: '#/components/schemas/Street'
-        streetNo:
-          $ref: '#/components/schemas/StreetNo'
-    ExtendedResponseCode:
+        responseCode:
+          $ref: '#/components/schemas/ResponseCode'
+        extendedResponse:
+          $ref: '#/components/schemas/ExtendedResponse'
+        payload:
+          $ref: '#/components/schemas/ExceptionLimitCategoriesResponsePayload'
+    ExtendedResponseMessage:
       type: string
-      description: Extended response code mapping
+      description: Extended response message
       example: SERVER_FAILURE
+    Street:
+      type: string
+      description: Street
+      example: 703 N
+    FullName:
+      type: string
+      description: Consumer full name
+      example: Darrien W Lock
+    ExceptionLimitTime:
+      required:
+      - validfrom
+      - validto
+      type: object
+      properties:
+        validfrom:
+          $ref: '#/components/schemas/dateTimeWithoutSeconds'
+        validto:
+          $ref: '#/components/schemas/dateTimeWithoutSeconds'
+      description: Exception limit time. Difference between from and to dates should be less than or equal to 24 hrs.
+    CassCounterList:
+      type: array
+      items:
+        $ref: '#/components/schemas/CassCounter'
+    CounterData:
+      description: Cassette counter details
+      type: object
+      properties:
+        deviceName:
+          type: string
+          example: DOCUMENT_FEED_2
+        totalPayableAmount:
+          type: string
+          example: '457600'
+        totalSafeAmount:
+          type: string
+          example: '457000'
+        cashInDeviceCoins:
+          type: string
+          example: '1562700'
+        cashInDeviceNotes:
+          type: string
+          example: '1462700'
+        cashOutDeviceCoins:
+          type: string
+          example: '146200'
+        cashOutDeviceNotes:
+          type: string
+          example: '146200'
+        cashRecyclingDeviceNotes:
+          type: string
+          example: '146200'
+        cashRecyclingDeviceCoins:
+          type: string
+          example: '146200'
+        rejectCount:
+          type: string
+          example: '2'
+        currency:
+          type: string
+          example: USD
+        denomination:
+          type: string
+          example: '10.00'
+        weightCoinIn:
+          type: string
+          example: 2.422 kg
+        weightCoinOut:
+          type: string
+          example: 1.422 kg
+        weightCoinInRecycle:
+          type: string
+          example: 2.422 kg
+        lastReplenishment:
+          type: string
+          example: '1714051376710'
+        status:
+          type: string
+          example: Operational
+        threshold:
+          type: string
+          example: OK
+        dispensedToConsumer:
+          type: integer
+          example: 16
+        dispensedFromCartridge:
+          type: integer
+          example: 12
+        payableFromCartridge:
+          type: integer
+          example: 18
+        safeAmount:
+          type: integer
+          example: 18
+        recycledCount:
+          type: integer
+          example: 0
+        level2Count:
+          type: integer
+          example: 44
+        level3Count:
+          type: integer
+          example: 44
+        level4Count:
+          type: integer
+          example: 44
+        checkCount:
+          type: integer
+          example: 22
+        lastChange:
+          type: string
+          example: '1713943999075'
+        weight:
+          type: string
+          example: 2.444 kg
+        retractCount:
+          type: integer
+          example: 2
+        additionalCounter:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentCounter'
+    MediaState:
+      type: string
+      description: The state of the media
+      example: OK
       enum:
+      - UNKNOWN
+      - RETAINED
       - OK
-      - SERVER_FAILURE
-      - NO_RESULT
-      - ACCOUNT_NOT_FOUND
-      - ACCOUNT_CLOSED
-      - ACCOUNT_TYPE_INVALID
-      - LIMIT_EXCEEDED
-      - INSUFFICIENT_FUNDS
-      - SERVER_NOT_READY
-      - REQUEST_DATA_INVALID
-      - TRX_NOT_PERMITTED_TO_ACCOUNT
-      - TRANSACTION_NOT_POSSIBLE
-      - HOST_OFFLINE
-      - HOST_CANCEL
-      - HOST_BUSINESS_ERROR
-      - RESPONSE_FEE_CONFIRM_REQUIRED
-      - OVERDRAFT_CONFIRM_REQUIRED
-      - PIN_VALIDATION_FAILED
-      - FCC_CONFIRM_REQUIRED
-      - DIRECT_CURRENCY_CONVERSION_CONFIRM_REQUIRED
-      - MULTI_CONFIRM_REQUIRED
-      - CARD_NOT_FOUND
-      - CARD_NOT_FOUND_FOR_EXPIRY_DATE
-      - CARD_BLOCKED
-      - CARD_EXPIRED
-      - CARD_MANIPULATED
-      - PIN_INACTIVE
-      - PIN_TRY_LIMIT_EXCEEDED
-      - PINS_DIFFER
-      - OFFLINE_OKAY
-      - PARTIALLY_FAILED
-      - FAILED
+      - JAMMED
+      - NO_MEDIA
+      - REMAINED_IN_SLOT
+      - REJECTED
+      - RECYCLED
+      - RECYCLING_ERROR
+    dateTime:
+      type: string
+      description: Timestamp of the description
+      format: yyyy-MM-dd'T'HH:mm:ssZ
+      example: '2024-07-05T15:25:47Z'
+    UnauthorizedServiceResponse:
+      required:
+      - responseCode
+      - extendedResponseCode
+      type: object
+      properties:
+        responseCode:
+          $ref: '#/components/schemas/FailResponseCode'
+        extendedResponseCode:
+          $ref: '#/components/schemas/ServiceResponse_extendedResponse'
+    Country:
+      type: string
+      description: Country
+      example: USA
     GetCheckImagesResponse:
       required:
       - payload
@@ -1127,95 +1862,145 @@ components:
         payload:
           $ref: '#/components/schemas/AddCheckResponsePayload'
       description: Add Check response
-    UnauthorizedServiceResponse:
-      required:
-      - responseCode
-      - extendedResponseCode
+    CommandStatus:
+      description: Statuses of commands sent
       type: object
+      properties:
+        commandType:
+          type: string
+          description: Command Type
+          example: sbCommand
+        commandName:
+          type: string
+          description: Command Name
+          example: shutdown
+        commandSendStatus:
+          $ref: '#/components/schemas/CommandSendStatus'
+    ParameterValue:
+      type: string
+      description: Parameter value
+      example: immediately
+    IsOrganization:
+      type: boolean
+      description: True if consumer is an organization.
+      example: false
+    LimitRequest:
+      type: object
+      properties:
+        payload:
+          type: object
+          required:
+          - workstationId
+          - category
+          - exceptionlimitAmount
+          - exceptionlimitTime
+          - consumerId
+          - timeZone
+          properties:
+            workstationId:
+              $ref: '#/components/schemas/WorkstationId'
+            category:
+              $ref: '#/components/schemas/Category'
+            exceptionlimitAmount:
+              $ref: '#/components/schemas/Amount'
+            exceptionlimitCount:
+              $ref: '#/components/schemas/Count'
+            exceptionlimitTime:
+              $ref: '#/components/schemas/ExceptionLimitTime'
+            consumerId:
+              $ref: '#/components/schemas/ConsumerId'
+            timeZone:
+              $ref: '#/components/schemas/TimeZone'
+    GetConsumerRequest:
+      properties:
+        payload:
+          type: object
+          properties:
+            accountRef:
+              $ref: '#/components/schemas/AccountRef'
+            name:
+              $ref: '#/components/schemas/ConsumerName'
+            address:
+              $ref: '#/components/schemas/Address'
+            consumerId:
+              $ref: '#/components/schemas/ConsumerId'
+            phoneNumber:
+              $ref: '#/components/schemas/PhoneNumber'
+            taxId:
+              $ref: '#/components/schemas/TaxId'
+            isOrganization:
+              $ref: '#/components/schemas/IsOrganization'
+    LimitResponse:
       properties:
         responseCode:
-          $ref: '#/components/schemas/FailResponseCode'
-        extendedResponseCode:
-          $ref: '#/components/schemas/ServiceResponse_extendedResponse'
-    ConsumerResponsePayload:
-      required:
-      - consumers
-      properties:
-        consumers:
-          type: array
-          items:
-            $ref: '#/components/schemas/ConsumerInfo'
-    DeviceState:
-      type: object
-      properties:
-        deviceName:
-          type: string
-          description: Device name
-          example: SAFE_DOOR
-        deviceId:
-          type: integer
-          description: Device Id
-          example: 66
-        state:
-          type: string
-          description: State
-          example: Unknown
-        extendedState:
-          type: string
-          description: Extended state
-          example: Unknown
-        thresholdState:
-          type: string
-          description: Threshold State
-          example: Unknown
-        counter:
-          type: integer
-          description: Counter
-          example: -1
-        additionalInfo:
+          $ref: '#/components/schemas/ResponseCode'
+        extendedResponse:
+          $ref: '#/components/schemas/ExtendedResponse'
+        payload:
           type: object
-          description: Additional information
-          additionalProperties:
-            type: string
-          example:
-            retainCount: '2'
-            deposit counter: '2'
-        subDevices:
-          type: array
-          description: Sub devices
-          items: {}
-        exchangeRate:
-          type: string
-          description: Exchange rate
-          example: ''
-        vendorDeviceInfo:
-          type: string
-          description: Vendor device info
-          example: ''
-        manipulationState:
-          type: integer
-          description: Manipulation state
-          example: 0
-        manipulationDetected:
-          type: boolean
-          description: Manipulation detected
-          example: false
-        requiredDevice:
-          type: boolean
-          description: Required Device
-          example: false
-        operational:
-          type: boolean
-          description: Operational
-          example: true
-        hasVendorDeviceInfo:
-          type: boolean
-          description: Has Vendor Device Info
-          example: true
-        subDevice:
-          type: boolean
-          description: Sub device
-          example: false
+          properties:
+            message:
+              type: string
+              example: Updated limit details
+    FailResponseCode:
+      type: string
+      example: FAIL
+      enum:
+      - OK
+      - FAIL
+      - RESUBMIT
+    AccountOwnership:
+      type: string
+      description: The ownership of the account
+      example: PRIMARY
+      enum:
+      - PRIMARY
+      - JOINT
+      - BENEFICIARY
+      - CUSTODIAN
+      - TRUSTEE
+      - POWER_OF_ATTORNEY
+      - AUTHORIZED_SIGNER
+      - TRUSTOR
+      - CO_BORROWER
+      - CO_SIGNER
+      - CO_OWNER
+      - CO_MAKER
+      - CORPORATION
+      - BORROWER
+      - CORPORATE_OWNER
+      - JOINT_PRIMARY
+      - JOINT_SECONDARY
+      - JOINT_AND
+      - JOINT_OR
+      - ENDORSER
+      - GUARANTOR
+      - GRANTOR
+      - LANDLORD
+      - SECONDARY
+      - TENANT
+      - SOLE_PROPRIETOR
+      - GUARDIAN
+      - EXECUTOR
+      - NOT_SPECIFIED
+    AccountName:
+      type: string
+      description: The account name which is displayed to the user
+      example: Your Savings account
+    ParameterKey:
+      type: string
+      description: Parameter key
+      example: mode
+    TellerStatusResponse:
+      properties:
+        responseCode:
+          $ref: '#/components/schemas/ResponseCode'
+        extendedResponse:
+          $ref: '#/components/schemas/ExtendedResponse'
+    ImageId:
+      type: string
+      description: Image id
+      example: 41492121a2694330842ffef4abb1ad7b
     Server:
       type: object
       properties:
@@ -1226,29 +2011,145 @@ components:
           type: string
           example: UP
       description: Get server status
-    Amount:
+    Count:
+      type: integer
+      description: Count Limit specifies the aggregated business cases to be count within a defined period of time.
+      example: 100
+    CheckType:
+      type: string
+      description: The Check Type value of the check
+      example: ON_US
+      enum:
+      - ON_US
+      - OFF_US
+      - GOVERNMENT
+      - NOT_SPECIFIED
+    Category:
+      type: string
+      description: Exception limit category
+      example: Exception_limit_withdrawal
+    AccountListResponsePayload:
       required:
-      - currency
-      - value
+      - accounts
+      properties:
+        accounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountInfo'
+    TaxId:
+      type: string
+      description: Tax id of a consumer
+      example: '1984358498'
+    TransactionId:
+      type: string
+      description: Transaction id
+      example: '616621626623'
+    CheckStatus:
       type: object
       properties:
-        value:
-          minimum: 0
-          pattern: '[0-9]{1,13}\.[0-9]{1,3}'
+        id:
           type: string
-          description: The amount value of the given currency.
-          example: '100.00'
-        currency:
-          minLength: 3
-          pattern: '[A-Z]{3,3}'
+          example: 7892480d0a1948099c71beffa823ed0e
+        micr:
           type: string
-          description: Currency code
-          example: USD
-      description: The basic type of an amount.
+          description: Check MICR code
+          example: '*192307*T06300277T41442*'
+        routingTransitNumber:
+          type: string
+          description: Routing transit number
+          example: '13402303'
+        accountNumber:
+          type: string
+          example: A0123456789
+        checkNumber:
+          type: string
+          format: integer
+          example: '123456'
+        checkState:
+          $ref: '#/components/schemas/CheckState'
+        validatedAmount:
+          $ref: '#/components/schemas/Amount'
+        remarks:
+          $ref: '#/components/schemas/Remarks'
     TellerName:
       type: string
       description: Teller Name
       example: QAUSER@GMAIL.COM
+    TenantName:
+      type: string
+      description: Name of the tenant
+      example: pqeautotmcbo2
+    Amounts:
+      type: array
+      description: Account amount
+      items:
+        $ref: '#/components/schemas/AccountAmount'
+    InstituteConfigurationPayload:
+      required:
+      - configuration
+      properties:
+        configuration:
+          type: object
+          description: List of Default, Standard, Supervisor configuration parameters
+          additionalProperties:
+            $ref: '#/components/schemas/Config'
+          example:
+            Default:
+              timer_wait_for_consumer_reconnect: '120'
+              supported_search_for_consumer: firstname, lastname, SSN
+              background_image: link
+              timerCallPopupTimeout: '120'
+              timerCallQueueRefresh: '60'
+              timerTerminalStatusRefresh: '60'
+            Standard:
+              debit_approval: 1000 USD
+              credit_approval: 9000 USD
+            Supervisor:
+              debit_approval: 1000 USD
+              credit_approval: 9000 USD
+    ServiceResponse_extendedResponse:
+      required:
+      - code
+      properties:
+        code:
+          $ref: '#/components/schemas/ExtendedResponseCode'
+        message:
+          $ref: '#/components/schemas/ExtendedResponseMessage'
+    InstituteConfiguration:
+      required:
+      - payload
+      - responseCode
+      type: object
+      properties:
+        responseCode:
+          $ref: '#/components/schemas/ResponseCode'
+        extendedResponse:
+          $ref: '#/components/schemas/ExtendedResponse'
+        payload:
+          $ref: '#/components/schemas/InstituteConfigurationPayload'
+      description: Institute Configuration
+    TerminalDataResponse:
+      required:
+      - payload
+      - responseCode
+      type: object
+      properties:
+        responseCode:
+          $ref: '#/components/schemas/ResponseCode'
+        extendedResponse:
+          $ref: '#/components/schemas/ExtendedResponse'
+        payload:
+          $ref: '#/components/schemas/WorkstationDataResponsePayload'
+      description: Get workstation Data
+    CommandName:
+      type: string
+      description: Command Name
+      example: shutdown
+      enum:
+      - shutdown
+      - restart
+      - prestagedTransaction
+      - imageRescan
     SessionDataResponse:
       properties:
         responseCode:
@@ -1417,235 +2318,226 @@ components:
                       dateTime: '2024-05-22T07:18:20.742691900Z'
                       transactionNumber: 28
                   uuid: d6da7bc4d64e467c9c698e9f2ff60792
-    CheckState:
+    FirstName:
       type: string
-      description: State of the check
-      example: ENDORSED
-      enum:
-      - OPEN
-      - RETURNED
-      - RETAINED
-      - ENDORSED
-      - CONFIRMED
-      - AMENDED
-      - REJECTED
-      - PROCESSED_OK
-      - PROCESSED_ERROR
-    Deleted:
-      type: boolean
-      description: Flag to indicate that the check is rejected or should be returned to the consumer
-    MICRAmount:
-      type: object
-      description: Amount read from the MICR line
-      allOf:
-      - $ref: '#/components/schemas/Amount'
-    TimeZone:
-      type: string
-      description: ATM/Workstation Timezone
-      example: Asia/Calcutta
-    Host:
-      type: object
-      properties:
-        name:
-          type: string
-          example: Jxchange
-        status:
-          type: string
-          example: UP
-        description:
-          type: string
-          x-field-extra-annotation: '@com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)'
-          example: operational
-      description: Get host status
-    ExceptionLimitCategoriesResponsePayload:
-      properties:
-        categoryDefinition:
-          type: array
-          items:
-            $ref: '#/components/schemas/CategoryDefinition'
-    ConsumerInfo:
+      description: Consumer first name
+      example: Darrien
+    WorkstationDataResponsePayload:
       required:
-      - consumerId
-      type: object
+      - workstationId
+      - cassetteCounters
+      - listOfDeviceWithStates
+      - sam
+      - Assist APIStatus
       properties:
-        taxId:
-          $ref: '#/components/schemas/TaxId'
-        consumerId:
-          $ref: '#/components/schemas/ConsumerId'
-        addresses:
-          type: array
-          description: Consumer addresses
-          items:
-            $ref: '#/components/schemas/Address'
-        name:
-          $ref: '#/components/schemas/ConsumerName'
-        email:
-          $ref: '#/components/schemas/Email'
-        dateOfBirth:
-          $ref: '#/components/schemas/DateOfBirth'
-        consumerType:
-          $ref: '#/components/schemas/ConsumerType'
-        phoneNumbers:
-          type: array
-          example:
-          - phoneNumber: 4172359612
-            phoneType: Home
-          - phoneNumber: 4172354621
-            phoneType: Business
-          items:
-            $ref: '#/components/schemas/ConsumerPhone'
-    AccountSubType:
-      type: string
-      description: Represents the SubType of an account for AccountType
-      example: Business Savings
-    AccountListResponsePayload:
-      required:
-      - accounts
-      properties:
-        accounts:
+        workstationId:
+          $ref: '#/components/schemas/WorkstationId'
+        workstationStatus:
+          $ref: '#/components/schemas/WorkstationData'
+        listOfDeviceWithStates:
           type: array
           items:
-            $ref: '#/components/schemas/AccountInfo'
-    ConsumerId:
+            $ref: '#/components/schemas/DeviceState'
+        sams:
+          type: array
+          items:
+            $ref: '#/components/schemas/StateAndAlertMessage'
+        restrictions:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkstationRestriction'
+        disabledTransactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkstationTransaction'
+        cassetteCounters:
+          $ref: '#/components/schemas/CassCounterList'
+    AccountNumber:
+      minLength: 5
       type: string
-      description: Consumer id
-      example: '627846278462'
-    TellerReadinessRequest:
-      properties:
-        payload:
-          type: object
-          required:
-          - tellerStatus
-          - tellerName
-          - tenantName
-          properties:
-            tellerStatus:
-              $ref: '#/components/schemas/TellerStatus'
-            tellerName:
-              $ref: '#/components/schemas/TellerName'
-            tenantName:
-              $ref: '#/components/schemas/TenantName'
-    MiddleName:
-      type: string
-      description: Consumer middle name
-      example: W
-    Remarks:
-      type: string
-      description: Reason for change
-    PostalCode:
-      type: string
-      description: Postal code
-      example: '657080000'
-    ConsumerPhone:
-      properties:
-        phoneNumber:
-          $ref: '#/components/schemas/PhoneNumber'
-        phoneType:
-          $ref: '#/components/schemas/PhoneType'
-    CourtesyAmount:
-      type: object
-      description: Amount read by Optical Character Recognition (OCR) from the check image
-      allOf:
-      - $ref: '#/components/schemas/Amount'
-    City:
-      type: string
-      description: City
-      example: Monett
-    IsOrganization:
-      type: boolean
-      description: True if consumer is an organization.
-      example: false
-    ServiceResponse_extendedResponse:
-      required:
-      - code
-      properties:
-        code:
-          $ref: '#/components/schemas/ExtendedResponseCode'
-        message:
-          $ref: '#/components/schemas/ExtendedResponseMessage'
-    SendCommandResponse:
-      properties:
-        responseCode:
-          $ref: '#/components/schemas/ResponseCode'
-        extendedResponse:
-          $ref: '#/components/schemas/ExtendedResponse'
-        payload:
-          $ref: '#/components/schemas/SendCommandResponsePayload'
-    CategoryDefinition:
-      type: object
-      description: Exception Limit categories with description
-      properties:
-        name:
-          type: string
-          example: Exception_limit_card_withdrawal
-        description:
-          type: string
-          example: one exception limit for a card based withdrawal
-    ImageValidationStatus:
-      type: string
-      description: Validation status of an image
-      example: PENDING
-      enum:
-      - VALIDATED
-      - PENDING
-      - REJECTED
-    ParameterValue:
-      type: string
-      description: Parameter value
-      example: immediately
-    TellerToken:
-      type: string
-      x-field-extra-annotation: '@com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)'
-      description: Base64 encoded tellerToken.
-      example: Bearer eyJhbGciO....xMlv3NLDw
-    ExternalCustomerId:
-      type: string
-      description: External customer id
-      example: '111222'
-    GetExceptionLimitCategoriesResponse:
-      properties:
-        responseCode:
-          $ref: '#/components/schemas/ResponseCode'
-        extendedResponse:
-          $ref: '#/components/schemas/ExtendedResponse'
-        payload:
-          $ref: '#/components/schemas/ExceptionLimitCategoriesResponsePayload'
+      description: Account number
+      example: '19023456789'
     UpdateImageResponse:
       properties:
         responseCode:
           $ref: '#/components/schemas/ResponseCode'
         extendedResponse:
           $ref: '#/components/schemas/ExtendedResponse'
-    TwilioTaskRouterResponsePayload:
+    CommandType:
+      type: string
+      description: Command Type
+      example: sbCommand
+      enum:
+      - sbCommand
+      - genericCommand
+    Email:
+      type: string
+      description: Consumer email
+      example: darrien.lock@netom.com
+    DateOfBirth:
+      type: string
+      description: Consumer's date of birth
+      example: 10/31/1989
+    FrontImage:
+      type: object
+      description: Front part of document image
+      properties:
+        imageData:
+          $ref: '#/components/schemas/ImageData'
+        imageType:
+          $ref: '#/components/schemas/ImageType'
+    ConsumerId:
+      type: string
+      description: Consumer id
+      example: '627846278462'
+    AccountInformationBase:
+      required:
+      - accountNumber
+      - accountType
+      - amounts
       type: object
       properties:
-        taskRouterToken:
-          $ref: '#/components/schemas/TellerToken'
-        taskRouterTokenExpiresIn:
-          type: integer
-          x-field-extra-annotation: '@com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)'
-          description: teller token expiry time in seconds
-          example: 3600
-      description: Teller response
-    Street:
+        accountNumber:
+          minLength: 5
+          type: string
+          description: Account number
+          example: '19023456789'
+        accountCurrency:
+          pattern: '[A-Z]{3,3}'
+          type: string
+          description: Currency code
+          example: USD
+        accountType:
+          $ref: '#/components/schemas/AccountType'
+        accountSubType:
+          $ref: '#/components/schemas/AccountSubType'
+        accountName:
+          $ref: '#/components/schemas/AccountName'
+        instituteName:
+          type: string
+          description: The name or identifier of the institute
+          example: Deutsche Bank
+        amounts:
+          $ref: '#/components/schemas/Amounts'
+      description: Account base information
+    CancelGroupTaskResponse:
+      properties:
+        responseCode:
+          $ref: '#/components/schemas/ResponseCode'
+        extendedResponse:
+          $ref: '#/components/schemas/ExtendedResponse'
+        payload:
+          type: object
+          properties:
+            cancellationStatus:
+              type: boolean
+              example: 'true'
+    ImageType:
       type: string
-      description: Street
-      example: 703 N
-    CheckDetailsWithImage:
+      description: ImageType of the check
+      example: JPEG
+      enum:
+      - BMP
+      - JPEG
+      - PNG
+      - TIFF
+    AccountRef:
       type: object
-      description: Check details with image
+      properties:
+        accountNumber:
+          $ref: '#/components/schemas/AccountNumber'
+        accountType:
+          $ref: '#/components/schemas/AccountType'
+    AccountAmount:
+      type: object
+      properties:
+        amountType:
+          $ref: '#/components/schemas/AccountAmountType'
+        value:
+          minimum: 0
+          pattern: '[0-9]{1,13}\.[0-9]{1,3}'
+          type: string
+          description: The amount value of the given currency
+          example: '100.50'
+        currency:
+          pattern: '[A-Z]{3,3}'
+          type: string
+          description: Currency code
+          example: USD
+    ExternalCustomerId:
+      type: string
+      description: External customer id
+      example: '111222'
+    AccountInfo:
+      type: object
       allOf:
-      - $ref: '#/components/schemas/CheckDetails'
+      - $ref: '#/components/schemas/AccountInformationBase'
       - type: object
         properties:
-          checkImageBack:
-            $ref: '#/components/schemas/CheckImage'
-          checkImageFront:
-            $ref: '#/components/schemas/CheckImage'
-    TaskTimeOut:
-      type: integer
-      description: Task time out for group call in seconds
-      example: 60
+          accountOwnerName:
+            type: string
+            description: The owner of the account
+            example: JOHN DOE
+          accountOwnership:
+            $ref: '#/components/schemas/AccountOwnership'
+          accountStatus:
+            $ref: '#/components/schemas/AccountStatus'
+          additionalInfo:
+            type: object
+            description: Additional information
+            additionalProperties:
+              type: string
+            example:
+              branchCode: '1234'
+              bankCode: '11133444'
+              openDate: '2020-07-23'
+              accountMaturityDate: '2020-07-23'
+              nickName: Nick
+          accountWarnings:
+            type: array
+            items:
+              $ref: '#/components/schemas/Warning'
+    SendCommandResponsePayload:
+      properties:
+        commandStatuses:
+          type: array
+          items:
+            $ref: '#/components/schemas/CommandStatus'
+    StreetNo:
+      type: string
+      description: Street
+      example: 155th St.
+    WorkstationId:
+      type: string
+      description: Workstation Id
+      example: '80810'
+    ExtendedResponse:
+      required:
+      - code
+      type: object
+      properties:
+        code:
+          type: string
+          example: OK
+        message:
+          type: string
+          example: OK
+    SetConsumerRequest:
+      properties:
+        payload:
+          type: object
+          required:
+          - workstationId
+          - consumerId
+          - zoomToken
+          properties:
+            workstationId:
+              $ref: '#/components/schemas/WorkstationId'
+            consumerId:
+              $ref: '#/components/schemas/ConsumerId'
+            zoomToken:
+              type: string
+              example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiVklERU9fU0RLX0tFWSIsImlhdCI6MTY0NjI0ODc5NiwiZXhwIjoxNjQ2MjU1OTk2LCJ0cGMiOiJDb29sIENhcnMiLCJ1c2VyX2lkZW50aXR5IjoidXNlcjEyMyIsInNlc3Npb25fa2V5Ijoic2Vzc2lvbjEyMyIsInJvbGVfdHlwZSI6MH0.Y6C65mZUxTZFeGiOI6oW5q2UkIXe3nLTK0MVNkfiJ9c
     WorkstationDetails:
       type: object
       properties:
@@ -1689,26 +2581,42 @@ components:
           type: integer
           description: Retracted money cash-in
           example: 228
-    AccountName:
+    ExceptionLimitCategoriesResponsePayload:
+      properties:
+        categoryDefinition:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryDefinition'
+    PhoneNumber:
       type: string
-      description: The account name which is displayed to the user
-      example: Your Savings account
-    CommandType:
+      description: Consumer phone number
+      example: '4172359612'
+    SendCommandRequest:
+      properties:
+        payload:
+          type: object
+          required:
+          - workstationId
+          - commandList
+          properties:
+            workstationId:
+              $ref: '#/components/schemas/WorkstationId'
+            commandList:
+              type: array
+              items:
+                $ref: '#/components/schemas/Command'
+    ConsumerType:
       type: string
-      description: Command Type
-      example: sbCommand
+      description: 'Consumer type. Possible values: UNKNOWN_CONSUMER, PRIVATE_CONSUMER, BUSINESS_CONSUMER and BUSINESS_RUNNER'
+      example: Normal
+    ImageValidationStatus:
+      type: string
+      description: Validation status of an image
+      example: PENDING
       enum:
-      - sbCommand
-      - genericCommand
-    CommandName:
-      type: string
-      description: Command Name
-      example: shutdown
-      enum:
-      - shutdown
-      - restart
-      - prestagedTransaction
-      - imageRescan
+      - VALIDATED
+      - PENDING
+      - REJECTED
     CallForwardingResponse:
       properties:
         responseCode:
@@ -1721,206 +2629,6 @@ components:
             groupCallTaskId:
               type: string
               example: WT66360c81b4a1deddd832b81c72eb6987
-    CheckDetails:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-          description: Unique identifier of the check record maintained by the client. This value needs to be mirrored and returned by the host while passing details for this same check in the response
-          example: 7892480d0a1948099c71beffa823ed0e
-        hostId:
-          type: string
-          description: Transaction identifier provided by the check processing system after validation
-          example: 442347823ebfad58676644aaaa432323
-        checkActionCode:
-          type: string
-          description: Action to be taken post the check recognition
-          example: NONE
-          enum:
-          - NONE
-          - CORRECT
-          - VERIFY_IMAGE
-          - SUSPECTED_DUPLICATE
-          - REMOVE
-        deleted:
-          $ref: '#/components/schemas/Deleted'
-        suspectedFraud:
-          type: boolean
-          description: Flag to indicate if the check is suspected to be a fraud
-          example: false
-        micrReadIntegrity:
-          type: string
-          description: Defines the integrity of the MICR which is read
-          example: GOOD
-          enum:
-          - GOOD
-          - PARTIAL
-          - BAD
-        micr:
-          type: string
-          description: Contains the MICR (Magnetic Ink Character Recognition) as raw string as scanned and recognized from the check
-          example: '*192307*T06300277T41442*'
-        routingTransitNumber:
-          type: string
-          description: Identifies the bank on which the document is drawn. For instance, in the US this is the Routing and Transit number, and in the UK it is the Sort Code
-          example: '063100277'
-        mediaState:
-          $ref: '#/components/schemas/MediaState'
-        printData:
-          type: string
-          description: The string that should be printed on the back of the check
-          example: Dated July 17th, 2020
-        date:
-          $ref: '#/components/schemas/CheckUpdateDate'
-        score:
-          type: integer
-          description: Score of the Optical character recognition (OCR)
-          example: 0
-        accountNumber:
-          type: string
-          description: Identifies the account on which the check is drawn
-          example: A0123456789
-        checkNumber:
-          type: string
-          description: Check number as provided by MICR line
-          example: '123456'
-        courtesyAmount:
-          $ref: '#/components/schemas/CourtesyAmount'
-        micrAmount:
-          $ref: '#/components/schemas/MICRAmount'
-        userAmount:
-          $ref: '#/components/schemas/UserAmount'
-        validatedAmount:
-          $ref: '#/components/schemas/ValidatedAmount'
-        documentSequenceNumber:
-          type: integer
-          description: The document sequence number. Order number of the entered checks
-          example: 1
-        rejectedBy:
-          $ref: '#/components/schemas/RejectedBy'
-        externalProcessingCode:
-          type: string
-          description: Processing Code read from the MICR line. (a.k.a. Transaction Code (UK), Trancode (AU))
-          example: '4'
-        checkType:
-          $ref: '#/components/schemas/CheckType'
-        checkState:
-          $ref: '#/components/schemas/CheckState'
-      description: Details of checks
-    ValidatedAmount:
-      type: object
-      description: Amount which has been validated
-      allOf:
-      - $ref: '#/components/schemas/Amount'
-    BackImage:
-      type: object
-      description: Back part of document image
-      properties:
-        imageData:
-          $ref: '#/components/schemas/ImageData'
-        imageType:
-          $ref: '#/components/schemas/ImageType'
-    ConsumerName:
-      properties:
-        firstName:
-          $ref: '#/components/schemas/FirstName'
-        middleName:
-          $ref: '#/components/schemas/MiddleName'
-        lastName:
-          $ref: '#/components/schemas/LastName'
-        fullName:
-          $ref: '#/components/schemas/FullName'
-    TransactionId:
-      type: string
-      description: Transaction id
-      example: '616621626623'
-    LimitResponse:
-      properties:
-        responseCode:
-          $ref: '#/components/schemas/ResponseCode'
-        extendedResponse:
-          $ref: '#/components/schemas/ExtendedResponse'
-        payload:
-          type: object
-          properties:
-            message:
-              type: string
-              example: Updated limit details
-    TwilioTaskRouterResponse:
-      required:
-      - payload
-      - responseCode
-      type: object
-      properties:
-        responseCode:
-          $ref: '#/components/schemas/ResponseCode'
-        extendedResponse:
-          $ref: '#/components/schemas/ExtendedResponse'
-        payload:
-          $ref: '#/components/schemas/TwilioTaskRouterResponsePayload'
-      description: Twillio Task Router Token
-    CheckType:
-      type: string
-      description: The Check Type value of the check
-      example: ON_US
-      enum:
-      - ON_US
-      - OFF_US
-      - GOVERNMENT
-      - NOT_SPECIFIED
-    AccountInformationBase:
-      required:
-      - accountNumber
-      - accountType
-      - amounts
-      type: object
-      properties:
-        accountNumber:
-          minLength: 5
-          type: string
-          description: Account number
-          example: '19023456789'
-        accountCurrency:
-          pattern: '[A-Z]{3,3}'
-          type: string
-          description: Currency code
-          example: USD
-        accountType:
-          $ref: '#/components/schemas/AccountType'
-        accountSubType:
-          $ref: '#/components/schemas/AccountSubType'
-        accountName:
-          $ref: '#/components/schemas/AccountName'
-        instituteName:
-          type: string
-          description: The name or identifier of the institute
-          example: Deutsche Bank
-        amounts:
-          $ref: '#/components/schemas/Amounts'
-      description: Account base information
-    TaxId:
-      type: string
-      description: Tax id of a consumer
-      example: '1984358498'
-    SendCommandResponsePayload:
-      properties:
-        commandStatuses:
-          type: array
-          items:
-            $ref: '#/components/schemas/CommandStatus'
-    ExtendedResponse:
-      required:
-      - code
-      type: object
-      properties:
-        code:
-          type: string
-          example: OK
-        message:
-          type: string
-          example: OK
     Status:
       type: object
       properties:
@@ -1950,358 +2658,169 @@ components:
                 status: UP
               items:
                 $ref: '#/components/schemas/Server'
-    ValidateTaskResponse:
-      properties:
-        responseCode:
-          $ref: '#/components/schemas/ResponseCode'
-        extendedResponse:
-          $ref: '#/components/schemas/ExtendedResponse'
-        payload:
-          type: object
-          properties:
-            tokenValidationStatus:
-              type: string
-              example: ok
-    WorkstationDataResponsePayload:
-      required:
-      - workstationId
-      - cassetteCounters
-      - listOfDeviceWithStates
-      - sam
-      - Assist APIStatus
-      properties:
-        workstationId:
-          $ref: '#/components/schemas/WorkstationId'
-        workstationStatus:
-          $ref: '#/components/schemas/WorkstationData'
-        listOfDeviceWithStates:
-          type: array
-          items:
-            $ref: '#/components/schemas/DeviceState'
-        sams:
-          type: array
-          items:
-            $ref: '#/components/schemas/StateAndAlertMessage'
-        restrictions:
-          type: array
-          items:
-            $ref: '#/components/schemas/WorkstationRestriction'
-        disabledTransactions:
-          type: array
-          items:
-            $ref: '#/components/schemas/WorkstationTransaction'
-        cassetteCounters:
-          $ref: '#/components/schemas/CassCounterList'
-    CheckUpdateDate:
+    MICRAmount:
       type: object
-      description: Creation date or date of last update for this record
+      description: Amount read from the MICR line
       allOf:
-      - $ref: '#/components/schemas/Date'
-    CancelGroupTaskRequestPayload:
+      - $ref: '#/components/schemas/Amount'
+    CreateGroupTaskRequest:
       properties:
         payload:
           type: object
           required:
-          - groupTaskSid
+          - callAttributes
+          - taskTimeout
           properties:
-            groupTaskSid:
+            taskTimeout:
+              $ref: '#/components/schemas/TaskTimeOut'
+            callAttributes:
               type: string
-              example: WT9843f5655eccaf609339dc6cae16a5a5
-              description: Group call task sid
-            cancellationReason:
-              type: string
-              description: Reason for cancelling the call
-              example: User not available
-    DateOfBirth:
-      type: string
-      description: Consumer's date of birth
-      example: 10/31/1989
-    TenantName:
-      type: string
-      description: Name of the tenant
-      example: pqeautotmcbo2
-    Command:
-      description: Command to be sent
+              example: '{"requestLanguage":"EN","secondaryUserId":"WK4e7f37a3611f10d723464909f53c56db","requestid":"WTed7eb7bb115039c44dac683cc53c0549","installedAt":"","workstation":"80810","details":{"role":0,"topic":"test"},"id":"WR8064ca353728c9988f23f0875a134336","groupCallDetails":{"isConsumerOnHold":"no","callingUserName":"Nicole Smith"},"subsidiary":"","callType":"GroupCall","requestInstitute":"IN1"}'
+              description: Group call attributes
+    TwilioTaskRouterResponsePayload:
       type: object
       properties:
-        commandType:
-          $ref: '#/components/schemas/CommandType'
-        commandName:
-          $ref: '#/components/schemas/CommandName'
-        commandParameters:
-          type: array
-          items:
-            $ref: '#/components/schemas/CommandParameter'
-    StateCode:
+        taskRouterToken:
+          $ref: '#/components/schemas/TellerToken'
+        taskRouterTokenExpiresIn:
+          type: integer
+          x-field-extra-annotation: '@com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)'
+          description: teller token expiry time in seconds
+          example: 3600
+      description: Teller response
+    ValidatedAmount:
+      type: object
+      description: Amount which has been validated
+      allOf:
+      - $ref: '#/components/schemas/Amount'
+    StateAndAlertMessage:
+      type: object
+      properties:
+        nodeId:
+          type: string
+          description: Node Id
+          example: '808100'
+        id:
+          type: string
+          description: Sam Id
+          example: eefaef1f40b946ddb2064459addb647a
+        creationTime:
+          type: string
+          description: Message creation time
+          example: '1713338292000'
+        messageId:
+          type: integer
+          description: Message Id
+          example: 3
+        params:
+          type: object
+          description: params
+          additionalProperties:
+            type: string
+          example:
+            '%EXT_RESP_CODE%': RESPONSE_ERECEIPT_SENDER_FAILURE
+            '%ABORT_REASON%': ABORT_REASON
+        message:
+          type: string
+          description: SAM Message
+          example: Open Consumer
+    Remarks:
       type: string
-      description: State code
-      example: MO
-    CounterData:
-      description: Cassette counter details
+      description: Reason for change
+    DeviceState:
       type: object
       properties:
         deviceName:
           type: string
-          example: DOCUMENT_FEED_2
-        totalPayableAmount:
-          type: string
-          example: '457600'
-        totalSafeAmount:
-          type: string
-          example: '457000'
-        cashInDeviceCoins:
-          type: string
-          example: '1562700'
-        cashInDeviceNotes:
-          type: string
-          example: '1462700'
-        cashOutDeviceCoins:
-          type: string
-          example: '146200'
-        cashOutDeviceNotes:
-          type: string
-          example: '146200'
-        cashRecyclingDeviceNotes:
-          type: string
-          example: '146200'
-        cashRecyclingDeviceCoins:
-          type: string
-          example: '146200'
-        rejectCount:
-          type: string
-          example: '2'
-        currency:
-          type: string
-          example: USD
-        denomination:
-          type: string
-          example: '10.00'
-        weightCoinIn:
-          type: string
-          example: 2.422 kg
-        weightCoinOut:
-          type: string
-          example: 1.422 kg
-        weightCoinInRecycle:
-          type: string
-          example: 2.422 kg
-        lastReplenishment:
-          type: string
-          example: '1714051376710'
-        status:
-          type: string
-          example: Operational
-        threshold:
-          type: string
-          example: OK
-        dispensedToConsumer:
+          description: Device name
+          example: SAFE_DOOR
+        deviceId:
           type: integer
-          example: 16
-        dispensedFromCartridge:
+          description: Device Id
+          example: 66
+        state:
+          type: string
+          description: State
+          example: Unknown
+        extendedState:
+          type: string
+          description: Extended state
+          example: Unknown
+        thresholdState:
+          type: string
+          description: Threshold State
+          example: Unknown
+        counter:
           type: integer
-          example: 12
-        payableFromCartridge:
+          description: Counter
+          example: -1
+        additionalInfo:
+          type: object
+          description: Additional information
+          additionalProperties:
+            type: string
+          example:
+            retainCount: '2'
+            deposit counter: '2'
+        subDevices:
+          type: array
+          description: Sub devices
+          items: {}
+        exchangeRate:
+          type: string
+          description: Exchange rate
+          example: ''
+        vendorDeviceInfo:
+          type: string
+          description: Vendor device info
+          example: ''
+        manipulationState:
           type: integer
-          example: 18
-        safeAmount:
-          type: integer
-          example: 18
-        recycledCount:
-          type: integer
+          description: Manipulation state
           example: 0
-        level2Count:
-          type: integer
-          example: 44
-        level3Count:
-          type: integer
-          example: 44
-        level4Count:
-          type: integer
-          example: 44
-        checkCount:
-          type: integer
-          example: 22
-        lastChange:
-          type: string
-          example: '1713943999075'
-        weight:
-          type: string
-          example: 2.444 kg
-        retractCount:
-          type: integer
-          example: 2
-        additionalCounter:
-          type: array
-          items:
-            $ref: '#/components/schemas/DocumentCounter'
-    ImageListResponsePayload:
+        manipulationDetected:
+          type: boolean
+          description: Manipulation detected
+          example: false
+        requiredDevice:
+          type: boolean
+          description: Required Device
+          example: false
+        operational:
+          type: boolean
+          description: Operational
+          example: true
+        hasVendorDeviceInfo:
+          type: boolean
+          description: Has Vendor Device Info
+          example: true
+        subDevice:
+          type: boolean
+          description: Sub device
+          example: false
+    Amount:
       required:
-      - imageList
+      - currency
+      - value
+      type: object
       properties:
-        transactionId:
-          $ref: '#/components/schemas/TransactionId'
-        imageList:
-          type: array
-          items:
-            $ref: '#/components/schemas/Image'
-    MediaState:
+        value:
+          minimum: 0
+          pattern: '[0-9]{1,13}\.[0-9]{1,3}'
+          type: string
+          description: The amount value of the given currency.
+          example: '100.00'
+        currency:
+          minLength: 3
+          pattern: '[A-Z]{3,3}'
+          type: string
+          description: Currency code
+          example: USD
+      description: The basic type of an amount.
+    TerminalId:
       type: string
-      description: The state of the media
-      example: OK
-      enum:
-      - UNKNOWN
-      - RETAINED
-      - OK
-      - JAMMED
-      - NO_MEDIA
-      - REMAINED_IN_SLOT
-      - REJECTED
-      - RECYCLED
-      - RECYCLING_ERROR
-    SaveImageResponse:
-      properties:
-        responseCode:
-          $ref: '#/components/schemas/ResponseCode'
-        extendedResponse:
-          $ref: '#/components/schemas/ExtendedResponse'
-        payload:
-          type: object
-          properties:
-            imageId:
-              type: string
-              example: 123-456-7890
-    ImageRequest:
-      properties:
-        payload:
-          type: object
-          required:
-          - terminalId
-          - transactionId
-          - documentType
-          - validationStatus
-          - frontImage
-          properties:
-            terminalId:
-              $ref: '#/components/schemas/TerminalId'
-            transactionId:
-              $ref: '#/components/schemas/TransactionId'
-            documentType:
-              $ref: '#/components/schemas/DocumentType'
-            frontImage:
-              $ref: '#/components/schemas/FrontImage'
-            backImage:
-              $ref: '#/components/schemas/BackImage'
-            validationStatus:
-              $ref: '#/components/schemas/ImageValidationStatus'
-            remarks:
-              $ref: '#/components/schemas/Remarks'
-    CheckDetailsResponse:
-      required:
-      - responseCode
-      type: object
-      properties:
-        responseCode:
-          $ref: '#/components/schemas/ResponseCode'
-        extendedResponse:
-          $ref: '#/components/schemas/ExtendedResponse'
-      description: Check image response
-    UserAmount:
-      type: object
-      description: The amount which is entered by the User
-      allOf:
-      - $ref: '#/components/schemas/Amount'
-    AccountListResponse:
-      required:
-      - payload
-      - responseCode
-      type: object
-      properties:
-        responseCode:
-          $ref: '#/components/schemas/ResponseCode'
-        extendedResponse:
-          $ref: '#/components/schemas/ExtendedResponse'
-        payload:
-          $ref: '#/components/schemas/AccountListResponsePayload'
-      description: Account list response
-    LimitRequest:
-      type: object
-      properties:
-        payload:
-          type: object
-          required:
-          - workstationId
-          - category
-          - exceptionlimitAmount
-          - exceptionlimitTime
-          - consumerId
-          - timeZone
-          properties:
-            workstationId:
-              $ref: '#/components/schemas/WorkstationId'
-            category:
-              $ref: '#/components/schemas/Category'
-            exceptionlimitAmount:
-              $ref: '#/components/schemas/Amount'
-            exceptionlimitCount:
-              $ref: '#/components/schemas/Count'
-            exceptionlimitTime:
-              $ref: '#/components/schemas/ExceptionLimitTime'
-            consumerId:
-              $ref: '#/components/schemas/ConsumerId'
-            timeZone:
-              $ref: '#/components/schemas/TimeZone'
-    TransactionNo:
-      type: string
-      description: TM Transaction Number
-      example: '108'
-    ImageData:
-      type: string
-      description: Base64 image data
-      example: VyXC/Vr7/yURd0FyoRz/j9f6EEXWl/9//XndXa//ySj//6+RRHtL+n//XuGU4S8f9H9/9f+OiE/hhfWm//9O1CaC//r/b38RhOvRGf3/6/2kfGl6X9/9d7H6+U4IuvrrXb/9VmZ/2/4aX/+2vpmH//2K+l14r0Ptr+wv/fH/Gv4///+P/7/ys/+Qb/klH/WvmF7JZ0/6M4f///tDyo/0Ef76v/7x9/9P//X3//+///tv////13ElW/7//9++7D+JJH///4sg79r/H/67Hj/ZN1+9+//Ef/98q0X//6/h8IIW/5VQ7/74fH///+diQYMZjPCkGgQRdfytmv/52Lhpdf+F///69wl//4ob/QX/+0EeF9Qgmv/xev6//4YX+Q4X//H/V+//8Uv//7/6/8qqNMlqv/f/5tZEtf///rwwv/+vffj////7C//kDwa7Kshmv/r//5Tsl0Ij/v//xH8RoP///Nn//qNB6/47iIiI0yoJ6mwqhNOUgqCWFWVBRUVZ7Kwh3BcRERERERERER/rf+vh/61vf19//4AIAIAA==
-    AddCheckResponsePayload:
-      required:
-      - check
-      - transaction
-      properties:
-        check:
-          type: array
-          items:
-            $ref: '#/components/schemas/CheckDetailsWithImage'
-    ConsumerResponse:
-      required:
-      - payload
-      - responseCode
-      properties:
-        responseCode:
-          $ref: '#/components/schemas/ResponseCode'
-        extendedResponse:
-          $ref: '#/components/schemas/ExtendedResponse'
-        payload:
-          $ref: '#/components/schemas/ConsumerResponsePayload'
-    FullName:
-      type: string
-      description: Consumer full name
-      example: Darrien W Lock
-    Warning:
-      required:
-      - effectiveDate
-      - warningCode
-      type: object
-      properties:
-        effectiveDate:
-          $ref: '#/components/schemas/Date'
-        expirationDate:
-          $ref: '#/components/schemas/Date'
-        warningCode:
-          type: string
-          description: The warning code for warning.
-          example: '94'
-        description:
-          type: string
-          description: The description for this warning.
-        category:
-          type: string
-          description: The category for this warning.
+      description: Terminal Id
+      example: 80810
     AccountType:
       type: string
       description: '| Symbolic name              | Comment                                                        | |----------------------------|----------------------------------------------------------------| | UNSPECIFIED                | Default value for unknown accounts.                              | | GIRO                       | Giro account.                                                  | | SAVINGS                    | Savings account.  | SECURITIES_DEPOSIT         | Depot of securities (shares and so on).                        | | SAVINGS_SECURITIES_DEPOSIT | Savings securities.                                            | | GIRO_SECURITIES_DEPOSIT    | Giro securities.                                               | | FIXED_TERM_DEPOSIT         | Fixed term deposit.                                            | | CREDIT_CARD                | Credit card account. (ISO 8583; MC DE.54->30 / VISA DE.54->30).| | LOAN                       | An account that covers a credit and its balance and movements. | | MORTGAGE                   | Security for a loan.                                           | | FOREIGN_CURRENCY           | An account that holds money in a foreign curreny.              | | EXTERNAL                   | An account that represents an account of a foreign institution.| | CHECKING                   | Checking account. (ISO 8583; MC DE.54->20 / VISA DE.54->20)    |  | UNIVERSAL                  | ISO 8583; VISA DE.54->40)                                      |  | SPENDING_POWER             | ISO 8583; VISA DE.54->64)                                      |  | FEE_COLLECTION_ACCOUNT     | used to collect fees                                           |  | ATM                        | ATM                                                            | | VENDOR                     | Vendor                                                         | | SHAREHOLDER                | Shareholder                                                    | | GENERAL_LEDGER             | General ledger                                                 | | CASH_RESERVE               | Cash Reserve Line of Credit                                    | | LOAN_DENIAL                | Load denial                                                    | | LEASE                      | Lease                                                          | | CONSUMER_LOAN              | Consumer loan                                                  | | COMMERCIAL_LOAN            | Cemercial loan                                                 | | RETIREMENT_LOAN            | Retirement loan                                                | | EXTERNAL_LOAN              | External loan                                                  | | SHARE                      | Share                                                          | | INDIVIDUAL_RETIREMENT      | Individual Retirement Account(IRA)                             |'
@@ -2350,237 +2869,7 @@ components:
       - DEFERRED_DEBIT_CARD
       - CHARGE_ACCOUNT
       - PREPAID
-    ResponseCode:
-      type: string
-      example: OK
-      enum:
-      - OK
-      - FAIL
-      - RESUBMIT
-    ImageType:
-      type: string
-      description: ImageType of the check
-      example: JPEG
-      enum:
-      - BMP
-      - JPEG
-      - PNG
-      - TIFF
-    CommandParameter:
-      description: Command parameter
-      type: object
-      properties:
-        key:
-          $ref: '#/components/schemas/ParameterKey'
-        value:
-          $ref: '#/components/schemas/ParameterValue'
-    ExtendedResponseMessage:
-      type: string
-      description: Extended response message
-      example: SERVER_FAILURE
-    Email:
-      type: string
-      description: Consumer email
-      example: darrien.lock@netom.com
-    CreateGroupTaskRequest:
-      properties:
-        payload:
-          type: object
-          required:
-          - callAttributes
-          - taskTimeout
-          properties:
-            taskTimeout:
-              $ref: '#/components/schemas/TaskTimeOut'
-            callAttributes:
-              type: string
-              example: '{"requestLanguage":"EN","secondaryUserId":"WK4e7f37a3611f10d723464909f53c56db","requestid":"WTed7eb7bb115039c44dac683cc53c0549","installedAt":"","workstation":"80810","details":{"role":0,"topic":"test"},"id":"WR8064ca353728c9988f23f0875a134336","groupCallDetails":{"isConsumerOnHold":"no","callingUserName":"Nicole Smith"},"subsidiary":"","callType":"GroupCall","requestInstitute":"IN1"}'
-              description: Group call attributes
-    AccountNumber:
-      minLength: 5
-      type: string
-      description: Account number
-      example: '19023456789'
-    ServiceResponse:
-      required:
-      - responseCode
-      - extendedResponseCode
-      type: object
-      properties:
-        responseCode:
-          $ref: '#/components/schemas/ResponseCode'
-        extendedResponseCode:
-          $ref: '#/components/schemas/ExtendedResponseCode'
-    Config:
-      type: object
-      additionalProperties:
-        type: string
-    dateTimeWithoutSeconds:
-      type: string
-      description: Timestamp of the description
-      format: yyyy-MM-dd'T'HH:mmZ
-      example: 2024-07-05T15:25Z
-    Country:
-      type: string
-      description: Country
-      example: USA
-    CheckImage:
-      required:
-      - image
-      type: object
-      properties:
-        image:
-          type: string
-          description: Base 64 Image
-          example: SUkqAAgAAAASAAABBAABAAAAsAYAAAEBBAABAAAAqQIAAAIBAwABAAAAAQAAAAMBAwABAAAABAAAAAYBAwABAAAAAAAAAAoBAwABAAAAAQAAABEBBAABAAAA9gAAABIBAwABAAAAAQAAABUBAwABAAAAAQAAABYBBAABAAAAqQIAABcBBAABAAAAEhkAABoBBQABAAAA5gAAABsBBQABAAAA7gAAABwBAwABAAAAAQAAACQBBAABAAAAAAAAACUBBAABAAAAAAAAACgBAwABAAAAAgAAACkBAwACAAAAAAAAAAAAAADIAAAAAQAAAMgAAAABAAAAJqJoul9///19///19//6/+8ev/+/r9v/X///39f/f+v7///+u//rv/X9//X9////Xf+u//87CoquVOOxSLNGf700ybGAyQ39+/IHhnd+vrnkl/r///v39///f/NhkAb//r5A8MO///ypKnX+7/9/////r//9L///v//rf//3pp////52ax2Bj///5S+0ev//X6QIuq//d////+v4pYf///fkVH/1/iLBf//////52a0P/9/5S+0Z3//v+kCLqn////+////iv///+62F/v/+SvEWK//7/DH///hkwyWwr9f/2GFO1YX//r9ynKedii/v/+CLzi//+q/hDggWdpDX///jcaH/X/99hf//8lIgidgb///6w/79/4Z9SE2Bf//+9L///5HUpTgi6//7/O6/////Qk/dsf///VJt3//3+3uI///+RzV///9gujtWF///2N4//6/bU0f//+iVjigmd65e//3+QtBhI/FbDQf///2NX//+v9Iwn////+wWx//7/JWPrr///sFhdr///wmP//1+ptFCmun///6u3qVb//3v7sjoEr////xJC//7/+ub////7R1Sux///9hAiNG2v//k2GL6QIuujvT//+TZHDH5URdf//6d4UuvaO0JP//6T8ECsrSXQYQwRdf//p/+POyEv///zyH8NBBx////41FFW2l///+xRDRdJOI///tdhFAT//r7Hm05qV52cf/39r72wsp///2vJRponoKWCLr//4/ygZWwIf///0s2uv//5Nhi8hEeX+aBNf/9ZNkd4oel4j///TvSfSX//3pXm0GVqNQQRDR5Bf//0/iwqEIYIL//+/lQMRaCX///9ImDFGj////lCZUP///2v65q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
-        imageType:
-          $ref: '#/components/schemas/ImageType'
-      description: Check Image
-    CommandStatus:
-      description: Statuses of commands sent
-      type: object
-      properties:
-        commandType:
-          type: string
-          description: Command Type
-          example: sbCommand
-        commandName:
-          type: string
-          description: Command Name
-          example: shutdown
-        commandSendStatus:
-          $ref: '#/components/schemas/CommandSendStatus'
-    CheckStatus:
-      type: object
-      properties:
-        id:
-          type: string
-          example: 7892480d0a1948099c71beffa823ed0e
-        micr:
-          type: string
-          description: Check MICR code
-          example: '*192307*T06300277T41442*'
-        routingTransitNumber:
-          type: string
-          description: Routing transit number
-          example: '13402303'
-        accountNumber:
-          type: string
-          example: A0123456789
-        checkNumber:
-          type: string
-          format: integer
-          example: '123456'
-        checkState:
-          $ref: '#/components/schemas/CheckState'
-        validatedAmount:
-          $ref: '#/components/schemas/Amount'
-        remarks:
-          $ref: '#/components/schemas/Remarks'
-    ImageListResponse:
-      required:
-      - payload
-      - responseCode
-      type: object
-      properties:
-        responseCode:
-          $ref: '#/components/schemas/ResponseCode'
-        extendedResponse:
-          $ref: '#/components/schemas/ExtendedResponse'
-        payload:
-          $ref: '#/components/schemas/ImageListResponsePayload'
-      description: Get Image response
-    ParameterKey:
-      type: string
-      description: Parameter key
-      example: mode
-    CommandSendStatus:
-      type: string
-      description: Status to show if command has been sent successfully to terminal
-      example: success
-      enum:
-      - success
-      - failure
-    PhoneType:
-      type: string
-      description: Consumer phone type
-    StateAndAlertMessage:
-      type: object
-      properties:
-        nodeId:
-          type: string
-          description: Node Id
-          example: '808100'
-        id:
-          type: string
-          description: Sam Id
-          example: eefaef1f40b946ddb2064459addb647a
-        creationTime:
-          type: string
-          description: Message creation time
-          example: '1713338292000'
-        messageId:
-          type: integer
-          description: Message Id
-          example: 3
-        params:
-          type: object
-          description: params
-          additionalProperties:
-            type: string
-          example:
-            '%EXT_RESP_CODE%': RESPONSE_ERECEIPT_SENDER_FAILURE
-            '%ABORT_REASON%': ABORT_REASON
-        message:
-          type: string
-          description: SAM Message
-          example: Open Consumer
-    CassCounterList:
-      type: array
-      items:
-        $ref: '#/components/schemas/CassCounter'
-    AccountInfo:
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/AccountInformationBase'
-      - type: object
-        properties:
-          accountOwnerName:
-            type: string
-            description: The owner of the account
-            example: JOHN DOE
-          accountOwnership:
-            $ref: '#/components/schemas/AccountOwnership'
-          accountStatus:
-            $ref: '#/components/schemas/AccountStatus'
-          additionalInfo:
-            type: object
-            description: Additional information
-            additionalProperties:
-              type: string
-            example:
-              branchCode: '1234'
-              bankCode: '11133444'
-              openDate: '2020-07-23'
-              accountMaturityDate: '2020-07-23'
-              nickName: Nick
-          accountWarnings:
-            type: array
-            items:
-              $ref: '#/components/schemas/Warning'
-    StreetNo:
-      type: string
-      description: Street
-      example: 155th St.
-    WorkstationId:
-      type: string
-      description: Workstation Id
-      example: '80810'
-    FirstName:
-      type: string
-      description: Consumer first name
-      example: Darrien
-    CancelGroupTaskResponse:
+    ValidateTaskResponse:
       properties:
         responseCode:
           $ref: '#/components/schemas/ResponseCode'
@@ -2589,169 +2878,9 @@ components:
         payload:
           type: object
           properties:
-            cancellationStatus:
-              type: boolean
-              example: 'true'
-    GetConsumerRequest:
-      properties:
-        payload:
-          type: object
-          properties:
-            accountRef:
-              $ref: '#/components/schemas/AccountRef'
-            name:
-              $ref: '#/components/schemas/ConsumerName'
-            address:
-              $ref: '#/components/schemas/Address'
-            consumerId:
-              $ref: '#/components/schemas/ConsumerId'
-            phoneNumber:
-              $ref: '#/components/schemas/PhoneNumber'
-            taxId:
-              $ref: '#/components/schemas/TaxId'
-            isOrganization:
-              $ref: '#/components/schemas/IsOrganization'
-    UpdateImageRequest:
-      properties:
-        payload:
-          type: object
-          required:
-          - imageId
-          properties:
-            imageId:
-              $ref: '#/components/schemas/ImageId'
-            documentType:
-              $ref: '#/components/schemas/DocumentType'
-            validationStatus:
-              $ref: '#/components/schemas/ImageValidationStatus'
-            remarks:
-              $ref: '#/components/schemas/Remarks'
-    AccountAmount:
-      type: object
-      properties:
-        amountType:
-          $ref: '#/components/schemas/AccountAmountType'
-        value:
-          minimum: 0
-          pattern: '[0-9]{1,13}\.[0-9]{1,3}'
-          type: string
-          description: The amount value of the given currency
-          example: '100.50'
-        currency:
-          pattern: '[A-Z]{3,3}'
-          type: string
-          description: Currency code
-          example: USD
-    dateTime:
-      type: string
-      description: Timestamp of the description
-      format: yyyy-MM-dd'T'HH:mm:ssZ
-      example: '2024-07-05T15:25:47Z'
-    SetConsumerRequest:
-      properties:
-        payload:
-          type: object
-          required:
-          - workstationId
-          - consumerId
-          - zoomToken
-          properties:
-            workstationId:
-              $ref: '#/components/schemas/WorkstationId'
-            consumerId:
-              $ref: '#/components/schemas/ConsumerId'
-            zoomToken:
+            tokenValidationStatus:
               type: string
-              example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiVklERU9fU0RLX0tFWSIsImlhdCI6MTY0NjI0ODc5NiwiZXhwIjoxNjQ2MjU1OTk2LCJ0cGMiOiJDb29sIENhcnMiLCJ1c2VyX2lkZW50aXR5IjoidXNlcjEyMyIsInNlc3Npb25fa2V5Ijoic2Vzc2lvbjEyMyIsInJvbGVfdHlwZSI6MH0.Y6C65mZUxTZFeGiOI6oW5q2UkIXe3nLTK0MVNkfiJ9c
-    ConsumerType:
-      type: string
-      description: 'Consumer type. Possible values: UNKNOWN_CONSUMER, PRIVATE_CONSUMER, BUSINESS_CONSUMER and BUSINESS_RUNNER'
-      example: Normal
-    WorkstationData:
-      type: object
-      properties:
-        profileID:
-          type: string
-          description: Profile ID
-          example: WS_CLIENT_CONNECTOR_ATM
-        currentProcessingCenter:
-          type: string
-          description: Current processing center
-          example: Alpha
-        customerStatus:
-          type: string
-          description: Status of Customer
-          example: Open consumer with indication
-        reasonForLastStatusChange:
-          type: string
-          description: Reason for last status change
-          example: state of a device or subdevice changed
-        lastStatusUpdate:
-          type: string
-          description: Last status update date-time
-          example: '1713770559563'
-        doorStatus:
-          type: string
-          description: Door status
-          example: The doors are closed.
-        softwareVersion:
-          type: string
-          description: Software version
-          example: RichClientManager 13.50.0
-        retainedCards:
-          type: integer
-          description: Retained cards
-          example: 0
-        retractedMoneyCashOut:
-          type: integer
-          description: Retracted money cash-out
-          example: 8
-        retractedMoneyCashIn:
-          type: integer
-          description: Retracted money cash-in
-          example: 228
-        retractedChecks:
-          type: integer
-          description: Retracted checks
-          example: 12
-        retainedDocuments:
-          type: integer
-          description: Retained documents
-          example: 12
-        retractedPassbooks:
-          type: integer
-          description: Retracted passbooks
-          example: 12
-        retractedScannedDocuments:
-          type: integer
-          description: Retracted scanned documents
-          example: 12
-        maxRetractCounter:
-          type: integer
-          description: Max retract counter
-          example: 12
-        timeZone:
-          $ref: '#/components/schemas/TimeZone'
-        referenceCurrency:
-          pattern: '[A-Z]{3,3}'
-          type: string
-          description: Reference currency code
-          example: USD
-      description: Workstation status
-    SaveConsumerResponse:
-      properties:
-        responseCode:
-          $ref: '#/components/schemas/ResponseCode'
-        extendedResponse:
-          $ref: '#/components/schemas/ExtendedResponse'
-    LastName:
-      type: string
-      description: Consumer last name
-      example: Lock
-    TerminalId:
-      type: string
-      description: Terminal Id
-      example: 80810
+              example: ok
     ImageDeleteRequest:
       properties:
         payload:
@@ -2771,301 +2900,50 @@ components:
             imageId: 41492121a2694330842ffef4abb1ad7b
             workstationId: '80810'
             remarks: Delete image details
-    CheckDetailsRequest:
+    AccountListResponse:
+      required:
+      - payload
+      - responseCode
       type: object
       properties:
+        responseCode:
+          $ref: '#/components/schemas/ResponseCode'
+        extendedResponse:
+          $ref: '#/components/schemas/ExtendedResponse'
         payload:
-          type: object
-          required:
-          - workstationId
-          - transactionId
-          - checks
-          properties:
-            workstationId:
-              $ref: '#/components/schemas/WorkstationId'
-            transactionId:
-              $ref: '#/components/schemas/TransactionId'
-            checks:
-              type: array
-              items:
-                $ref: '#/components/schemas/CheckStatus'
-              example:
-              - id: 7892480d0a1948099c71beffa823ed0e
-                micr: '*192307*T06300277T41442*'
-                routingTransitNumber: '13402303'
-                accountNumber: A0123456789
-                checkNumber: '123456'
-                checkState: OPEN
-                validatedAmount:
-                  value: '100.00'
-                  currency: USD
-                remarks: Updating check details
-              - id: 7892480d0a1948099c71beffa823ed0f
-                micr: '*192307*T06300277T41442*'
-                routingTransitNumber: '13402303'
-                accountNumber: A0123456789
-                checkNumber: '123456'
-                checkState: OPEN
-                validatedAmount:
-                  value: '100.00'
-                  currency: USD
-                remarks: Updating check details
-    WorkstationTransaction:
+          $ref: '#/components/schemas/AccountListResponsePayload'
+      description: Account list response
+    Warning:
+      required:
+      - effectiveDate
+      - warningCode
       type: object
       properties:
-        transactionId:
-          type: integer
-          description: Transaction Id
-          example: 1
-        transactionName:
+        effectiveDate:
+          $ref: '#/components/schemas/Date'
+        expirationDate:
+          $ref: '#/components/schemas/Date'
+        warningCode:
           type: string
-          description: Transaction name
-          example: SB Open workstation
-        transactionDisabledByCommand:
-          type: boolean
-          description: Transaction disabled by command.
-          example: 'false'
-        transactionDisabledByDevice:
-          type: boolean
-          description: Transaction disabled by device.
-          example: 'false'
-        transactionDisabledByRestriction:
-          type: boolean
-          description: Transaction disabled by restriction.
-          example: 'false'
-        transactionDisabledByCommonComponentState:
-          type: boolean
-          description: Transaction disabled by common component state.
-          example: 'false'
-      description: Returns workstation transaction data
-    CassCounter:
-      description: Cassette counter details
-      type: object
+          description: The warning code for warning.
+          example: '94'
+        description:
+          type: string
+          description: The description for this warning.
+        category:
+          type: string
+          description: The category for this warning.
+    ConsumerResponsePayload:
+      required:
+      - consumers
       properties:
-        counterType:
-          type: string
-          example: Total
-        counterData:
+        consumers:
           type: array
           items:
-            $ref: '#/components/schemas/CounterData'
-    AccountOwnership:
-      type: string
-      description: The ownership of the account
-      example: PRIMARY
-      enum:
-      - PRIMARY
-      - JOINT
-      - BENEFICIARY
-      - CUSTODIAN
-      - TRUSTEE
-      - POWER_OF_ATTORNEY
-      - AUTHORIZED_SIGNER
-      - TRUSTOR
-      - CO_BORROWER
-      - CO_SIGNER
-      - CO_OWNER
-      - CO_MAKER
-      - CORPORATION
-      - BORROWER
-      - CORPORATE_OWNER
-      - JOINT_PRIMARY
-      - JOINT_SECONDARY
-      - JOINT_AND
-      - JOINT_OR
-      - ENDORSER
-      - GUARANTOR
-      - GRANTOR
-      - LANDLORD
-      - SECONDARY
-      - TENANT
-      - SOLE_PROPRIETOR
-      - GUARDIAN
-      - EXECUTOR
-      - NOT_SPECIFIED
-    ImageId:
-      type: string
-      description: Image id
-      example: 41492121a2694330842ffef4abb1ad7b
-    Date:
-      type: string
-      description: The date pattern is defined 'yyyy-MM-dd', with yyyy as 4-digit year, MM as 2-digit month and dd as 2-digit date of month
-      format: yyyy-MM-dd
-      example: '2020-07-23'
-    InstituteConfigurationPayload:
-      required:
-      - configuration
-      properties:
-        configuration:
-          type: object
-          description: List of Default, Standard, Supervisor configuration parameters
-          additionalProperties:
-            $ref: '#/components/schemas/Config'
-          example:
-            Default:
-              timer_wait_for_consumer_reconnect: '120'
-              supported_search_for_consumer: firstname, lastname, SSN
-              background_image: link
-              timerCallPopupTimeout: '120'
-              timerCallQueueRefresh: '60'
-              timerTerminalStatusRefresh: '60'
-            Standard:
-              debit_approval: 1000 USD
-              credit_approval: 9000 USD
-            Supervisor:
-              debit_approval: 1000 USD
-              credit_approval: 9000 USD
-    WorkstationRestriction:
-      type: object
-      properties:
-        restrictionId:
-          type: integer
-          description: Restriction Id
-          example: 1520001
-        restrictionName:
-          type: string
-          description: Restriction name
-          example: TOO_MANY_TAN_ENTRY_FAILURES
-      description: Returns workstation restriction data
-    SendCommandRequest:
-      properties:
-        payload:
-          type: object
-          required:
-          - workstationId
-          - commandList
-          properties:
-            workstationId:
-              $ref: '#/components/schemas/WorkstationId'
-            commandList:
-              type: array
-              items:
-                $ref: '#/components/schemas/Command'
-  parameters:
-    externalCustomerId:
-      name: externalCustomerId
-      in: path
-      description: External customer id
-      required: true
-      style: simple
-      explode: false
-      schema:
-        $ref: '#/components/schemas/ExternalCustomerId'
-    accountNumber:
-      name: accountNumber
-      in: query
-      description: Account number
-      required: false
-      schema:
-        $ref: '#/components/schemas/AccountNumber'
-    tellerToken:
-      name: Authorization
-      in: header
-      description: Base64 encoded tellerToken
-      required: true
-      style: simple
-      explode: false
-      schema:
-        $ref: '#/components/schemas/TellerToken'
-    roleType:
-      name: roleType
-      description: The user role. 1 to specify host or co-host. 0 to specify participant, Participants can join before the host. Be sure to use a number type.
-      in: query
-      required: true
-      style: pipeDelimited
-      explode: false
-      schema:
-        type: integer
-        example: 0
-    userIdentity:
-      name: userIdentity
-      description: Identifies a user.
-      in: query
-      required: false
-      style: pipeDelimited
-      explode: false
-      schema:
-        type: string
-        example: User1
-    workstationID:
-      name: WorkstationID
-      in: header
-      description: workstation ID
-      required: false
-      style: simple
-      explode: false
-      schema:
-        type: string
-        example: 80810
-    workstationId:
-      name: workstationId
-      in: path
-      description: Workstation Id
-      required: true
-      style: simple
-      explode: false
-      schema:
-        $ref: '#/components/schemas/WorkstationId'
-    tellerName:
-      name: tellerName
-      in: path
-      description: Name of the teller
-      required: true
-      style: simple
-      explode: false
-      schema:
-        $ref: '#/components/schemas/TellerName'
-    topic:
-      name: topic
-      description: The Video SDK session name. The topic in the payload should be the same as the one in the join session context.
-      in: query
-      required: true
-      style: pipeDelimited
-      explode: false
-      schema:
-        type: string
-        example: Meeting room 1
-    idToken:
-      name: id_token
-      in: header
-      description: ID Token
-      required: false
-      explode: false
-      schema:
-        $ref: '#/components/schemas/IDToken'
-    transactionId:
-      name: transactionId
-      in: path
-      description: Transaction Id
-      required: true
-      style: simple
-      explode: false
-      schema:
-        $ref: '#/components/schemas/TransactionId'
-    tenantName:
-      name: tenantName
-      in: path
-      description: Name of the tenant
-      required: true
-      style: simple
-      explode: false
-      schema:
-        $ref: '#/components/schemas/TenantName'
+            $ref: '#/components/schemas/ConsumerInfo'
   responses:
     Forbidden:
       description: Forbidden access
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ServiceResponse'
-    Unauthorized:
-      description: Unauthorized access
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/UnauthorizedServiceResponse'
-    InternalServerError:
-      description: Error occurred while performing operation
       content:
         application/json:
           schema:
@@ -3076,6 +2954,128 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ServiceResponse'
+    InternalServerError:
+      description: Error occurred while performing operation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ServiceResponse'
+    Unauthorized:
+      description: Unauthorized access
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnauthorizedServiceResponse'
+  parameters:
+    workstationID:
+      name: WorkstationID
+      in: header
+      description: workstation ID
+      required: false
+      style: simple
+      explode: false
+      schema:
+        type: string
+        example: 80810
+    tenantName:
+      name: tenantName
+      in: path
+      description: Name of the tenant
+      required: true
+      style: simple
+      explode: false
+      schema:
+        $ref: '#/components/schemas/TenantName'
+    topic:
+      name: topic
+      description: The Video SDK session name. The topic in the payload should be the same as the one in the join session context.
+      in: query
+      required: true
+      style: pipeDelimited
+      explode: false
+      schema:
+        type: string
+        example: Meeting room 1
+    tellerToken:
+      name: Authorization
+      in: header
+      description: Base64 encoded tellerToken
+      required: true
+      style: simple
+      explode: false
+      schema:
+        $ref: '#/components/schemas/TellerToken'
+    externalCustomerId:
+      name: externalCustomerId
+      in: path
+      description: External customer id
+      required: true
+      style: simple
+      explode: false
+      schema:
+        $ref: '#/components/schemas/ExternalCustomerId'
+    workstationId:
+      name: workstationId
+      in: path
+      description: Workstation Id
+      required: true
+      style: simple
+      explode: false
+      schema:
+        $ref: '#/components/schemas/WorkstationId'
+    userIdentity:
+      name: userIdentity
+      description: Identifies a user.
+      in: query
+      required: false
+      style: pipeDelimited
+      explode: false
+      schema:
+        type: string
+        example: User1
+    idToken:
+      name: id_token
+      in: header
+      description: ID Token
+      required: false
+      explode: false
+      schema:
+        $ref: '#/components/schemas/IDToken'
+    tellerName:
+      name: tellerName
+      in: path
+      description: Name of the teller
+      required: true
+      style: simple
+      explode: false
+      schema:
+        $ref: '#/components/schemas/TellerName'
+    transactionId:
+      name: transactionId
+      in: path
+      description: Transaction Id
+      required: true
+      style: simple
+      explode: false
+      schema:
+        $ref: '#/components/schemas/TransactionId'
+    roleType:
+      name: roleType
+      description: The user role. 1 to specify host or co-host. 0 to specify participant, Participants can join before the host. Be sure to use a number type.
+      in: query
+      required: true
+      style: pipeDelimited
+      explode: false
+      schema:
+        type: integer
+        example: 0
+    accountNumber:
+      name: accountNumber
+      in: query
+      description: Account number
+      required: false
+      schema:
+        $ref: '#/components/schemas/AccountNumber'
   securitySchemes:
     basic:
       type: http

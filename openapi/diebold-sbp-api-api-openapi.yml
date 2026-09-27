@@ -63,71 +63,17 @@ paths:
         default:
           $ref: '#/components/responses/defaultResponse'
 components:
-  responses:
-    defaultResponse:
-      description: Unexpected error. Please see/inspect 'code' and 'message' properties of the error for more/detailed informations.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    executeProcessResponse:
-      description: Holds the response CryptoEnvelope
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ExecuteProcessResponse'
-    getEcKeyResponse:
-      description: Returns the API's public EC key as PEM.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/GetEcKeyResponse'
-    badRequestResponse:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    notFoundResponse:
-      description: Not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    unauthorizedResponse:
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-  parameters:
-    processIdentifierParam:
-      name: Dn-Tm-Process-Identifier
-      in: header
-      required: true
-      description: The process identifier is used to find the necessary business case data from the OCM configuration
-      schema:
-        type: string
-        minLength: 1
-    cryptoParamsParam:
-      name: Dn-Tm-Crypto-Params
-      in: header
-      required: true
-      description: "The __CryptoParams__ schema should be filled with the clients public key (EC) and set as value for this header parameter as stringified JSON. An example:\n__Using ECIES:__\n\n        cryptoParams: {\n            \"ecPublicKey\":{\n                \"publicKeyPem\":\"-----BEGIN PUBLIC KEY-----\\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEHPMaBu6d0BR6QFw3VKwPipuAdDPL\\nG36/aoyTx7iTK1xgoi7X9aMmT1x3Qh1+S1zVhBh2LDDEljHkkVyHrl4bOg==\\n-----END PUBLIC KEY-----\\n\"\n                }\n            }\n\nThe property __ecPublicKey__ is used to send the client's public key to the server in order to create encrypted responses."
-      schema:
-        type: string
-        minLength: 1
   schemas:
-    GetEcKeyResponse:
+    CryptoEnvelope:
       type: object
       required:
-      - responseStatus
-      - ecKeyAsPem
+      - payload
+      description: Object holding a cryptographically secured request/response properties.
       properties:
-        responseStatus:
-          $ref: '#/components/schemas/ResponseBase'
-        ecPublicKey:
-          $ref: '#/components/schemas/EcPublicKey'
+        payload:
+          type: string
+          minLength: 1
+          example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+
     ResponseBase:
       description: 'The basic response object used to transmit the response status and errors
 
@@ -148,6 +94,33 @@ components:
           example: true
         error:
           $ref: '#/components/schemas/Error'
+    GetEcKeyResponse:
+      type: object
+      required:
+      - responseStatus
+      - ecKeyAsPem
+      properties:
+        responseStatus:
+          $ref: '#/components/schemas/ResponseBase'
+        ecPublicKey:
+          $ref: '#/components/schemas/EcPublicKey'
+    Error:
+      type: object
+      description: The error property is optional. It is set only if an error has been detected.
+      required:
+      - code
+      properties:
+        code:
+          description: An error code.
+          type: integer
+          format: int32
+          minimum: 0
+          example: 850004
+        message:
+          description: An optional, additional message which describes the error.
+          type: string
+          maxLength: 255
+          example: Internal server error. A database connection could not be established.
     PublicKeyPem:
       description: A holder object for PEM formatted public keys
       type: object
@@ -179,33 +152,43 @@ components:
           $ref: '#/components/schemas/ResponseBase'
         cryptoEnvelope:
           $ref: '#/components/schemas/CryptoEnvelope'
-    CryptoEnvelope:
-      type: object
-      required:
-      - payload
-      description: Object holding a cryptographically secured request/response properties.
-      properties:
-        payload:
-          type: string
-          minLength: 1
-          example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+
-    Error:
-      type: object
-      description: The error property is optional. It is set only if an error has been detected.
-      required:
-      - code
-      properties:
-        code:
-          description: An error code.
-          type: integer
-          format: int32
-          minimum: 0
-          example: 850004
-        message:
-          description: An optional, additional message which describes the error.
-          type: string
-          maxLength: 255
-          example: Internal server error. A database connection could not be established.
+  responses:
+    defaultResponse:
+      description: Unexpected error. Please see/inspect 'code' and 'message' properties of the error for more/detailed informations.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    unauthorizedResponse:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    notFoundResponse:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    getEcKeyResponse:
+      description: Returns the API's public EC key as PEM.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetEcKeyResponse'
+    executeProcessResponse:
+      description: Holds the response CryptoEnvelope
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ExecuteProcessResponse'
+    badRequestResponse:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   requestBodies:
     executeProcessRequestBody:
       content:
@@ -216,6 +199,23 @@ components:
 
         '
       required: true
+  parameters:
+    processIdentifierParam:
+      name: Dn-Tm-Process-Identifier
+      in: header
+      required: true
+      description: The process identifier is used to find the necessary business case data from the OCM configuration
+      schema:
+        type: string
+        minLength: 1
+    cryptoParamsParam:
+      name: Dn-Tm-Crypto-Params
+      in: header
+      required: true
+      description: "The __CryptoParams__ schema should be filled with the clients public key (EC) and set as value for this header parameter as stringified JSON. An example:\n__Using ECIES:__\n\n        cryptoParams: {\n            \"ecPublicKey\":{\n                \"publicKeyPem\":\"-----BEGIN PUBLIC KEY-----\\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEHPMaBu6d0BR6QFw3VKwPipuAdDPL\\nG36/aoyTx7iTK1xgoi7X9aMmT1x3Qh1+S1zVhBh2LDDEljHkkVyHrl4bOg==\\n-----END PUBLIC KEY-----\\n\"\n                }\n            }\n\nThe property __ecPublicKey__ is used to send the client's public key to the server in order to create encrypted responses."
+      schema:
+        type: string
+        minLength: 1
   securitySchemes:
     basicAuth:
       description: 'A basic authentication method where the username and a password hash are provided in the Authentication header. The username and password string must be base64 encoded and align to the pattern <username>:<password>.

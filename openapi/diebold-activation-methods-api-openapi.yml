@@ -131,43 +131,23 @@ paths:
           $ref: '#/components/responses/InternalServerError500'
 components:
   schemas:
-    BankIdentifier:
+    CorrelationId:
       type: string
-      description: 'The bank identifier of the bank for which the token request is issued.<br>
+      maxLength: 14
+      description: 'Value linking pre-digitization messages generated during provisioning.<br>
 
-        The bank identifier is take from the original request.
+        Max length - 14. Type - String
 
         '
-      example: NLBLJ
-    ActivationMethod:
-      type: object
-      required:
-      - type
-      - value
-      description: The activation methods to be used for this digitization.
-      properties:
-        type:
-          type: string
-          enum:
-          - SMS_TO_CARDHOLDER
-          - EMAIL_TO_CARDHOLDER
-          - CALL_TO_CARDHOLDER
-          - CARDHOLDER_TO_AUTOMATED_NUMBER
-          - CARDHOLDER_TO_CALLCENTER
-          - CARDHOLDER_USE_WEB
-          - CARDHOLDER_USE_MOBILE_APP
-          - null
-          description: "Specifies the activation method type. \nMust be one of:<br> \n<ul>\n  <li>SMS_TO_CARDHOLDER = Text message to Account holder's mobile phone number. Value will be the Account holder's masked mobile phone number</li>\n  <li>EMAIL_TO_CARDHOLDER = Email to Account holder's email address. Value will be the Account holder's masked email address</li>\n  <li>CALL_TO_CARDHOLDER = Issuer-initiated voice call to Account holder's phone. Value will be the Account holder's masked voice call phone number.</li>\n  <li>CARDHOLDER_TO_AUTOMATED_NUMBER = Account holder-initiated call to automated call center phone number. Value will be the phone number for the Account holder to call</li> \n  <li>CARDHOLDER_TO_CALLCENTER = Account holder-initiated call to manned call center phone number. Value will be the phone number for the Account holder to call</li>\n  <li>CARDHOLDER_USE_WEB =  Account holder to visit a website. Value will be the website URL</li>\n  <li>CARDHOLDER_USE_MOBILE_APP = Account holder to use a specific mobile app to activate token. Value will be the identifier of the mobile app, which is provided by the issuer and used by the Account holder</li>\n<ul>\n<br>\n Max length - Not applicable. Type - String.\n"
-          example: CARDHOLDER_TO_CALL_AUTOMATED_NUMBER
-        value:
-          type: string
-          maxLength: 64
-          description: 'Specifies the activation method value (meaning varies depending on the activation method type).<br>
-
-            Max length - 64. Type - String. Required.
-
-            '
-          example: 1-800-BANK-NUMBER
+      example: D98765432104
+    DigitalizationDecision:
+      type: string
+      enum:
+      - APPROVED
+      - DECLINED
+      - REQUIRE_ADDITIONAL_AUTHENTICATION
+      description: "The decision that was made by the system or which was recommended by e.g. the Wallet Provider.<br>\nMust be one of:<br>\n<ul>\n  <li>APPROVED = Services request was approved, \n  <li>DECLINED = Services request was declined, \n  <li>REQUIRE_ADDITIONAL_AUTHENTICATION = Services request requires additional authentication to be approved.</li>\n</ul>\n<br>\nMax length - Not applicable. Type - String.\n"
+      example: APPROVED
     ConsumerId:
       type: string
       maxLength: 88
@@ -179,40 +159,61 @@ components:
 
         '
       example: '123456'
-    ReasonCodes:
-      type: array
-      description: "The reason the account holder is being authenticated.<br>\nThe reason could impact the generation and validation of the code in a number of ways including but not limited to the time period of validity of the code and the number of attempts allowed to validate the code.<br>\nNew reason codes can be added at any time and should not result in a failure.\n<b>Note:</b>Conditional - Only present for Conset Service\nPossible push methods are:<br>\n<ul>\n  <li>>ADD_CARD: The account holder is being authenticated after adding the card to the token requestor</li>\n  <li>VERIFY_ACCOUNT: The account holder is being authenticated in order to verify account ownership.</li>\n  <li>OTHER: The account holder is being authenticated for a reason not enumerated in this list.</li>\n</ul>\n"
-      items:
-        type: string
-        example: ADD_CARD
-    TokenProviderType:
+    DigitizationCompletedRequest:
+      type: object
+      required:
+      - requestId
+      - correlationId
+      - tokenizedPAN
+      - tokenUniqueNumber
+      - consumerId
+      - decision
+      - tokenActivatedDateTime
+      - tokenProviderType
+      - bankIdentifier
+      properties:
+        requestId:
+          $ref: '#/components/schemas/RequestId'
+        correlationId:
+          $ref: '#/components/schemas/CorrelationId'
+        tokenizedPAN:
+          $ref: '#/components/schemas/FPAN'
+        token:
+          $ref: '#/components/schemas/DPAN'
+        tokenUniqueNumber:
+          $ref: '#/components/schemas/TokenUniqueNumber'
+        consumerId:
+          $ref: '#/components/schemas/ConsumerId'
+        decision:
+          $ref: '#/components/schemas/DigitalizationDecision'
+        tokenActivatedDateTime:
+          type: string
+          format: date-time
+          description: 'The date, when the token was activated.<br>
+
+            Max length - Not applicable. Type - String.
+
+            '
+          example: '2015-07-04T12:09:57.123-07:00'
+        tokenProviderType:
+          $ref: '#/components/schemas/TokenProviderType'
+        bankIdentifier:
+          $ref: '#/components/schemas/BankIdentifier'
+        sendSMS:
+          type: string
+          enum:
+          - 'true'
+          - 'false'
+          description: "A flag whether SMS needs to be sent for TCN/TN;<br>\n<ul>\n  <li>true — Indicates that a SMS should send.</li>\n  <li>false — Indicates that there is no need to to send a SMS.</li>\n</ul></br>\n"
+          example: 'true'
+    BankIdentifier:
       type: string
-      enum:
-      - APPLE_PAY
-      - GOOGLE_PAY
-      - SAMSUNG_PAY
-      - GARMIN_PAY
-      - XIAOMI_PAY
-      - MERCHANT_TOKENIZATION_PROGRAM
-      - OTHER
-      description: 'The identifier of the Wallet Provider who requested the digitization.<br>
+      description: 'The bank identifier of the bank for which the token request is issued.<br>
+
+        The bank identifier is take from the original request.
 
         '
-      example: APPLE_PAY
-    CorrelationId:
-      type: string
-      maxLength: 14
-      description: 'Value linking pre-digitization messages generated during provisioning.<br>
-
-        Max length - 14. Type - String
-
-        '
-      example: D98765432104
-    FPAN:
-      type: string
-      maxLength: 128
-      description: "A tokenized PAN.  \nMax length - 128. Type - String.\n"
-      example: '98765432104676066094325336'
+      example: NLBLJ
     DeliverActivationCodeRequest:
       type: object
       required:
@@ -286,6 +287,11 @@ components:
           $ref: '#/components/schemas/TokenProviderType'
         bankIdentifier:
           $ref: '#/components/schemas/BankIdentifier'
+    RequestId:
+      type: string
+      maxLength: 64
+      description: The unique id of the request submitted. Max length - 64
+      example: '123456'
     CustomerInformationResponse:
       type: object
       required:
@@ -322,25 +328,6 @@ components:
 
             '
           example: https://xyz.com/verfiycardholder
-    TokenUniqueNumber:
-      type: string
-      maxLength: 64
-      description: 'A unique reference assigned following the allocation of a token used to identify the token for the duration of its lifetime.<br>
-
-        <b>Note:</b> It is required to be always present, even when an error occurs.<br>
-
-        Max length - 64. Type - String.
-
-        '
-      example: DWSPMC000000000fcb2f4136b2f4136a0532d2f4136a0532
-    DigitalizationDecision:
-      type: string
-      enum:
-      - APPROVED
-      - DECLINED
-      - REQUIRE_ADDITIONAL_AUTHENTICATION
-      description: "The decision that was made by the system or which was recommended by e.g. the Wallet Provider.<br>\nMust be one of:<br>\n<ul>\n  <li>APPROVED = Services request was approved, \n  <li>DECLINED = Services request was declined, \n  <li>REQUIRE_ADDITIONAL_AUTHENTICATION = Services request requires additional authentication to be approved.</li>\n</ul>\n<br>\nMax length - Not applicable. Type - String.\n"
-      example: APPROVED
     MSISDN:
       type: string
       pattern: ^\+(?:[0-9]\x20?){6,14}[0-9]$
@@ -350,30 +337,6 @@ components:
         Phone numbers cannot contain more than 15 digits. The shortest international phone numbers in use contain seven digits.
 
         '
-    NotifyServiceActivatedResponse:
-      type: object
-      required:
-      - responseId
-      properties:
-        responseId:
-          $ref: '#/components/schemas/ResponseId'
-    RequestId:
-      type: string
-      maxLength: 64
-      description: The unique id of the request submitted. Max length - 64
-      example: '123456'
-    DPAN:
-      type: string
-      maxLength: 128
-      description: "A tokenized PAN.  \nMax length - 128. Type - String.\n"
-      example: '98765432104676066094325336'
-    DeliverActivationCodeResponse:
-      type: object
-      required:
-      - responseId
-      properties:
-        responseId:
-          $ref: '#/components/schemas/ResponseId'
     ResponseId:
       type: string
       maxLength: 64
@@ -383,53 +346,20 @@ components:
 
         '
       example: '123456'
-    DigitizationCompletedRequest:
-      type: object
-      required:
-      - requestId
-      - correlationId
-      - tokenizedPAN
-      - tokenUniqueNumber
-      - consumerId
-      - decision
-      - tokenActivatedDateTime
-      - tokenProviderType
-      - bankIdentifier
-      properties:
-        requestId:
-          $ref: '#/components/schemas/RequestId'
-        correlationId:
-          $ref: '#/components/schemas/CorrelationId'
-        tokenizedPAN:
-          $ref: '#/components/schemas/FPAN'
-        token:
-          $ref: '#/components/schemas/DPAN'
-        tokenUniqueNumber:
-          $ref: '#/components/schemas/TokenUniqueNumber'
-        consumerId:
-          $ref: '#/components/schemas/ConsumerId'
-        decision:
-          $ref: '#/components/schemas/DigitalizationDecision'
-        tokenActivatedDateTime:
-          type: string
-          format: date-time
-          description: 'The date, when the token was activated.<br>
+    TokenProviderType:
+      type: string
+      enum:
+      - APPLE_PAY
+      - GOOGLE_PAY
+      - SAMSUNG_PAY
+      - GARMIN_PAY
+      - XIAOMI_PAY
+      - MERCHANT_TOKENIZATION_PROGRAM
+      - OTHER
+      description: 'The identifier of the Wallet Provider who requested the digitization.<br>
 
-            Max length - Not applicable. Type - String.
-
-            '
-          example: '2015-07-04T12:09:57.123-07:00'
-        tokenProviderType:
-          $ref: '#/components/schemas/TokenProviderType'
-        bankIdentifier:
-          $ref: '#/components/schemas/BankIdentifier'
-        sendSMS:
-          type: string
-          enum:
-          - 'true'
-          - 'false'
-          description: "A flag whether SMS needs to be sent for TCN/TN;<br>\n<ul>\n  <li>true — Indicates that a SMS should send.</li>\n  <li>false — Indicates that there is no need to to send a SMS.</li>\n</ul></br>\n"
-          example: 'true'
+        '
+      example: APPLE_PAY
     Error:
       description: "The error property is optional. \nIt is set only if an error has been detected.\n"
       type: object
@@ -451,9 +381,85 @@ components:
           example: HOST_CANCEL
         correlationId:
           $ref: '#/components/schemas/CorrelationId'
+    ReasonCodes:
+      type: array
+      description: "The reason the account holder is being authenticated.<br>\nThe reason could impact the generation and validation of the code in a number of ways including but not limited to the time period of validity of the code and the number of attempts allowed to validate the code.<br>\nNew reason codes can be added at any time and should not result in a failure.\n<b>Note:</b>Conditional - Only present for Conset Service\nPossible push methods are:<br>\n<ul>\n  <li>>ADD_CARD: The account holder is being authenticated after adding the card to the token requestor</li>\n  <li>VERIFY_ACCOUNT: The account holder is being authenticated in order to verify account ownership.</li>\n  <li>OTHER: The account holder is being authenticated for a reason not enumerated in this list.</li>\n</ul>\n"
+      items:
+        type: string
+        example: ADD_CARD
+    DPAN:
+      type: string
+      maxLength: 128
+      description: "A tokenized PAN.  \nMax length - 128. Type - String.\n"
+      example: '98765432104676066094325336'
+    NotifyServiceActivatedResponse:
+      type: object
+      required:
+      - responseId
+      properties:
+        responseId:
+          $ref: '#/components/schemas/ResponseId'
+    TokenUniqueNumber:
+      type: string
+      maxLength: 64
+      description: 'A unique reference assigned following the allocation of a token used to identify the token for the duration of its lifetime.<br>
+
+        <b>Note:</b> It is required to be always present, even when an error occurs.<br>
+
+        Max length - 64. Type - String.
+
+        '
+      example: DWSPMC000000000fcb2f4136b2f4136a0532d2f4136a0532
+    DeliverActivationCodeResponse:
+      type: object
+      required:
+      - responseId
+      properties:
+        responseId:
+          $ref: '#/components/schemas/ResponseId'
+    FPAN:
+      type: string
+      maxLength: 128
+      description: "A tokenized PAN.  \nMax length - 128. Type - String.\n"
+      example: '98765432104676066094325336'
+    ActivationMethod:
+      type: object
+      required:
+      - type
+      - value
+      description: The activation methods to be used for this digitization.
+      properties:
+        type:
+          type: string
+          enum:
+          - SMS_TO_CARDHOLDER
+          - EMAIL_TO_CARDHOLDER
+          - CALL_TO_CARDHOLDER
+          - CARDHOLDER_TO_AUTOMATED_NUMBER
+          - CARDHOLDER_TO_CALLCENTER
+          - CARDHOLDER_USE_WEB
+          - CARDHOLDER_USE_MOBILE_APP
+          - null
+          description: "Specifies the activation method type. \nMust be one of:<br> \n<ul>\n  <li>SMS_TO_CARDHOLDER = Text message to Account holder's mobile phone number. Value will be the Account holder's masked mobile phone number</li>\n  <li>EMAIL_TO_CARDHOLDER = Email to Account holder's email address. Value will be the Account holder's masked email address</li>\n  <li>CALL_TO_CARDHOLDER = Issuer-initiated voice call to Account holder's phone. Value will be the Account holder's masked voice call phone number.</li>\n  <li>CARDHOLDER_TO_AUTOMATED_NUMBER = Account holder-initiated call to automated call center phone number. Value will be the phone number for the Account holder to call</li> \n  <li>CARDHOLDER_TO_CALLCENTER = Account holder-initiated call to manned call center phone number. Value will be the phone number for the Account holder to call</li>\n  <li>CARDHOLDER_USE_WEB =  Account holder to visit a website. Value will be the website URL</li>\n  <li>CARDHOLDER_USE_MOBILE_APP = Account holder to use a specific mobile app to activate token. Value will be the identifier of the mobile app, which is provided by the issuer and used by the Account holder</li>\n<ul>\n<br>\n Max length - Not applicable. Type - String.\n"
+          example: CARDHOLDER_TO_CALL_AUTOMATED_NUMBER
+        value:
+          type: string
+          maxLength: 64
+          description: 'Specifies the activation method value (meaning varies depending on the activation method type).<br>
+
+            Max length - 64. Type - String. Required.
+
+            '
+          example: 1-800-BANK-NUMBER
   responses:
-    MethodNotAllowed405:
-      description: Method Not Allowed
+    Unauthorized401:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest400:
+      description: Bad Request
       content:
         application/json:
           schema:
@@ -464,14 +470,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    Unauthorized401:
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    BadRequest400:
-      description: Bad Request
+    MethodNotAllowed405:
+      description: Method Not Allowed
       content:
         application/json:
           schema:

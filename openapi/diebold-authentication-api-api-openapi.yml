@@ -274,36 +274,22 @@ paths:
                   $ref: '#/components/examples/ServiceResponseFailExample'
 components:
   schemas:
-    IsStandin:
-      type: boolean
-      description: Standin request indicator
-      example: false
     ExtendedResponseMessage:
       type: string
       description: Extended Response Message
       example: OK
-    KeyData:
-      type: string
-      description: Hex Encoded value of key
-      example: 4C0EDDA0BC74008A16484FEEFF67EC5FF089826D94402111
-    KeyGenerationIndex:
-      type: string
-      description: Key generation Index
-      example: '1'
-    AdditionalProperties:
-      type: object
-      additionalProperties:
-        type: string
-      description: Additional properties can be provided within this object
-    ServiceResponse:
+    exchangeKeyRequest:
       type: object
       required:
-      - responseCode
+      - signedJWT
+      description: '
+
+        signedJwt property represents the signed Jwt Token containing the TM public key'
       properties:
-        responseCode:
-          $ref: '#/components/schemas/ResponseCode'
-        extendedResponse:
-          $ref: '#/components/schemas/ExtendedResponse'
+        signedJWT:
+          type: string
+          minLength: 1
+          example: eyJraWQiOiIyIiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3Q6ODA4MCIsInN1YiI6IkFscGhhLkZhcm0uQ2x1c3Rlci5pbmlkYy1ha2FzaGMiLCJleHAiOjE2MjA3Mjc3OTQsImlhdCI6MTYyMDcyNzE5NH0.By0BQI9RjVNY5b0TSn6YIV2xjfTsGlWsGp5fDxsTh4npJ1SngQg37cqVPFc9Lepxp0VKi3zKm+fZHcvR6omG34JNUVDW+3pefLjYJxymixZdQTCjAL2FFIt1ei0JzyaSQGCOwpE+TUDkdMkbJ5x69ztAoa0tOSnLWPUJD0ELbV8wX2DhBTyS0sCDqEiht3wxk+3QoI04m+36Nt6zuLazigQzikJxLYllJB2QvM76oWLY3o3lNX77LdkZH6XkNF1w2acCXvbAdy11Bi+dAoSxPvCw5goFuh48I5yfQ/gzziY1RKXpMyxLkF+eMLixfjYx4WVDtZ4YIONdrSVdfQxPZs+A
     TransactionBase:
       type: object
       required:
@@ -341,34 +327,49 @@ components:
           type: string
           example: '000123'
           description: A numeric value containing the authorization code
-    KeyName:
+    PointOfInteractionSettlementDate:
       type: string
-      description: Name of the key requested
-      example: ZPK
-    ExtendedResponse:
-      type: object
-      required:
-      - code
-      properties:
-        code:
-          $ref: '#/components/schemas/ExtendedResponseCode'
-        message:
-          $ref: '#/components/schemas/ExtendedResponseMessage'
-    SupplementaryData:
-      type: object
-      description: 'Additional information incorporated as an extension to the message by mixins based on the transaction type          '
-    exchangeKeyRequest:
-      type: object
-      required:
-      - signedJWT
-      description: '
+      description: 'In Local Timezone <br> For ''selfService'' channel, ATM booking date for the transaction. <br><br>
 
-        signedJwt property represents the signed Jwt Token containing the TM public key'
-      properties:
-        signedJWT:
-          type: string
-          minLength: 1
-          example: eyJraWQiOiIyIiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3Q6ODA4MCIsInN1YiI6IkFscGhhLkZhcm0uQ2x1c3Rlci5pbmlkYy1ha2FzaGMiLCJleHAiOjE2MjA3Mjc3OTQsImlhdCI6MTYyMDcyNzE5NH0.By0BQI9RjVNY5b0TSn6YIV2xjfTsGlWsGp5fDxsTh4npJ1SngQg37cqVPFc9Lepxp0VKi3zKm+fZHcvR6omG34JNUVDW+3pefLjYJxymixZdQTCjAL2FFIt1ei0JzyaSQGCOwpE+TUDkdMkbJ5x69ztAoa0tOSnLWPUJD0ELbV8wX2DhBTyS0sCDqEiht3wxk+3QoI04m+36Nt6zuLazigQzikJxLYllJB2QvM76oWLY3o3lNX77LdkZH6XkNF1w2acCXvbAdy11Bi+dAoSxPvCw5goFuh48I5yfQ/gzziY1RKXpMyxLkF+eMLixfjYx4WVDtZ4YIONdrSVdfQxPZs+A
+        For ''network'' channel, data element DE15 - the  month and day funds are transferred between the acquirer and issuer.'
+      format: MMDD
+      example: 0921
+    KeyCheckValue:
+      type: string
+      description: Key check value
+      example: ABCDE
+    exchangeKeyResponse:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ServiceResponse'
+      - type: object
+        required:
+        - signedJWT
+        properties:
+          signedJWT:
+            type: string
+            minLength: 1
+            example: eyJraWQiOiIyIiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3Q6ODA4MCIsInN1YiI6IkFscGhhLkZhcm0uQ2x1c3Rlci5pbmlkYy1ha2FzaGMiLCJleHAiOjE2MjA3Mjc3OTQsImlhdCI6MTYyMDcyNzE5NH0.By0BQI9RjVNY5b0TSn6YIV2xjfTsGlWsGp5fDxsTh4npJ1SngQg37cqVPFc9Lepxp0VKi3zKm+fZHcvR6omG34JNUVDW+3pefLjYJxymixZdQTCjAL2FFIt1ei0JzyaSQGCOwpE+TUDkdMkbJ5x69ztAoa0tOSnLWPUJD0ELbV8wX2DhBTyS0sCDqEiht3wxk+3QoI04m+36Nt6zuLazigQzikJxLYllJB2QvM76oWLY3o3lNX77LdkZH6XkNF1w2acCXvbAdy11Bi+dAoSxPvCw5goFuh48I5yfQ/gzziY1RKXpMyxLkF+eMLixfjYx4WVDtZ4YIONdrSVdfQxPZs+A
+    TransactionResponse:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/TransactionWithStandin'
+      description: Exact replica of the request 'transaction' object which must be returned by the host
+    KeyZoneId:
+      type: string
+      description: Zone-id for which the key is requested
+      example: TARGET_ZONE
+    KeyData:
+      type: string
+      description: Hex Encoded value of key
+      example: 4C0EDDA0BC74008A16484FEEFF67EC5FF089826D94402111
+    ResponseCode:
+      type: string
+      enum:
+      - OK
+      - FAIL
+      - RESUBMIT
+      example: OK
     zpk.exchange.request:
       type: object
       required:
@@ -394,6 +395,109 @@ components:
               $ref: '#/components/schemas/AdditionalProperties'
             supplementaryData:
               $ref: '#/components/schemas/SupplementaryData'
+    tokenResponse:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ServiceResponse'
+      - type: object
+        required:
+        - payload
+        properties:
+          payload:
+            type: object
+            required:
+            - token
+            - validity
+            properties:
+              token:
+                type: string
+                example: '123456789'
+              expirationDate:
+                type: string
+                format: yyyy-MM-dd'T'HH:mm:ssZ
+                description: Expiry timestamp of the generated token.
+                example: 2030-09-23T16:40:52+0530
+    IsStandin:
+      type: boolean
+      description: Standin request indicator
+      example: false
+    KeyName:
+      type: string
+      description: Name of the key requested
+      example: ZPK
+    ExtendedResponse:
+      type: object
+      required:
+      - code
+      properties:
+        code:
+          $ref: '#/components/schemas/ExtendedResponseCode'
+        message:
+          $ref: '#/components/schemas/ExtendedResponseMessage'
+    KeyGenerationIndex:
+      type: string
+      description: Key generation Index
+      example: '1'
+    KeyType:
+      type: string
+      description: Type of the key requested
+      example: ZPK
+    AdditionalProperties:
+      type: object
+      additionalProperties:
+        type: string
+      description: Additional properties can be provided within this object
+    zpk.exchange.response:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ServiceResponse'
+      - type: object
+        required:
+        - payload
+        properties:
+          payload:
+            type: object
+            required:
+            - keyCheckValue
+            - keyGenerationIndex
+            - key
+            properties:
+              keyCheckValue:
+                $ref: '#/components/schemas/KeyCheckValue'
+              keyGenerationIndex:
+                $ref: '#/components/schemas/KeyGenerationIndex'
+              key:
+                $ref: '#/components/schemas/KeyData'
+              transaction:
+                $ref: '#/components/schemas/TransactionResponse'
+              additionalProperties:
+                $ref: '#/components/schemas/AdditionalProperties'
+              supplementaryData:
+                $ref: '#/components/schemas/SupplementaryData'
+    SupplementaryData:
+      type: object
+      description: 'Additional information incorporated as an extension to the message by mixins based on the transaction type          '
+    TransactionWithStandin:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/TransactionBase'
+      - type: object
+        properties:
+          isStandin:
+            $ref: '#/components/schemas/IsStandin'
+    ServiceResponse:
+      type: object
+      required:
+      - responseCode
+      properties:
+        responseCode:
+          $ref: '#/components/schemas/ResponseCode'
+        extendedResponse:
+          $ref: '#/components/schemas/ExtendedResponse'
+    keepAliveResponse:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ServiceResponse'
     TransactionTypes:
       type: string
       enum:
@@ -440,36 +544,6 @@ components:
       - quasiCash
       - requestCurrencyExchangeRates
       description: Type of Transaction or BusinessCase performed
-    keepAliveResponse:
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/ServiceResponse'
-    KeyType:
-      type: string
-      description: Type of the key requested
-      example: ZPK
-    tokenResponse:
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/ServiceResponse'
-      - type: object
-        required:
-        - payload
-        properties:
-          payload:
-            type: object
-            required:
-            - token
-            - validity
-            properties:
-              token:
-                type: string
-                example: '123456789'
-              expirationDate:
-                type: string
-                format: yyyy-MM-dd'T'HH:mm:ssZ
-                description: Expiry timestamp of the generated token.
-                example: 2030-09-23T16:40:52+0530
     ExtendedResponseCode:
       type: string
       enum:
@@ -505,106 +579,20 @@ components:
       - SERVER_NOT_READY
       example: OK
       description: Extended Response Code Mapping
-    TransactionResponse:
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/TransactionWithStandin'
-      description: Exact replica of the request 'transaction' object which must be returned by the host
-    PointOfInteractionSettlementDate:
-      type: string
-      description: 'In Local Timezone <br> For ''selfService'' channel, ATM booking date for the transaction. <br><br>
-
-        For ''network'' channel, data element DE15 - the  month and day funds are transferred between the acquirer and issuer.'
-      format: MMDD
-      example: 0921
-    zpk.exchange.response:
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/ServiceResponse'
-      - type: object
-        required:
-        - payload
-        properties:
-          payload:
-            type: object
-            required:
-            - keyCheckValue
-            - keyGenerationIndex
-            - key
-            properties:
-              keyCheckValue:
-                $ref: '#/components/schemas/KeyCheckValue'
-              keyGenerationIndex:
-                $ref: '#/components/schemas/KeyGenerationIndex'
-              key:
-                $ref: '#/components/schemas/KeyData'
-              transaction:
-                $ref: '#/components/schemas/TransactionResponse'
-              additionalProperties:
-                $ref: '#/components/schemas/AdditionalProperties'
-              supplementaryData:
-                $ref: '#/components/schemas/SupplementaryData'
-    TransactionWithStandin:
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/TransactionBase'
-      - type: object
-        properties:
-          isStandin:
-            $ref: '#/components/schemas/IsStandin'
-    KeyZoneId:
-      type: string
-      description: Zone-id for which the key is requested
-      example: TARGET_ZONE
-    exchangeKeyResponse:
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/ServiceResponse'
-      - type: object
-        required:
-        - signedJWT
-        properties:
-          signedJWT:
-            type: string
-            minLength: 1
-            example: eyJraWQiOiIyIiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3Q6ODA4MCIsInN1YiI6IkFscGhhLkZhcm0uQ2x1c3Rlci5pbmlkYy1ha2FzaGMiLCJleHAiOjE2MjA3Mjc3OTQsImlhdCI6MTYyMDcyNzE5NH0.By0BQI9RjVNY5b0TSn6YIV2xjfTsGlWsGp5fDxsTh4npJ1SngQg37cqVPFc9Lepxp0VKi3zKm+fZHcvR6omG34JNUVDW+3pefLjYJxymixZdQTCjAL2FFIt1ei0JzyaSQGCOwpE+TUDkdMkbJ5x69ztAoa0tOSnLWPUJD0ELbV8wX2DhBTyS0sCDqEiht3wxk+3QoI04m+36Nt6zuLazigQzikJxLYllJB2QvM76oWLY3o3lNX77LdkZH6XkNF1w2acCXvbAdy11Bi+dAoSxPvCw5goFuh48I5yfQ/gzziY1RKXpMyxLkF+eMLixfjYx4WVDtZ4YIONdrSVdfQxPZs+A
-    KeyCheckValue:
-      type: string
-      description: Key check value
-      example: ABCDE
-    ResponseCode:
-      type: string
-      enum:
-      - OK
-      - FAIL
-      - RESUBMIT
-      example: OK
+  examples:
+    ServiceResponseFundsExample:
+      value:
+        responseCode: FAIL
+        extendedResponse:
+          code: INSUFFICIENT_FUNDS
+          message: SERVER_FAILURE
+    ServiceResponseFailExample:
+      value:
+        responseCode: FAIL
+        extendedResponse:
+          code: SERVER_FAILURE
+          message: SERVER_FAILURE
   parameters:
-    referenceId:
-      name: referenceId
-      in: header
-      description: Unique identifier for the transaction request.
-      required: true
-      schema:
-        type: string
-        example: A123F34
-    tokenAuthorization:
-      name: Authorization
-      in: header
-      description: "In case the Authentication Type is TOKEN, Authorization will contain base 64 encoded userName:password string using HTTP Basic Authentication.<br> In case the Authentication Type is JWE, Authorization will contain Bearer encryptedJWT. JWT will be encrypted with backend endpoint public key. <br>\n\n__Signed JWT Structure:__ \n\n        Header:\n          alg: Signing algorithm\n          typ: JWT\n          kid: Key Id of the key used for signing\n        Payload:\n          iss: Token Issuer URL\n          iat: Absolute Token issue time (Unix epoch time in seconds)\n          exp: Absolute Token expiry time (Unix epoch time in seconds)\n          sub: TM Server name\n        Signature:\n          base64 signature with TM RSA private key\n\n__JWE Structure:__\n\n        Header:\n          kid: Key Id of the Backend RSA public key used to encrypt signed token \n          cty: JWT\n          enc: Content encryption algorithm\n          alg: Key encryption algorithm\n        Payload:\n          signedJWT\n  \n  __JWT and JWE Example Value:__\n      \n      signedJWT: \n      \n        Header:\n        {\n          \"alg\": \"RS256\",\n          \"typ\": \"JWT\",\n          \"kid\": \"vJ_GkZgf1ApAXRICFscTxeUKu1oBqgjstTgNwhdyjBo\"\n        }\n        Payload:\n        { \n          \"iss\": \"http://10.177.76.114:8080\",\n          \"iat\": 1620727194,\n          \"exp\": 1620727794,\n          \"sub\": \"Alpha.Farm.Cluster.TXMServer01\"\n        }\n        Signature: oB5BFasR_LOr_blUBaOD0p8Y5JuK0IO__HSD8A5DvUzhzvpccw1kwJj_5Eqab51QY06OPSLbvMIDGFhb1GGknCuVYSU9n5Y2G8ugIVvaG53TpmcF9bCxT3EzcLN1UhNL_yLYpJJLVPZfqE8Pb2zuvhjnUTg1NOUlbWxlMAYUFreWL3I74t7OdVY-7-xKjl2YkoiluQ03QOA4_8hHqn5Z2bxJ-SGxmVokcKpW49fSDNHnDe1c15PdzrkSjo70SHc2CEj6h7GiHrRaF_zqGP5aM6bMW5ztncf9Dp7h387gbck188Mwt9RqnSsJJ37wEGOYtKqEYCE4Vs7fkCg2HsbYlA\n      \n      JWE:\n        \n        Header:\n        {\n          \"kid\": \"sTToJZb0bEq5p216E7S3yBB2S6Ci-13uD6mGNhNZaT4\",\n          \"cty\": \"JWT\",\n          \"enc\": \"A256GCM\",\n          \"alg\": \"RSA-OAEP-256\"\n        }\n        Payload:\n          signedJWT\n        \n    Note:\n      \n      kid: It is kid from JWK thumbprint computed from the key used for\n      signing or encryption. Their computation is specified in RFC 7638.\n      Default hash algorithm SHA-256 used for computation.\n      \n      Algorithms used are as mentioned below:\n        Signing algorithm: RS256 (RSASSA-PKCS1-v1_5 using SHA-256)\n        Content encryption algorithm: A256GCM (AES GCM 256)\n        Key encryption algorithm: RSA-OAEP-256 (RSAES OAEP using SHA-256)\n          \n      Key size: RSA Key Pair used for signing and encrypting the token is of size 2048 bit"
-      required: true
-      schema:
-        type: string
-        example: Basic afae1wad213da OR Bearer RA6ICaWwLPLDEcdefg+
-    initiatingPartyName:
-      name: initiatingPartyName
-      in: header
-      description: The name of the initiating party.
-      required: true
-      schema:
-        type: string
-        minLength: 1
-        example: DieboldNixdorf
     version:
       name: version
       in: header
@@ -614,6 +602,30 @@ components:
         type: string
         minLength: 1
         example: 4.3.0
+    referenceId:
+      name: referenceId
+      in: header
+      description: Unique identifier for the transaction request.
+      required: true
+      schema:
+        type: string
+        example: A123F34
+    productName:
+      name: productName
+      in: header
+      description: The name of the product which is consuming the service (business product name).
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        example: Transaction Middleware
+    authorization:
+      name: Authorization
+      in: header
+      description: 'In case the Authentication type is BASIC_AUTH, Authorization will contain base 64 encoded userName:password string using HTTP Basic Authentication.<br> In case the Authentication Type is JWE/TOKEN, Authorization will contain token received using getToken request as Bearer Token. '
+      schema:
+        type: string
+        example: Basic afae1wad213da OR Bearer T2131241
     initiatingPartyId:
       name: initiatingPartyId
       in: header
@@ -623,13 +635,6 @@ components:
         type: string
         minLength: 1
         example: DieboldNixdorf
-    authorization:
-      name: Authorization
-      in: header
-      description: 'In case the Authentication type is BASIC_AUTH, Authorization will contain base 64 encoded userName:password string using HTTP Basic Authentication.<br> In case the Authentication Type is JWE/TOKEN, Authorization will contain token received using getToken request as Bearer Token. '
-      schema:
-        type: string
-        example: Basic afae1wad213da OR Bearer T2131241
     timestamp:
       name: timestamp
       in: header
@@ -640,28 +645,23 @@ components:
         format: yyyy-MM-dd'T'HH:mm:ssZ
         description: Timestamp
         example: 2020-09-01T16:40:52+0000
-    productName:
-      name: productName
+    initiatingPartyName:
+      name: initiatingPartyName
       in: header
-      description: The name of the product which is consuming the service (business product name).
+      description: The name of the initiating party.
       required: true
       schema:
         type: string
         minLength: 1
-        example: Transaction Middleware
-  examples:
-    ServiceResponseFailExample:
-      value:
-        responseCode: FAIL
-        extendedResponse:
-          code: SERVER_FAILURE
-          message: SERVER_FAILURE
-    ServiceResponseFundsExample:
-      value:
-        responseCode: FAIL
-        extendedResponse:
-          code: INSUFFICIENT_FUNDS
-          message: SERVER_FAILURE
+        example: DieboldNixdorf
+    tokenAuthorization:
+      name: Authorization
+      in: header
+      description: "In case the Authentication Type is TOKEN, Authorization will contain base 64 encoded userName:password string using HTTP Basic Authentication.<br> In case the Authentication Type is JWE, Authorization will contain Bearer encryptedJWT. JWT will be encrypted with backend endpoint public key. <br>\n\n__Signed JWT Structure:__ \n\n        Header:\n          alg: Signing algorithm\n          typ: JWT\n          kid: Key Id of the key used for signing\n        Payload:\n          iss: Token Issuer URL\n          iat: Absolute Token issue time (Unix epoch time in seconds)\n          exp: Absolute Token expiry time (Unix epoch time in seconds)\n          sub: TM Server name\n        Signature:\n          base64 signature with TM RSA private key\n\n__JWE Structure:__\n\n        Header:\n          kid: Key Id of the Backend RSA public key used to encrypt signed token \n          cty: JWT\n          enc: Content encryption algorithm\n          alg: Key encryption algorithm\n        Payload:\n          signedJWT\n  \n  __JWT and JWE Example Value:__\n      \n      signedJWT: \n      \n        Header:\n        {\n          \"alg\": \"RS256\",\n          \"typ\": \"JWT\",\n          \"kid\": \"vJ_GkZgf1ApAXRICFscTxeUKu1oBqgjstTgNwhdyjBo\"\n        }\n        Payload:\n        { \n          \"iss\": \"http://10.177.76.114:8080\",\n          \"iat\": 1620727194,\n          \"exp\": 1620727794,\n          \"sub\": \"Alpha.Farm.Cluster.TXMServer01\"\n        }\n        Signature: oB5BFasR_LOr_blUBaOD0p8Y5JuK0IO__HSD8A5DvUzhzvpccw1kwJj_5Eqab51QY06OPSLbvMIDGFhb1GGknCuVYSU9n5Y2G8ugIVvaG53TpmcF9bCxT3EzcLN1UhNL_yLYpJJLVPZfqE8Pb2zuvhjnUTg1NOUlbWxlMAYUFreWL3I74t7OdVY-7-xKjl2YkoiluQ03QOA4_8hHqn5Z2bxJ-SGxmVokcKpW49fSDNHnDe1c15PdzrkSjo70SHc2CEj6h7GiHrRaF_zqGP5aM6bMW5ztncf9Dp7h387gbck188Mwt9RqnSsJJ37wEGOYtKqEYCE4Vs7fkCg2HsbYlA\n      \n      JWE:\n        \n        Header:\n        {\n          \"kid\": \"sTToJZb0bEq5p216E7S3yBB2S6Ci-13uD6mGNhNZaT4\",\n          \"cty\": \"JWT\",\n          \"enc\": \"A256GCM\",\n          \"alg\": \"RSA-OAEP-256\"\n        }\n        Payload:\n          signedJWT\n        \n    Note:\n      \n      kid: It is kid from JWK thumbprint computed from the key used for\n      signing or encryption. Their computation is specified in RFC 7638.\n      Default hash algorithm SHA-256 used for computation.\n      \n      Algorithms used are as mentioned below:\n        Signing algorithm: RS256 (RSASSA-PKCS1-v1_5 using SHA-256)\n        Content encryption algorithm: A256GCM (AES GCM 256)\n        Key encryption algorithm: RSA-OAEP-256 (RSAES OAEP using SHA-256)\n          \n      Key size: RSA Key Pair used for signing and encrypting the token is of size 2048 bit"
+      required: true
+      schema:
+        type: string
+        example: Basic afae1wad213da OR Bearer RA6ICaWwLPLDEcdefg+
   securitySchemes:
     basic:
       type: http
