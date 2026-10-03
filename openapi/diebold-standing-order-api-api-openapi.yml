@@ -232,15 +232,42 @@ paths:
         default:
           $ref: '#/components/responses/defaultResponse'
 components:
+  parameters:
+    consumerIdParam:
+      name: Dn-Tm-Omapi-Consumer-Id
+      in: header
+      description: A unique identifier of a consumer (within an external system), which is required to identify the consumer. Maybe the consumerId is moreover/also used to authorize the consumer against an external system. This parameter should be encrypted and encoded in base64.
+      required: true
+      schema:
+        type: string
+        minLength: 1
+    clientSecretParam:
+      name: Dn-Tm-Omapi-Client-Secret
+      in: header
+      required: true
+      description: "Depending on the crypto scheme (RSA/AES or ECIES) the client intends to use the corresponding properties of the __CryptoParams__ schema defined by OM-API should be filled accordingly and sent back to the server as stringified JSON. For example:\n\n__Using RSA/AES:__\n\n        cryptoParams: {\n            aesKeyParams: {\n                key: \"uMSlxHYT+ttxz0T+nL+A344iP6ujJdodCn6k5MmjWDC0T+MFCXcs1OjXK1DaYFaP3v1mqN9+uh58FE0VxcwFGaRSp6uDfbl9Oaji7v0vDS9mMFa4hzMoiiYBmRKUemTNkJOcgCpDi7kDNHPB+gpqYyc4dMFfPvSCG/SYv7CFXTA=\",\n                iv: \"FgZ/HdtOhroVzRd802X3NgHCuiqBjCM+6Q/6PS0lUrROBe8T+me444KpKt112gLwHck7nmOVkZJPznWf7bpX6dh+mcIQ/3B7PJ3xGEsHbmSXEAK10C+AKwXpI9Sdig8feP2QT+Hd0d1qGk0X93OFaJ/zfqs/MNIesNTVAY2YBIw=\"\n            },\n            rsaPublicKey:\"-----BEGIN PUBLIC KEY-----\\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCeB05D31/zFICpf9JJWDo1ZVXt\\npYwvJa6ka0g0EHN95C8fvMguNDmprslmsOqaJYplmknWpWjbHAtIPpqrtY3H6eWP\\nELkBN2hitJlQQjf1y2jsWHsSH7BsVY5z1hCzJySFE7Q1ae9WuYj3RTsq+4ZZpEk7\\nCjRdjA26emVkCR3vWwIDAQAB\\n-----END PUBLIC KEY-----\"\n            }\n\nThe property __rsaPublicKey__ is used to send the client's public key to the server in order to create encrypted responses. It is recommended to use __rsaPublicKey__ key size of  - at least - 1024 bit.\nThe property __aesKeyParams__ is used to send the client's AES key (256bit) and iv (128bit) to the server. Both values __must__ be encrypted with the servers public RSA key (see __/getRsaKey__).\n\n__Using ECIES:__\n\n        cryptoParams: {\n            \"ecPublicKey\":{\n                \"publicKeyPem\":\"-----BEGIN PUBLIC KEY-----\\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEHPMaBu6d0BR6QFw3VKwPipuAdDPL\\nG36/aoyTx7iTK1xgoi7X9aMmT1x3Qh1+S1zVhBh2LDDEljHkkVyHrl4bOg==\\n-----END PUBLIC KEY-----\\n\"\n                }\n            }\n\nThe property __ecPublicKey__ is used to send the client's public key to the server in order to create encrypted responses."
+      schema:
+        type: string
+        minLength: 1
+    referenceIdParam:
+      name: Dn-Tm-Omapi-Reference-Id
+      in: header
+      description: A unique identifier referring to a transaction in TM. This parameter should be encrypted and encoded in base64.
+      required: true
+      schema:
+        type: string
+        minLength: 1
+    sessionTokenParam:
+      name: Dn-Tm-Omapi-Session-Token
+      in: header
+      description: A unique identifier of a consumer session (within an external system), which is required to validate the consumer session. The default implementation expects in the sessionToken parameter a valid openId Connect id_token. Moreover, the default implementation expects in the authorization header of the http request the authorization schema "Bearer" followed by a valid openId Connect access token. This parameter should be encrypted and encoded in base64.
+      required: true
+      schema:
+        type: string
+        minLength: 1
   responses:
-    unauthorizedResponse:
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    defaultResponse:
-      description: Unexpected error. Please see/inspect 'code' and 'message' properties of the error for more/detailed informations.
+    badRequestResponse:
+      description: Bad Request
       content:
         application/json:
           schema:
@@ -251,12 +278,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/CreateTransferResponse'
-    badRequestResponse:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
     getStandingOrdersResponse:
       description: Returns a list of standing orders.
       content:
@@ -269,8 +290,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/CreateTransferResponse'
-    notFoundResponse:
-      description: Not found
+    unauthorizedResponse:
+      description: Unauthorized
       content:
         application/json:
           schema:
@@ -281,7 +302,41 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/DeleteStandingOrderResponse'
+    defaultResponse:
+      description: Unexpected error. Please see/inspect 'code' and 'message' properties of the error for more/detailed informations.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    notFoundResponse:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   schemas:
+    CreateTransferResponse:
+      type: object
+      required:
+      - responseStatus
+      description: The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using the schema __CreateTransferResponsePayload__
+      properties:
+        responseStatus:
+          $ref: '#/components/schemas/ResponseBase'
+        cryptoEnvelope:
+          $ref: '#/components/schemas/CryptoEnvelope'
+    CryptoEnvelope:
+      type: object
+      required:
+      - payload
+      description: Object holding a cryptographically secured request properties.
+      properties:
+        keyParams:
+          $ref: '#/components/schemas/AesKeyParams'
+        payload:
+          type: string
+          minLength: 1
+          example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+
     ResponseBase:
       description: "Every number used by OM-API is within a certain number range.<br> The OM-API V4 number range is 2870000 - 2879999.<br> Within that range, every requests group has its number range of 1000: <br>\n  | Request Group | Number Range                       |\n  |---------------|------------------------------------|\n  | Account Management API          | 2870000-2870999  |\n  | Standing Order API              | 2871000-2871999  |\n  | Prestaged Transaction API       | 2872000-2872999  |\n  | Miscellaneous API               | 2873000-2873999  |\n  | Accessibility API               | 2874000-2874999  |\nWithin each group range, every belonging request has its number range of 100:\n  <br>\n  | Request Name  | Number Range                       |\n  |---------------|------------------------------------|\n  | *Account Management API*\n  | getAccounts                     | 2870000-2870099  |\n  | getAccountTypes                 | 2870100-2870199  |\n  | getAccountDetails               | 2870200-2870299  |\n  | getTransactions                 | 2870300-2870399  |\n  | getScheduledTransactions        | 2870400-2870499  |\n  | checkAccount                    | 2870500-2870599  |\n  | createTransfer                  | 2870600-2870699  |\n  | createDispute                   | 2870700-2870799  |\n  | &nbsp;\n  | *Standing Order API*\n  | getStandingOrders               | 2871000-2871099  |\n  | createStandingOrder             | 2871100-2871199  |\n  | updateStandingOrder             | 2871200-2871299  |\n  | deleteStandingOrder             | 2871300-2871399  |\n  | updateAccountNickname           | 2871400-2871499  |\n  | &nbsp;\n  | *Prestaged Transaction API*\n  | createCashout4Me                | 2872000-2872099  |\n  | createCashout2You               | 2872100-2872199  |\n  | createDeposit                   | 2872200-2872299  |\n  | createBranchDeposit             | 2872300-2872399  |\n  | deletePrestagedTransaction      | 2872400-2872499  |\n  | getPrestagedTransactions        | 2872500-2872599  |\n  | executePrestagedTransaction     | 2872600-2872699  |\n  | &nbsp;\n  | *Miscellaneous API*\n  | getCreditors                    | 2874000-2874099  |\n  | getSinglePaymentOrderData       | 2874100-2874199  |\n  | getPreferences                  | 2874200-2874299  |\n  | setPreferences                  | 2874300-2874399  |\n  | getClientBranding               | 2874400-2874499  |\n  | getGenericTransactionOrders     | 2874500-2874599  |\n  | performGenericTransactionOrder  | 2874600-2874699  |\n  | getLocations                    | 2874700-2874799  |\n  | &nbsp;\n  | *Accessibility API*\n  | getRsaKey                       | 2875000-2875099  |\n  | getEcKey                        | 2875100-2875199  |\n  | getVersion                      | 2875200-2875299  |\n  <br>\n  The numbers in the ranges are used primarily for the error codes (see Error schema)."
       type: object
@@ -300,14 +355,12 @@ components:
           example: true
         error:
           $ref: '#/components/schemas/Error'
-    CreateTransferResponse:
+    StandingOrderRequest:
       type: object
       required:
-      - responseStatus
-      description: The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using the schema __CreateTransferResponsePayload__
+      - cryptoEnvelope
+      description: "With OM-API v3 encryption is used for all endpoints. The request body is therefore specified to contain only on property, the __CryptoEnvelope__:\n\n  CryptoEnvelope:\n    type: object\n    required:\n      - payload\n    description: >-\n      Object holding cryptographically secured request properties.\n    properties:\n      payload:\n        type: string\n        minLength: 1\n        example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+\n\nThe __CryptoEnvelope__ has a __payload__ property which represents an encrypted JSON string of the actual request object which is specified by  the schema __StandingOrderRequestPayload__."
       properties:
-        responseStatus:
-          $ref: '#/components/schemas/ResponseBase'
         cryptoEnvelope:
           $ref: '#/components/schemas/CryptoEnvelope'
     AesKeyParams:
@@ -324,36 +377,6 @@ components:
           description: The Base64 encoded (and encrypted) AES iv (128bit).
           type: string
           example: MTI4MzI1Mjc2NTI=
-    GetStandingOrdersResponse:
-      type: object
-      required:
-      - responseStatus
-      description: The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using the schema __GetStandingOrdersResponsePayload__
-      properties:
-        responseStatus:
-          $ref: '#/components/schemas/ResponseBase'
-        cryptoEnvelope:
-          $ref: '#/components/schemas/CryptoEnvelope'
-    StandingOrderRequest:
-      type: object
-      required:
-      - cryptoEnvelope
-      description: "With OM-API v3 encryption is used for all endpoints. The request body is therefore specified to contain only on property, the __CryptoEnvelope__:\n\n  CryptoEnvelope:\n    type: object\n    required:\n      - payload\n    description: >-\n      Object holding cryptographically secured request properties.\n    properties:\n      payload:\n        type: string\n        minLength: 1\n        example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+\n\nThe __CryptoEnvelope__ has a __payload__ property which represents an encrypted JSON string of the actual request object which is specified by  the schema __StandingOrderRequestPayload__."
-      properties:
-        cryptoEnvelope:
-          $ref: '#/components/schemas/CryptoEnvelope'
-    CryptoEnvelope:
-      type: object
-      required:
-      - payload
-      description: Object holding a cryptographically secured request properties.
-      properties:
-        keyParams:
-          $ref: '#/components/schemas/AesKeyParams'
-        payload:
-          type: string
-          minLength: 1
-          example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+
     DeleteStandingOrderResponse:
       type: object
       required:
@@ -378,6 +401,16 @@ components:
           type: string
           maxLength: 255
           example: Internal server error. A database connection could not be established.
+    GetStandingOrdersResponse:
+      type: object
+      required:
+      - responseStatus
+      description: The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using the schema __GetStandingOrdersResponsePayload__
+      properties:
+        responseStatus:
+          $ref: '#/components/schemas/ResponseBase'
+        cryptoEnvelope:
+          $ref: '#/components/schemas/CryptoEnvelope'
   requestBodies:
     standingOrderRequestBody:
       content:
@@ -386,39 +419,6 @@ components:
             $ref: '#/components/schemas/StandingOrderRequest'
       description: The request body used for /createStandingOrder and /updateStandingOrder requests
       required: true
-  parameters:
-    referenceIdParam:
-      name: Dn-Tm-Omapi-Reference-Id
-      in: header
-      description: A unique identifier referring to a transaction in TM. This parameter should be encrypted and encoded in base64.
-      required: true
-      schema:
-        type: string
-        minLength: 1
-    sessionTokenParam:
-      name: Dn-Tm-Omapi-Session-Token
-      in: header
-      description: A unique identifier of a consumer session (within an external system), which is required to validate the consumer session. The default implementation expects in the sessionToken parameter a valid openId Connect id_token. Moreover, the default implementation expects in the authorization header of the http request the authorization schema "Bearer" followed by a valid openId Connect access token. This parameter should be encrypted and encoded in base64.
-      required: true
-      schema:
-        type: string
-        minLength: 1
-    clientSecretParam:
-      name: Dn-Tm-Omapi-Client-Secret
-      in: header
-      required: true
-      description: "Depending on the crypto scheme (RSA/AES or ECIES) the client intends to use the corresponding properties of the __CryptoParams__ schema defined by OM-API should be filled accordingly and sent back to the server as stringified JSON. For example:\n\n__Using RSA/AES:__\n\n        cryptoParams: {\n            aesKeyParams: {\n                key: \"uMSlxHYT+ttxz0T+nL+A344iP6ujJdodCn6k5MmjWDC0T+MFCXcs1OjXK1DaYFaP3v1mqN9+uh58FE0VxcwFGaRSp6uDfbl9Oaji7v0vDS9mMFa4hzMoiiYBmRKUemTNkJOcgCpDi7kDNHPB+gpqYyc4dMFfPvSCG/SYv7CFXTA=\",\n                iv: \"FgZ/HdtOhroVzRd802X3NgHCuiqBjCM+6Q/6PS0lUrROBe8T+me444KpKt112gLwHck7nmOVkZJPznWf7bpX6dh+mcIQ/3B7PJ3xGEsHbmSXEAK10C+AKwXpI9Sdig8feP2QT+Hd0d1qGk0X93OFaJ/zfqs/MNIesNTVAY2YBIw=\"\n            },\n            rsaPublicKey:\"-----BEGIN PUBLIC KEY-----\\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCeB05D31/zFICpf9JJWDo1ZVXt\\npYwvJa6ka0g0EHN95C8fvMguNDmprslmsOqaJYplmknWpWjbHAtIPpqrtY3H6eWP\\nELkBN2hitJlQQjf1y2jsWHsSH7BsVY5z1hCzJySFE7Q1ae9WuYj3RTsq+4ZZpEk7\\nCjRdjA26emVkCR3vWwIDAQAB\\n-----END PUBLIC KEY-----\"\n            }\n\nThe property __rsaPublicKey__ is used to send the client's public key to the server in order to create encrypted responses. It is recommended to use __rsaPublicKey__ key size of  - at least - 1024 bit.\nThe property __aesKeyParams__ is used to send the client's AES key (256bit) and iv (128bit) to the server. Both values __must__ be encrypted with the servers public RSA key (see __/getRsaKey__).\n\n__Using ECIES:__\n\n        cryptoParams: {\n            \"ecPublicKey\":{\n                \"publicKeyPem\":\"-----BEGIN PUBLIC KEY-----\\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEHPMaBu6d0BR6QFw3VKwPipuAdDPL\\nG36/aoyTx7iTK1xgoi7X9aMmT1x3Qh1+S1zVhBh2LDDEljHkkVyHrl4bOg==\\n-----END PUBLIC KEY-----\\n\"\n                }\n            }\n\nThe property __ecPublicKey__ is used to send the client's public key to the server in order to create encrypted responses."
-      schema:
-        type: string
-        minLength: 1
-    consumerIdParam:
-      name: Dn-Tm-Omapi-Consumer-Id
-      in: header
-      description: A unique identifier of a consumer (within an external system), which is required to identify the consumer. Maybe the consumerId is moreover/also used to authorize the consumer against an external system. This parameter should be encrypted and encoded in base64.
-      required: true
-      schema:
-        type: string
-        minLength: 1
   securitySchemes:
     bearerAuth:
       description: When using the bearer authentication method an access token has to be provided in the HTTP authorization header. When using openIdConnect as security scheme the access token has to be provided in the Authorization header with the bearer scheme while the id token has to be provided in the __consumerIdParam__ which must also be encrypted.

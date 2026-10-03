@@ -237,79 +237,7 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError500'
 components:
-  parameters:
-    nodeID-Param:
-      name: nodeID
-      in: header
-      required: false
-      description: 'The nodeID of the current node or the node the user wants to get information about.<br>
-
-        The effective rights of the current user are checked against the effective rights of this nodeID.
-
-        '
-      schema:
-        type: string
-        minLength: 1
-      example: '10800'
   schemas:
-    ExchangeTokenResponseData:
-      type: object
-      required:
-      - pceAdminToken
-      properties:
-        pceAdminToken:
-          type: string
-          description: 'Base64 encoded PCEAdminSecurityToken.
-
-            '
-          example: c3RhdGUKaWRfdG....BhZ2UKCg==
-    RefreshTokenRequest:
-      type: object
-      required:
-      - refreshToken
-      description: 'The RefreshTokenRequest.
-
-        '
-      properties:
-        refreshToken:
-          type: string
-          description: 'The refresh token.
-
-            '
-          example: eyJhb.....ImlzcyI6Imh0dHBzOi8vaG5zaHUud2luY29yLW5peGRvcmYuY2
-    AuthenticationProviderData:
-      type: object
-      required:
-      - displayName
-      - authorizationURL
-      properties:
-        displayName:
-          type: string
-          maxLength: 255
-          description: 'The name of the name of the external authorization system which in human readable form, which can be displayed to the customer.
-
-            '
-          example: Microsoft Azure AD
-        authorizationURL:
-          type: string
-          format: uri
-          description: '''The URI is use to call the external authorization system for to authenticate the user..
-
-            '
-          example: https://login.microsoftonline.com/52846f0f-bc96-4a36-939b-f4d04bb473a0/oauth2/v2.0/authorize
-    Error:
-      description: "The error property is optional.<br< \nIt is set only if an error has been detected.\n"
-      type: object
-      properties:
-        message:
-          description: An optional, additional message which describes the error.
-          type: string
-          maxLength: 256
-          example: Unauthorized
-        errorCode:
-          description: An error code as outlined in the PI-API documentation.
-          type: string
-          example: REQUEST_DATA_INVALID_ID
     TokenResponseData:
       type: object
       required:
@@ -356,7 +284,71 @@ components:
           description: 'The (optional) scope.
 
             '
+    RefreshTokenRequest:
+      type: object
+      required:
+      - refreshToken
+      description: 'The RefreshTokenRequest.
+
+        '
+      properties:
+        refreshToken:
+          type: string
+          description: 'The refresh token.
+
+            '
+          example: eyJhb.....ImlzcyI6Imh0dHBzOi8vaG5zaHUud2luY29yLW5peGRvcmYuY2
+    ExchangeTokenResponseData:
+      type: object
+      required:
+      - pceAdminToken
+      properties:
+        pceAdminToken:
+          type: string
+          description: 'Base64 encoded PCEAdminSecurityToken.
+
+            '
+          example: c3RhdGUKaWRfdG....BhZ2UKCg==
+    AuthenticationProviderData:
+      type: object
+      required:
+      - displayName
+      - authorizationURL
+      properties:
+        displayName:
+          type: string
+          maxLength: 255
+          description: 'The name of the name of the external authorization system which in human readable form, which can be displayed to the customer.
+
+            '
+          example: Microsoft Azure AD
+        authorizationURL:
+          type: string
+          format: uri
+          description: '''The URI is use to call the external authorization system for to authenticate the user..
+
+            '
+          example: https://login.microsoftonline.com/52846f0f-bc96-4a36-939b-f4d04bb473a0/oauth2/v2.0/authorize
+    Error:
+      description: "The error property is optional.<br< \nIt is set only if an error has been detected.\n"
+      type: object
+      properties:
+        message:
+          description: An optional, additional message which describes the error.
+          type: string
+          maxLength: 256
+          example: Unauthorized
+        errorCode:
+          description: An error code as outlined in the PI-API documentation.
+          type: string
+          example: REQUEST_DATA_INVALID_ID
   responses:
+    InternalServerError500:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
     BadRequest400:
       description: Bad Request
       content:
@@ -369,12 +361,20 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    InternalServerError500:
-      description: Internal Server Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
+  parameters:
+    nodeID-Param:
+      name: nodeID
+      in: header
+      required: false
+      description: 'The nodeID of the current node or the node the user wants to get information about.<br>
+
+        The effective rights of the current user are checked against the effective rights of this nodeID.
+
+        '
+      schema:
+        type: string
+        minLength: 1
+      example: '10800'
   securitySchemes:
     basicAuth:
       type: http

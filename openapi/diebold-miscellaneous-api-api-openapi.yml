@@ -253,67 +253,137 @@ paths:
         default:
           $ref: '#/components/responses/defaultResponse'
 components:
+  parameters:
+    bankCodeParam:
+      name: Dn-Tm-Omapi-Bankcode
+      in: header
+      required: false
+      description: "Contains the BIC (aka. bank identifier code)\n  The BIC - also known as SWIFT-code - as defined by ISO 9362 is required in/for cross border transfers/transactions.\n  Please see: https://en.wikipedia.org/wiki/ISO_9362\n  This field can also be used to send/receive an ABA RTN (ABA routing transit number) or Canadian TN(Canadian transit number).\n  See also: https://en.wikipedia.org/wiki/Routing_transit_number\n  This parameter should be encrypted and encoded in base64.\n"
+      schema:
+        type: string
+        pattern: ^[A-Za-z0-9]*$
+        minLength: 8
+        maxLength: 11
+    consumerIdParam:
+      name: Dn-Tm-Omapi-Consumer-Id
+      in: header
+      description: A unique identifier of a consumer (within an external system), which is required to identify the consumer. Maybe the consumerId is moreover/also used to authorize the consumer against an external system. This parameter should be encrypted and encoded in base64.
+      required: true
+      schema:
+        type: string
+        minLength: 1
+    clientSecretParam:
+      name: Dn-Tm-Omapi-Client-Secret
+      in: header
+      required: true
+      description: "Depending on the crypto scheme (RSA/AES or ECIES) the client intends to use the corresponding properties of the __CryptoParams__ schema defined by OM-API should be filled accordingly and sent back to the server as stringified JSON. For example:\n\n__Using RSA/AES:__\n\n        cryptoParams: {\n            aesKeyParams: {\n                key: \"uMSlxHYT+ttxz0T+nL+A344iP6ujJdodCn6k5MmjWDC0T+MFCXcs1OjXK1DaYFaP3v1mqN9+uh58FE0VxcwFGaRSp6uDfbl9Oaji7v0vDS9mMFa4hzMoiiYBmRKUemTNkJOcgCpDi7kDNHPB+gpqYyc4dMFfPvSCG/SYv7CFXTA=\",\n                iv: \"FgZ/HdtOhroVzRd802X3NgHCuiqBjCM+6Q/6PS0lUrROBe8T+me444KpKt112gLwHck7nmOVkZJPznWf7bpX6dh+mcIQ/3B7PJ3xGEsHbmSXEAK10C+AKwXpI9Sdig8feP2QT+Hd0d1qGk0X93OFaJ/zfqs/MNIesNTVAY2YBIw=\"\n            },\n            rsaPublicKey:\"-----BEGIN PUBLIC KEY-----\\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCeB05D31/zFICpf9JJWDo1ZVXt\\npYwvJa6ka0g0EHN95C8fvMguNDmprslmsOqaJYplmknWpWjbHAtIPpqrtY3H6eWP\\nELkBN2hitJlQQjf1y2jsWHsSH7BsVY5z1hCzJySFE7Q1ae9WuYj3RTsq+4ZZpEk7\\nCjRdjA26emVkCR3vWwIDAQAB\\n-----END PUBLIC KEY-----\"\n            }\n\nThe property __rsaPublicKey__ is used to send the client's public key to the server in order to create encrypted responses. It is recommended to use __rsaPublicKey__ key size of  - at least - 1024 bit.\nThe property __aesKeyParams__ is used to send the client's AES key (256bit) and iv (128bit) to the server. Both values __must__ be encrypted with the servers public RSA key (see __/getRsaKey__).\n\n__Using ECIES:__\n\n        cryptoParams: {\n            \"ecPublicKey\":{\n                \"publicKeyPem\":\"-----BEGIN PUBLIC KEY-----\\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEHPMaBu6d0BR6QFw3VKwPipuAdDPL\\nG36/aoyTx7iTK1xgoi7X9aMmT1x3Qh1+S1zVhBh2LDDEljHkkVyHrl4bOg==\\n-----END PUBLIC KEY-----\\n\"\n                }\n            }\n\nThe property __ecPublicKey__ is used to send the client's public key to the server in order to create encrypted responses."
+      schema:
+        type: string
+        minLength: 1
+    scopeParam:
+      name: Dn-Tm-Omapi-Scope
+      in: header
+      required: true
+      description: The 'scope' of the preferences. If the scope is not given, all preferences are returned without taking any certain scope into account.
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 255
+    panParam:
+      name: Dn-Tm-Omapi-Pan
+      in: header
+      description: The PAN of the card to get the preferences for. This parameter should be encrypted and encoded in base64.
+      required: true
+      schema:
+        type: string
+        pattern: ^\d+$
+        format: PAN
+        minLength: 13
+        maxLength: 19
+        example: '4761739028380180'
+    referenceIdParam:
+      name: Dn-Tm-Omapi-Reference-Id
+      in: header
+      description: A unique identifier referring to a transaction in TM. This parameter should be encrypted and encoded in base64.
+      required: true
+      schema:
+        type: string
+        minLength: 1
+    sessionTokenParam:
+      name: Dn-Tm-Omapi-Session-Token
+      in: header
+      description: A unique identifier of a consumer session (within an external system), which is required to validate the consumer session. The default implementation expects in the sessionToken parameter a valid openId Connect id_token. Moreover, the default implementation expects in the authorization header of the http request the authorization schema "Bearer" followed by a valid openId Connect access token. This parameter should be encrypted and encoded in base64.
+      required: true
+      schema:
+        type: string
+        minLength: 1
   responses:
-    unauthorizedResponse:
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    defaultResponse:
-      description: Unexpected error. Please see/inspect 'code' and 'message' properties of the error for more/detailed informations.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    setPreferencesResponse:
-      description: Returns the response status.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/SetPreferencesResponse'
     badRequestResponse:
       description: Bad Request
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    getLocationsResponse:
-      description: Returns the response status.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/GetLocationsResponse'
-    getClientBrandingResponse:
-      description: Returns the response status.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/GetClientBrandingResponse'
-    manageRemoteNotificationsResponse:
-      description: Returns the response status when subscribing/unsubscribing for remote notifications.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ManageRemoteNotificationsResponse'
-    executeGenericTransactionOrderResponse:
-      description: Returns the response status.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ExecuteGenericTransactionOrderResponse'
     getPreferencesResponse:
       description: Returns the preferences key-value map.
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/GetPreferencesResponse'
+    setPreferencesResponse:
+      description: Returns the response status.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SetPreferencesResponse'
+    unauthorizedResponse:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    executeGenericTransactionOrderResponse:
+      description: Returns the response status.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ExecuteGenericTransactionOrderResponse'
+    getClientBrandingResponse:
+      description: Returns the response status.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetClientBrandingResponse'
     getGenericTransactionOrdersResponse:
       description: Returns the list of generic transaction orders.
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/GetGenericTransactionOrdersResponse'
+    defaultResponse:
+      description: Unexpected error. Please see/inspect 'code' and 'message' properties of the error for more/detailed informations.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    getCreditorsResponse:
+      description: Returns the list of pending prestaged transactions.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetCreditorsResponse'
+    manageRemoteNotificationsResponse:
+      description: Returns the response status when subscribing/unsubscribing for remote notifications.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ManageRemoteNotificationsResponse'
+    getLocationsResponse:
+      description: Returns the response status.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetLocationsResponse'
     notFoundResponse:
       description: Not found
       content:
@@ -326,44 +396,63 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/GetSinglePaymentOrderDataResponse'
-    getCreditorsResponse:
-      description: Returns the list of pending prestaged transactions.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/GetCreditorsResponse'
-  requestBodies:
-    executeGenericTransactionOrderRequestBody:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ExecuteGenericTransactionOrderRequest'
-      description: The request body used for /executeGenericTransactionOrder requests
-      required: true
-    setPreferencesRequestBody:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/SetPreferencesRequest'
-      description: The request body used for /setPreferences requests
-      required: true
-    getLocationsRequestBody:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/GetLocationsRequest'
-      description: The request body used for /getLocations requests
-      required: true
-    manageRemoteNotificationsRequestBody:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ManageRemoteNotificationsRequest'
-      description: 'The request body used for /executeProcess requests
-
-        '
-      required: true
   schemas:
+    SetPreferencesResponse:
+      type: object
+      required:
+      - responseStatus
+      properties:
+        responseStatus:
+          $ref: '#/components/schemas/ResponseBase'
+    GetClientBrandingResponse:
+      type: object
+      required:
+      - responseStatus
+      description: The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using the schema __GetClientBrandingResponsePayload__
+      properties:
+        responseStatus:
+          $ref: '#/components/schemas/ResponseBase'
+        cryptoEnvelope:
+          $ref: '#/components/schemas/CryptoEnvelope'
+    ExecuteGenericTransactionOrderResponse:
+      type: object
+      required:
+      - responseStatus
+      properties:
+        responseStatus:
+          $ref: '#/components/schemas/ResponseBase'
+    GetLocationsResponse:
+      type: object
+      required:
+      - responseStatus
+      description: The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using the schema __GetLocationsResponsePayload__
+      properties:
+        responseStatus:
+          $ref: '#/components/schemas/ResponseBase'
+        cryptoEnvelope:
+          $ref: '#/components/schemas/CryptoEnvelope'
+    CryptoEnvelope:
+      type: object
+      required:
+      - payload
+      description: Object holding a cryptographically secured request properties.
+      properties:
+        keyParams:
+          $ref: '#/components/schemas/AesKeyParams'
+        payload:
+          type: string
+          minLength: 1
+          example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+
+    GetSinglePaymentOrderDataResponse:
+      type: object
+      required:
+      - responseStatus
+      description: The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using the schema __GetSinglePaymentOrderDataResponsePayload__
+      properties:
+        responseStatus:
+          $ref: '#/components/schemas/ResponseBase'
+        cryptoEnvelope:
+          $ref: '#/components/schemas/CryptoEnvelope'
     ResponseBase:
       description: "Every number used by OM-API is within a certain number range.<br> The OM-API V4 number range is 2870000 - 2879999.<br> Within that range, every requests group has its number range of 1000: <br>\n  | Request Group | Number Range                       |\n  |---------------|------------------------------------|\n  | Account Management API          | 2870000-2870999  |\n  | Standing Order API              | 2871000-2871999  |\n  | Prestaged Transaction API       | 2872000-2872999  |\n  | Miscellaneous API               | 2873000-2873999  |\n  | Accessibility API               | 2874000-2874999  |\nWithin each group range, every belonging request has its number range of 100:\n  <br>\n  | Request Name  | Number Range                       |\n  |---------------|------------------------------------|\n  | *Account Management API*\n  | getAccounts                     | 2870000-2870099  |\n  | getAccountTypes                 | 2870100-2870199  |\n  | getAccountDetails               | 2870200-2870299  |\n  | getTransactions                 | 2870300-2870399  |\n  | getScheduledTransactions        | 2870400-2870499  |\n  | checkAccount                    | 2870500-2870599  |\n  | createTransfer                  | 2870600-2870699  |\n  | createDispute                   | 2870700-2870799  |\n  | &nbsp;\n  | *Standing Order API*\n  | getStandingOrders               | 2871000-2871099  |\n  | createStandingOrder             | 2871100-2871199  |\n  | updateStandingOrder             | 2871200-2871299  |\n  | deleteStandingOrder             | 2871300-2871399  |\n  | updateAccountNickname           | 2871400-2871499  |\n  | &nbsp;\n  | *Prestaged Transaction API*\n  | createCashout4Me                | 2872000-2872099  |\n  | createCashout2You               | 2872100-2872199  |\n  | createDeposit                   | 2872200-2872299  |\n  | createBranchDeposit             | 2872300-2872399  |\n  | deletePrestagedTransaction      | 2872400-2872499  |\n  | getPrestagedTransactions        | 2872500-2872599  |\n  | executePrestagedTransaction     | 2872600-2872699  |\n  | &nbsp;\n  | *Miscellaneous API*\n  | getCreditors                    | 2874000-2874099  |\n  | getSinglePaymentOrderData       | 2874100-2874199  |\n  | getPreferences                  | 2874200-2874299  |\n  | setPreferences                  | 2874300-2874399  |\n  | getClientBranding               | 2874400-2874499  |\n  | getGenericTransactionOrders     | 2874500-2874599  |\n  | performGenericTransactionOrder  | 2874600-2874699  |\n  | getLocations                    | 2874700-2874799  |\n  | &nbsp;\n  | *Accessibility API*\n  | getRsaKey                       | 2875000-2875099  |\n  | getEcKey                        | 2875100-2875199  |\n  | getVersion                      | 2875200-2875299  |\n  <br>\n  The numbers in the ranges are used primarily for the error codes (see Error schema)."
       type: object
@@ -382,13 +471,29 @@ components:
           example: true
         error:
           $ref: '#/components/schemas/Error'
-    ExecuteGenericTransactionOrderResponse:
+    GetLocationsRequest:
+      type: object
+      required:
+      - cryptoEnvelope
+      description: "With OM-API v3 encryption is used for all endpoints. The request body is therefore specified to contain only on property, the __CryptoEnvelope__:\n\n  CryptoEnvelope:\n    type: object\n    required:\n      - payload\n    description: >-\n      Object holding cryptographically secured request properties.\n    properties:\n      payload:\n        type: string\n        minLength: 1\n        example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+\n\nThe __CryptoEnvelope__ has a __payload__ property which represents an encrypted JSON string of the actual request object which is specified by  the schema __GetLocationsRequestPayload__."
+      properties:
+        cryptoEnvelope:
+          $ref: '#/components/schemas/CryptoEnvelope'
+    ManageRemoteNotificationsResponse:
       type: object
       required:
       - responseStatus
       properties:
         responseStatus:
           $ref: '#/components/schemas/ResponseBase'
+    ExecuteGenericTransactionOrderRequest:
+      type: object
+      required:
+      - cryptoEnvelope
+      description: "With OM-API v3 encryption is used for all endpoints. The request body is therefore specified to contain only on property, the __CryptoEnvelope__:\n\n  CryptoEnvelope:\n    type: object\n    required:\n      - payload\n    description: >-\n      Object holding cryptographically secured request properties.\n    properties:\n      payload:\n        type: string\n        minLength: 1\n        example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+\n\nThe __CryptoEnvelope__ has a __payload__ property which represents an encrypted JSON string of the actual request object which is specified by  the schema __ExecuteGenericTransactionOrderRequestPayload__."
+      properties:
+        cryptoEnvelope:
+          $ref: '#/components/schemas/CryptoEnvelope'
     AesKeyParams:
       description: A holder object for AES symmetric key params.
       required:
@@ -403,79 +508,14 @@ components:
           description: The Base64 encoded (and encrypted) AES iv (128bit).
           type: string
           example: MTI4MzI1Mjc2NTI=
-    SetPreferencesRequest:
-      type: object
-      required:
-      - cryptoEnvelope
-      description: "With OM-API v3 encryption is used for all endpoints. The request body is therefore specified to contain only on property, the __CryptoEnvelope__:\n\n  CryptoEnvelope:\n    type: object\n    required:\n      - payload\n    description: >-\n      Object holding cryptographically secured request properties.\n    properties:\n      payload:\n        type: string\n        minLength: 1\n        example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+\n\nThe __CryptoEnvelope__ has a __payload__ property which represents an encrypted JSON string of the actual request object which is specified by  the schema __SetPreferencesRequestPayload__."
-      properties:
-        cryptoEnvelope:
-          $ref: '#/components/schemas/CryptoEnvelope'
-    GetPreferencesResponse:
+    GetGenericTransactionOrdersResponse:
       type: object
       required:
       - responseStatus
-      description: The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using the schema __GetPreferencesResponsePayload__
+      description: The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using the schema __GetGenericTransactionOrdersResponsePayload__
       properties:
         responseStatus:
           $ref: '#/components/schemas/ResponseBase'
-        cryptoEnvelope:
-          $ref: '#/components/schemas/CryptoEnvelope'
-    GetSinglePaymentOrderDataResponse:
-      type: object
-      required:
-      - responseStatus
-      description: The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using the schema __GetSinglePaymentOrderDataResponsePayload__
-      properties:
-        responseStatus:
-          $ref: '#/components/schemas/ResponseBase'
-        cryptoEnvelope:
-          $ref: '#/components/schemas/CryptoEnvelope'
-    GetClientBrandingResponse:
-      type: object
-      required:
-      - responseStatus
-      description: The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using the schema __GetClientBrandingResponsePayload__
-      properties:
-        responseStatus:
-          $ref: '#/components/schemas/ResponseBase'
-        cryptoEnvelope:
-          $ref: '#/components/schemas/CryptoEnvelope'
-    GetCreditorsResponse:
-      type: object
-      required:
-      - responseStatus
-      description: The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using the schema __GetCreditorsResponsePayload__
-      properties:
-        responseStatus:
-          $ref: '#/components/schemas/ResponseBase'
-        cryptoEnvelope:
-          $ref: '#/components/schemas/CryptoEnvelope'
-    CryptoEnvelope:
-      type: object
-      required:
-      - payload
-      description: Object holding a cryptographically secured request properties.
-      properties:
-        keyParams:
-          $ref: '#/components/schemas/AesKeyParams'
-        payload:
-          type: string
-          minLength: 1
-          example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+
-    SetPreferencesResponse:
-      type: object
-      required:
-      - responseStatus
-      properties:
-        responseStatus:
-          $ref: '#/components/schemas/ResponseBase'
-    ManageRemoteNotificationsRequest:
-      type: object
-      required:
-      - cryptoEnvelope
-      description: "The request body only holds one property, the __CryptoEnvelope__:\n\n  CryptoEnvelope:\n    type: object\n    required:\n      - payload\n    description: >-\n      Object holding cryptographically secured request/response properties.\n    properties:\n      payload:\n        type: string\n        minLength: 1\n        example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+\n\nThe __CryptoEnvelope__ has a __payload__ property which represents an encrypted JSON string of the actual request object which is specified by  the schema __ManageRemoteNotificationsPayload__."
-      properties:
         cryptoEnvelope:
           $ref: '#/components/schemas/CryptoEnvelope'
     Error:
@@ -495,113 +535,73 @@ components:
           type: string
           maxLength: 255
           example: Internal server error. A database connection could not be established.
-    GetLocationsResponse:
-      type: object
-      required:
-      - responseStatus
-      description: The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using the schema __GetLocationsResponsePayload__
-      properties:
-        responseStatus:
-          $ref: '#/components/schemas/ResponseBase'
-        cryptoEnvelope:
-          $ref: '#/components/schemas/CryptoEnvelope'
-    ExecuteGenericTransactionOrderRequest:
+    SetPreferencesRequest:
       type: object
       required:
       - cryptoEnvelope
-      description: "With OM-API v3 encryption is used for all endpoints. The request body is therefore specified to contain only on property, the __CryptoEnvelope__:\n\n  CryptoEnvelope:\n    type: object\n    required:\n      - payload\n    description: >-\n      Object holding cryptographically secured request properties.\n    properties:\n      payload:\n        type: string\n        minLength: 1\n        example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+\n\nThe __CryptoEnvelope__ has a __payload__ property which represents an encrypted JSON string of the actual request object which is specified by  the schema __ExecuteGenericTransactionOrderRequestPayload__."
+      description: "With OM-API v3 encryption is used for all endpoints. The request body is therefore specified to contain only on property, the __CryptoEnvelope__:\n\n  CryptoEnvelope:\n    type: object\n    required:\n      - payload\n    description: >-\n      Object holding cryptographically secured request properties.\n    properties:\n      payload:\n        type: string\n        minLength: 1\n        example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+\n\nThe __CryptoEnvelope__ has a __payload__ property which represents an encrypted JSON string of the actual request object which is specified by  the schema __SetPreferencesRequestPayload__."
       properties:
         cryptoEnvelope:
           $ref: '#/components/schemas/CryptoEnvelope'
-    GetGenericTransactionOrdersResponse:
-      type: object
-      required:
-      - responseStatus
-      description: The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using the schema __GetGenericTransactionOrdersResponsePayload__
-      properties:
-        responseStatus:
-          $ref: '#/components/schemas/ResponseBase'
-        cryptoEnvelope:
-          $ref: '#/components/schemas/CryptoEnvelope'
-    GetLocationsRequest:
+    ManageRemoteNotificationsRequest:
       type: object
       required:
       - cryptoEnvelope
-      description: "With OM-API v3 encryption is used for all endpoints. The request body is therefore specified to contain only on property, the __CryptoEnvelope__:\n\n  CryptoEnvelope:\n    type: object\n    required:\n      - payload\n    description: >-\n      Object holding cryptographically secured request properties.\n    properties:\n      payload:\n        type: string\n        minLength: 1\n        example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+\n\nThe __CryptoEnvelope__ has a __payload__ property which represents an encrypted JSON string of the actual request object which is specified by  the schema __GetLocationsRequestPayload__."
+      description: "The request body only holds one property, the __CryptoEnvelope__:\n\n  CryptoEnvelope:\n    type: object\n    required:\n      - payload\n    description: >-\n      Object holding cryptographically secured request/response properties.\n    properties:\n      payload:\n        type: string\n        minLength: 1\n        example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+\n\nThe __CryptoEnvelope__ has a __payload__ property which represents an encrypted JSON string of the actual request object which is specified by  the schema __ManageRemoteNotificationsPayload__."
       properties:
         cryptoEnvelope:
           $ref: '#/components/schemas/CryptoEnvelope'
-    ManageRemoteNotificationsResponse:
+    GetCreditorsResponse:
       type: object
       required:
       - responseStatus
+      description: The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using the schema __GetCreditorsResponsePayload__
       properties:
         responseStatus:
           $ref: '#/components/schemas/ResponseBase'
-  parameters:
-    referenceIdParam:
-      name: Dn-Tm-Omapi-Reference-Id
-      in: header
-      description: A unique identifier referring to a transaction in TM. This parameter should be encrypted and encoded in base64.
+        cryptoEnvelope:
+          $ref: '#/components/schemas/CryptoEnvelope'
+    GetPreferencesResponse:
+      type: object
+      required:
+      - responseStatus
+      description: The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using the schema __GetPreferencesResponsePayload__
+      properties:
+        responseStatus:
+          $ref: '#/components/schemas/ResponseBase'
+        cryptoEnvelope:
+          $ref: '#/components/schemas/CryptoEnvelope'
+  requestBodies:
+    executeGenericTransactionOrderRequestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ExecuteGenericTransactionOrderRequest'
+      description: The request body used for /executeGenericTransactionOrder requests
       required: true
-      schema:
-        type: string
-        minLength: 1
-    scopeParam:
-      name: Dn-Tm-Omapi-Scope
-      in: header
+    manageRemoteNotificationsRequestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ManageRemoteNotificationsRequest'
+      description: 'The request body used for /executeProcess requests
+
+        '
       required: true
-      description: The 'scope' of the preferences. If the scope is not given, all preferences are returned without taking any certain scope into account.
-      schema:
-        type: string
-        minLength: 1
-        maxLength: 255
-    sessionTokenParam:
-      name: Dn-Tm-Omapi-Session-Token
-      in: header
-      description: A unique identifier of a consumer session (within an external system), which is required to validate the consumer session. The default implementation expects in the sessionToken parameter a valid openId Connect id_token. Moreover, the default implementation expects in the authorization header of the http request the authorization schema "Bearer" followed by a valid openId Connect access token. This parameter should be encrypted and encoded in base64.
+    getLocationsRequestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetLocationsRequest'
+      description: The request body used for /getLocations requests
       required: true
-      schema:
-        type: string
-        minLength: 1
-    clientSecretParam:
-      name: Dn-Tm-Omapi-Client-Secret
-      in: header
+    setPreferencesRequestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SetPreferencesRequest'
+      description: The request body used for /setPreferences requests
       required: true
-      description: "Depending on the crypto scheme (RSA/AES or ECIES) the client intends to use the corresponding properties of the __CryptoParams__ schema defined by OM-API should be filled accordingly and sent back to the server as stringified JSON. For example:\n\n__Using RSA/AES:__\n\n        cryptoParams: {\n            aesKeyParams: {\n                key: \"uMSlxHYT+ttxz0T+nL+A344iP6ujJdodCn6k5MmjWDC0T+MFCXcs1OjXK1DaYFaP3v1mqN9+uh58FE0VxcwFGaRSp6uDfbl9Oaji7v0vDS9mMFa4hzMoiiYBmRKUemTNkJOcgCpDi7kDNHPB+gpqYyc4dMFfPvSCG/SYv7CFXTA=\",\n                iv: \"FgZ/HdtOhroVzRd802X3NgHCuiqBjCM+6Q/6PS0lUrROBe8T+me444KpKt112gLwHck7nmOVkZJPznWf7bpX6dh+mcIQ/3B7PJ3xGEsHbmSXEAK10C+AKwXpI9Sdig8feP2QT+Hd0d1qGk0X93OFaJ/zfqs/MNIesNTVAY2YBIw=\"\n            },\n            rsaPublicKey:\"-----BEGIN PUBLIC KEY-----\\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCeB05D31/zFICpf9JJWDo1ZVXt\\npYwvJa6ka0g0EHN95C8fvMguNDmprslmsOqaJYplmknWpWjbHAtIPpqrtY3H6eWP\\nELkBN2hitJlQQjf1y2jsWHsSH7BsVY5z1hCzJySFE7Q1ae9WuYj3RTsq+4ZZpEk7\\nCjRdjA26emVkCR3vWwIDAQAB\\n-----END PUBLIC KEY-----\"\n            }\n\nThe property __rsaPublicKey__ is used to send the client's public key to the server in order to create encrypted responses. It is recommended to use __rsaPublicKey__ key size of  - at least - 1024 bit.\nThe property __aesKeyParams__ is used to send the client's AES key (256bit) and iv (128bit) to the server. Both values __must__ be encrypted with the servers public RSA key (see __/getRsaKey__).\n\n__Using ECIES:__\n\n        cryptoParams: {\n            \"ecPublicKey\":{\n                \"publicKeyPem\":\"-----BEGIN PUBLIC KEY-----\\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEHPMaBu6d0BR6QFw3VKwPipuAdDPL\\nG36/aoyTx7iTK1xgoi7X9aMmT1x3Qh1+S1zVhBh2LDDEljHkkVyHrl4bOg==\\n-----END PUBLIC KEY-----\\n\"\n                }\n            }\n\nThe property __ecPublicKey__ is used to send the client's public key to the server in order to create encrypted responses."
-      schema:
-        type: string
-        minLength: 1
-    bankCodeParam:
-      name: Dn-Tm-Omapi-Bankcode
-      in: header
-      required: false
-      description: "Contains the BIC (aka. bank identifier code)\n  The BIC - also known as SWIFT-code - as defined by ISO 9362 is required in/for cross border transfers/transactions.\n  Please see: https://en.wikipedia.org/wiki/ISO_9362\n  This field can also be used to send/receive an ABA RTN (ABA routing transit number) or Canadian TN(Canadian transit number).\n  See also: https://en.wikipedia.org/wiki/Routing_transit_number\n  This parameter should be encrypted and encoded in base64.\n"
-      schema:
-        type: string
-        pattern: ^[A-Za-z0-9]*$
-        minLength: 8
-        maxLength: 11
-    consumerIdParam:
-      name: Dn-Tm-Omapi-Consumer-Id
-      in: header
-      description: A unique identifier of a consumer (within an external system), which is required to identify the consumer. Maybe the consumerId is moreover/also used to authorize the consumer against an external system. This parameter should be encrypted and encoded in base64.
-      required: true
-      schema:
-        type: string
-        minLength: 1
-    panParam:
-      name: Dn-Tm-Omapi-Pan
-      in: header
-      description: The PAN of the card to get the preferences for. This parameter should be encrypted and encoded in base64.
-      required: true
-      schema:
-        type: string
-        pattern: ^\d+$
-        format: PAN
-        minLength: 13
-        maxLength: 19
-        example: '4761739028380180'
   securitySchemes:
     bearerAuth:
       description: When using the bearer authentication method an access token has to be provided in the HTTP authorization header. When using openIdConnect as security scheme the access token has to be provided in the Authorization header with the bearer scheme while the id token has to be provided in the __consumerIdParam__ which must also be encrypted.

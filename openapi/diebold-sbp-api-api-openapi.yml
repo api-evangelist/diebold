@@ -63,6 +63,43 @@ paths:
         default:
           $ref: '#/components/responses/defaultResponse'
 components:
+  responses:
+    executeProcessResponse:
+      description: Holds the response CryptoEnvelope
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ExecuteProcessResponse'
+    defaultResponse:
+      description: Unexpected error. Please see/inspect 'code' and 'message' properties of the error for more/detailed informations.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    badRequestResponse:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    unauthorizedResponse:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    notFoundResponse:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    getEcKeyResponse:
+      description: Returns the API's public EC key as PEM.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetEcKeyResponse'
   schemas:
     CryptoEnvelope:
       type: object
@@ -74,6 +111,37 @@ components:
           type: string
           minLength: 1
           example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+
+    ExecuteProcessResponse:
+      type: object
+      required:
+      - responseStatus
+      description: "The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using a schema  matching the ProcessType.\n\n  - CONF      -> ConfResponsePayload\n  - CARDDATA  -> CardDataResponsePayload"
+      properties:
+        responseStatus:
+          $ref: '#/components/schemas/ResponseBase'
+        cryptoEnvelope:
+          $ref: '#/components/schemas/CryptoEnvelope'
+    ExecuteProcessRequest:
+      type: object
+      required:
+      - cryptoEnvelope
+      description: "The request body only holds one property, the __CryptoEnvelope__:\n\n  CryptoEnvelope:\n    type: object\n    required:\n      - payload\n    description: >-\n      Object holding cryptographically secured request/response properties.\n    properties:\n      payload:\n        type: string\n        minLength: 1\n        example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+\n\nThe __CryptoEnvelope__ has a __payload__ property which represents an encrypted JSON string of the actual request object which is specified by  the schema __ExecuteProcessRequestPayload__."
+      properties:
+        cryptoEnvelope:
+          $ref: '#/components/schemas/CryptoEnvelope'
+    PublicKeyPem:
+      description: A holder object for PEM formatted public keys
+      type: object
+      required:
+      - publicKeyPem
+      properties:
+        publicKeyPem:
+          type: string
+          minLength: 1
+          example: '"-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEt0 GMNz1Geam/Jw4lbIoPcspDbWt2\n84U+yYZqnqMIa5gQZyJNsTRdvDfb2jdP3MUVBJM UoOeuGTF/cJy4uQ587w==\n-----END PUBLIC KEY-----\n"'
+    EcPublicKey:
+      allOf:
+      - $ref: '#/components/schemas/PublicKeyPem'
     ResponseBase:
       description: 'The basic response object used to transmit the response status and errors
 
@@ -121,74 +189,6 @@ components:
           type: string
           maxLength: 255
           example: Internal server error. A database connection could not be established.
-    PublicKeyPem:
-      description: A holder object for PEM formatted public keys
-      type: object
-      required:
-      - publicKeyPem
-      properties:
-        publicKeyPem:
-          type: string
-          minLength: 1
-          example: '"-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEt0 GMNz1Geam/Jw4lbIoPcspDbWt2\n84U+yYZqnqMIa5gQZyJNsTRdvDfb2jdP3MUVBJM UoOeuGTF/cJy4uQ587w==\n-----END PUBLIC KEY-----\n"'
-    ExecuteProcessRequest:
-      type: object
-      required:
-      - cryptoEnvelope
-      description: "The request body only holds one property, the __CryptoEnvelope__:\n\n  CryptoEnvelope:\n    type: object\n    required:\n      - payload\n    description: >-\n      Object holding cryptographically secured request/response properties.\n    properties:\n      payload:\n        type: string\n        minLength: 1\n        example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+\n\nThe __CryptoEnvelope__ has a __payload__ property which represents an encrypted JSON string of the actual request object which is specified by  the schema __ExecuteProcessRequestPayload__."
-      properties:
-        cryptoEnvelope:
-          $ref: '#/components/schemas/CryptoEnvelope'
-    EcPublicKey:
-      allOf:
-      - $ref: '#/components/schemas/PublicKeyPem'
-    ExecuteProcessResponse:
-      type: object
-      required:
-      - responseStatus
-      description: "The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using a schema  matching the ProcessType.\n\n  - CONF      -> ConfResponsePayload\n  - CARDDATA  -> CardDataResponsePayload"
-      properties:
-        responseStatus:
-          $ref: '#/components/schemas/ResponseBase'
-        cryptoEnvelope:
-          $ref: '#/components/schemas/CryptoEnvelope'
-  responses:
-    defaultResponse:
-      description: Unexpected error. Please see/inspect 'code' and 'message' properties of the error for more/detailed informations.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    unauthorizedResponse:
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    notFoundResponse:
-      description: Not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    getEcKeyResponse:
-      description: Returns the API's public EC key as PEM.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/GetEcKeyResponse'
-    executeProcessResponse:
-      description: Holds the response CryptoEnvelope
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ExecuteProcessResponse'
-    badRequestResponse:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
   requestBodies:
     executeProcessRequestBody:
       content:
@@ -200,19 +200,19 @@ components:
         '
       required: true
   parameters:
-    processIdentifierParam:
-      name: Dn-Tm-Process-Identifier
-      in: header
-      required: true
-      description: The process identifier is used to find the necessary business case data from the OCM configuration
-      schema:
-        type: string
-        minLength: 1
     cryptoParamsParam:
       name: Dn-Tm-Crypto-Params
       in: header
       required: true
       description: "The __CryptoParams__ schema should be filled with the clients public key (EC) and set as value for this header parameter as stringified JSON. An example:\n__Using ECIES:__\n\n        cryptoParams: {\n            \"ecPublicKey\":{\n                \"publicKeyPem\":\"-----BEGIN PUBLIC KEY-----\\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEHPMaBu6d0BR6QFw3VKwPipuAdDPL\\nG36/aoyTx7iTK1xgoi7X9aMmT1x3Qh1+S1zVhBh2LDDEljHkkVyHrl4bOg==\\n-----END PUBLIC KEY-----\\n\"\n                }\n            }\n\nThe property __ecPublicKey__ is used to send the client's public key to the server in order to create encrypted responses."
+      schema:
+        type: string
+        minLength: 1
+    processIdentifierParam:
+      name: Dn-Tm-Process-Identifier
+      in: header
+      required: true
+      description: The process identifier is used to find the necessary business case data from the OCM configuration
       schema:
         type: string
         minLength: 1

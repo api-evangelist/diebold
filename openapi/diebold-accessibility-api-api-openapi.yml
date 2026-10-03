@@ -123,44 +123,48 @@ paths:
     - url: http://localhost:8080/pi-api/v1
     - url: https://localhost:8080/pi-api/v1
 components:
-  responses:
-    defaultResponse:
-      description: Unexpected error. Please see/inspect 'code' and 'message' properties of the error for more/detailed informations.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    getVersionResponse:
-      description: Returns the API's version information.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/GetVersionResponse'
-    getRsaKeyResponse:
-      description: Returns the API's public RSA key.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/GetRsaKeyResponse'
-    notFoundResponse:
-      description: Not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    getEcKeyResponse:
-      description: Returns the API's public EC key as PEM.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/GetEcKeyResponse'
-    InternalServerError500:
-      description: Internal Server Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error_2'
   schemas:
+    GetVersionResponse:
+      type: object
+      required:
+      - encryptionRequired
+      - responseStatus
+      properties:
+        encryptionRequired:
+          type: boolean
+          description: true, if enrcryption of request and response payloads is required.
+          example: true
+        versionInfo:
+          type: array
+          items:
+            type: string
+            minLength: 1
+          description: OM-API version info
+        responseStatus:
+          $ref: '#/components/schemas/ResponseBase'
+    PublicKeyPem:
+      description: A holder object for PEM formatted public keys
+      type: object
+      required:
+      - publicKeyPem
+      properties:
+        publicKeyPem:
+          type: string
+          minLength: 1
+          example: '"-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEt0 GMNz1Geam/Jw4lbIoPcspDbWt2\n84U+yYZqnqMIa5gQZyJNsTRdvDfb2jdP3MUVBJM UoOeuGTF/cJy4uQ587w==\n-----END PUBLIC KEY-----\n"'
+    GetRsaKeyResponse:
+      type: object
+      required:
+      - responseStatus
+      - rsaPublicKey
+      properties:
+        responseStatus:
+          $ref: '#/components/schemas/ResponseBase'
+        rsaPublicKey:
+          $ref: '#/components/schemas/RsaPublicKey'
+    EcPublicKey:
+      allOf:
+      - $ref: '#/components/schemas/PublicKeyPem'
     ResponseBase:
       description: "Every number used by OM-API is within a certain number range.<br> The OM-API V4 number range is 2870000 - 2879999.<br> Within that range, every requests group has its number range of 1000: <br>\n  | Request Group | Number Range                       |\n  |---------------|------------------------------------|\n  | Account Management API          | 2870000-2870999  |\n  | Standing Order API              | 2871000-2871999  |\n  | Prestaged Transaction API       | 2872000-2872999  |\n  | Miscellaneous API               | 2873000-2873999  |\n  | Accessibility API               | 2874000-2874999  |\nWithin each group range, every belonging request has its number range of 100:\n  <br>\n  | Request Name  | Number Range                       |\n  |---------------|------------------------------------|\n  | *Account Management API*\n  | getAccounts                     | 2870000-2870099  |\n  | getAccountTypes                 | 2870100-2870199  |\n  | getAccountDetails               | 2870200-2870299  |\n  | getTransactions                 | 2870300-2870399  |\n  | getScheduledTransactions        | 2870400-2870499  |\n  | checkAccount                    | 2870500-2870599  |\n  | createTransfer                  | 2870600-2870699  |\n  | createDispute                   | 2870700-2870799  |\n  | &nbsp;\n  | *Standing Order API*\n  | getStandingOrders               | 2871000-2871099  |\n  | createStandingOrder             | 2871100-2871199  |\n  | updateStandingOrder             | 2871200-2871299  |\n  | deleteStandingOrder             | 2871300-2871399  |\n  | updateAccountNickname           | 2871400-2871499  |\n  | &nbsp;\n  | *Prestaged Transaction API*\n  | createCashout4Me                | 2872000-2872099  |\n  | createCashout2You               | 2872100-2872199  |\n  | createDeposit                   | 2872200-2872299  |\n  | createBranchDeposit             | 2872300-2872399  |\n  | deletePrestagedTransaction      | 2872400-2872499  |\n  | getPrestagedTransactions        | 2872500-2872599  |\n  | executePrestagedTransaction     | 2872600-2872699  |\n  | &nbsp;\n  | *Miscellaneous API*\n  | getCreditors                    | 2874000-2874099  |\n  | getSinglePaymentOrderData       | 2874100-2874199  |\n  | getPreferences                  | 2874200-2874299  |\n  | setPreferences                  | 2874300-2874399  |\n  | getClientBranding               | 2874400-2874499  |\n  | getGenericTransactionOrders     | 2874500-2874599  |\n  | performGenericTransactionOrder  | 2874600-2874699  |\n  | getLocations                    | 2874700-2874799  |\n  | &nbsp;\n  | *Accessibility API*\n  | getRsaKey                       | 2875000-2875099  |\n  | getEcKey                        | 2875100-2875199  |\n  | getVersion                      | 2875200-2875299  |\n  <br>\n  The numbers in the ranges are used primarily for the error codes (see Error schema)."
       type: object
@@ -179,6 +183,9 @@ components:
           example: true
         error:
           $ref: '#/components/schemas/Error'
+    RsaPublicKey:
+      allOf:
+      - $ref: '#/components/schemas/PublicKeyPem'
     GetEcKeyResponse:
       type: object
       required:
@@ -206,62 +213,6 @@ components:
           type: string
           maxLength: 255
           example: Internal server error. A database connection could not be established.
-    PublicKeyPem:
-      description: A holder object for PEM formatted public keys
-      type: object
-      required:
-      - publicKeyPem
-      properties:
-        publicKeyPem:
-          type: string
-          minLength: 1
-          example: '"-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEt0 GMNz1Geam/Jw4lbIoPcspDbWt2\n84U+yYZqnqMIa5gQZyJNsTRdvDfb2jdP3MUVBJM UoOeuGTF/cJy4uQ587w==\n-----END PUBLIC KEY-----\n"'
-    GetVersionResponse:
-      type: object
-      required:
-      - encryptionRequired
-      - responseStatus
-      properties:
-        encryptionRequired:
-          type: boolean
-          description: true, if enrcryption of request and response payloads is required.
-          example: true
-        versionInfo:
-          type: array
-          items:
-            type: string
-            minLength: 1
-          description: OM-API version info
-        responseStatus:
-          $ref: '#/components/schemas/ResponseBase'
-    EcPublicKey:
-      allOf:
-      - $ref: '#/components/schemas/PublicKeyPem'
-    RsaPublicKey:
-      allOf:
-      - $ref: '#/components/schemas/PublicKeyPem'
-    GetRsaKeyResponse:
-      type: object
-      required:
-      - responseStatus
-      - rsaPublicKey
-      properties:
-        responseStatus:
-          $ref: '#/components/schemas/ResponseBase'
-        rsaPublicKey:
-          $ref: '#/components/schemas/RsaPublicKey'
-    PKIKeyResponse:
-      type: object
-      required:
-      - publicKey
-      description: 'The GetTransactionsResponse contains a set of already processed payment
-
-        transactions in the given timeframe.
-
-        '
-      properties:
-        publicKey:
-          $ref: '#/components/schemas/PKIPublicKey'
     PKIPublicKey:
       description: A public (RSA) key.
       type: object
@@ -277,6 +228,18 @@ components:
           description: The base64 encoded exponent of the public key.
           type: string
           example: OTYyMzgz
+    PKIKeyResponse:
+      type: object
+      required:
+      - publicKey
+      description: 'The GetTransactionsResponse contains a set of already processed payment
+
+        transactions in the given timeframe.
+
+        '
+      properties:
+        publicKey:
+          $ref: '#/components/schemas/PKIPublicKey'
     TransactionIdentifier:
       type: string
       minLength: 6
@@ -316,6 +279,43 @@ components:
           example: HOST_CANCEL
         transactionId:
           $ref: '#/components/schemas/TransactionIdentifier'
+  responses:
+    defaultResponse:
+      description: Unexpected error. Please see/inspect 'code' and 'message' properties of the error for more/detailed informations.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    notFoundResponse:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    getEcKeyResponse:
+      description: Returns the API's public EC key as PEM.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetEcKeyResponse'
+    getRsaKeyResponse:
+      description: Returns the API's public RSA key.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetRsaKeyResponse'
+    getVersionResponse:
+      description: Returns the API's version information.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetVersionResponse'
+    InternalServerError500:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error_2'
   securitySchemes:
     bearerAuth:
       description: When using the bearer authentication method an access token has to be provided in the HTTP authorization header. When using openIdConnect as security scheme the access token has to be provided in the Authorization header with the bearer scheme while the id token has to be provided in the __consumerIdParam__ which must also be encrypted.

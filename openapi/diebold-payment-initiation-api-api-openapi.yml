@@ -522,22 +522,70 @@ paths:
           $ref: '#/components/responses/InternalServerError500'
 components:
   schemas:
-    ConfirmResponse:
-      type: object
-      description: 'The Confirm Response contains  more or less only the link to the
+    PaymentProvider:
+      type: string
+      description: 'The identifier of the payment provider.<br>
 
-        transaction
+        The payment provider ''TM'' indicates, that the transaction middleware server - aka. the TM server - should decide
+
+        which payment provider has to be used at the end, e.g. based on the card data.
 
         '
+      enum:
+      - AGOS
+      - ALIPAY
+      - APPLEPAY
+      - BLUECODE
+      - DANISH_MOBILEPAY
+      - GOOGLEPAY
+      - HUMM
+      - IKEAREFUNDCARD
+      - RAIFFEISEN
+      - SATISPAY
+      - SEPAINSTANTPAYMENT
+      - SIMULATOR
+      - SWISH
+      - SWISHMCOMMERCE
+      - SWISSBILLING
+      - TM
+      - VIPPS
+      - VISADIRECT
+      - WECHAT
+      - WOSAIPAY
+      example: ALIPAY
+    PaymentFacilitator:
+      type: object
+      required:
+      - id
+      - name
+      - subMerchantId
       properties:
-        href:
+        id:
+          maxLength: 11
+          minLength: 1
           type: string
-          description: 'The URI used e.g. to cancel this transaction. Please see also
-
-            https://en.wikipedia.org/wiki/HATEOAS
+          description: 'Payment Facilitator ID or Marketplace ID (MasterCard).
 
             '
-          example: http://pisp-pi-api-webapp/pi-api/v1/payments/123123123
+        name:
+          maxLength: 25
+          minLength: 1
+          type: string
+          description: 'Payment facilitator name in OCTs. This field is conditionally required when a payment facilitator is involved.
+
+            '
+        subMerchantId:
+          maxLength: 15
+          minLength: 1
+          type: string
+          description: 'Sub-Merchant ID containing the sponsored merchant ID.
+
+            '
+        address:
+          $ref: '#/components/schemas/Address'
+    ParticipantAncillaryDetails:
+      allOf:
+      - $ref: '#/components/schemas/ParticipantName'
     CardbasedDetailsResponse:
       allOf:
       - $ref: '#/components/schemas/CardbasedPaymentBaseResponse'
@@ -586,10 +634,219 @@ components:
 
               '
             example: '1234567890'
-    MerchantCategoryCode:
+    AuthorizePaymentRequest:
+      type: object
+      required:
+      - authorizePymentRequestData
+      description: "The AuthorizePaymentRequest is used to initiate a authorization of a payment request \nfrom the cashiers desk.\n"
+      properties:
+        authorizePymentRequestData:
+          $ref: '#/components/schemas/PaymentAuthorizationData'
+    RefundRequest:
+      type: object
+      required:
+      - refundAmount
+      - refundReason
+      description: The refundPaymentRequest is used to refund an already processed payment.
+      properties:
+        refundAmount:
+          $ref: '#/components/schemas/Amount'
+        refundReason:
+          type: string
+          minLength: 1
+          maxLength: 512
+          description: A free text field e.g. for the reason of the refund.
+          example: Late delivery
+        refundItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemData'
+        additionalData:
+          description: 'A list of addtional properties.
+
+            '
+          type: array
+          items:
+            $ref: '#/components/schemas/KeyValuePair'
+    PaymentProviderTransactionIdentifier:
+      description: The transactionId in the payment providers domain/eco-system.
       type: string
-      pattern: '[0-9]{4,4}'
-      description: "<b>Conditional.</b><br>\nIf provided, then the value overrides the one present in onboarding data.<br> \nIf the merchantCategoryCode value is not populated in onboarding data then this field is mandatory.<br><br>\n<b>Note:</b> Required if not provided during onboarding.\nNumeric value with total length of <b>4 digits</b>\nPlease see: ISO 18245:2023, Merchant category codes\n"
+      example: 343545544423-34344317
+    ParticipantInformation:
+      type: object
+      properties:
+        nationality:
+          $ref: '#/components/schemas/CountryCode'
+        countryOfBirth:
+          $ref: '#/components/schemas/CountryCode'
+        occupation:
+          type: string
+          minLength: 1
+          maxLength: 35
+          description: account owner occupation
+        dateOfBirth:
+          type: string
+          format: date
+          description: account owner date of birth
+          example: '2020-02-12'
+        emailAddress:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 99
+          description: account owner email address
+          example: john.doe@gmail.com
+    BaseAddress:
+      type: object
+      properties:
+        street:
+          type: string
+          maxLength: 255
+          description: The name of the street.
+          example: Mainstreet
+        streetNo:
+          type: string
+          maxLength: 255
+          description: The street number of this address.
+          example: '119'
+        zipCode:
+          type: string
+          maxLength: 255
+          description: The zip code of this city.
+          example: NY 5467
+        county:
+          maxLength: 50
+          minLength: 1
+          type: string
+          description: '<b>Conditional.</b><br>
+
+            Must be the county of the Merchant/Originator.<br>
+
+            Required, e.g. if the payment provider is <b>VISA Direct</b> and if country is "USA".
+
+            '
+        state:
+          maxLength: 2
+          minLength: 2
+          type: string
+          description: "<b>Conditional.</b><br>\nUse a 2-character abbreviated states code or territory code as the state value.<br>\nRequired, e.g. if the payment provider is <b>VISA Direct</b> and if country is \"USA\".  \n"
+    OrderItemData:
+      description: "Details of an order item.\nThe refered amounts are:\n  total: Line total\n  unitPrice: Unit price\n  discount: Discount amount\n"
+      type: object
+      required:
+      - itemDesc
+      - itemCount
+      - total
+      - taxRate
+      properties:
+        itemId:
+          description: Item POS ID
+          type: string
+          minLength: 4
+          maxLength: 128
+          example: 21478
+        itemDesc:
+          description: Item description
+          type: string
+          minLength: 5
+          maxLength: 256
+          example: PAX
+        itemCount:
+          description: Amount of items when purchasing more than one of a kind (including weighted items or bulk goods)
+          type: number
+          format: double
+          minimum: 0.0
+          example: 5.5
+        quantityUnit:
+          description: The quantity unit of the item. Default is "piece"
+          type: string
+          minLength: 1
+          example: cm,m,g,kg,L
+        total:
+          $ref: '#/components/schemas/Amount'
+        unitPrice:
+          $ref: '#/components/schemas/Amount'
+        discount:
+          $ref: '#/components/schemas/Amount'
+        taxRate:
+          description: Rate of taxation in percent
+          type: number
+          format: double
+          minimum: 0.0
+          example: 24.0
+    CountryCode:
+      type: string
+      minLength: 3
+      maxLength: 3
+      pattern: \d{3,3}|[A-Z]{3,3}
+      description: 'Refer to ISO Codes <p>https://en.wikipedia.org/wiki/ISO_3166-1_numeric</p> <p>https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3</p>
+
+        '
+      example: 276
+    CancelResponse:
+      type: object
+      description: The CancelPaymentResponse contains  more or less only the retryFlag
+      properties:
+        href:
+          type: string
+          description: 'The URI used e.g. to cancel this transaction. Please see also
+
+            https://en.wikipedia.org/wiki/HATEOAS
+
+            '
+          example: http://pisp-pi-api-webapp/pi-api/v1/payments/123123123
+        retryFlag:
+          type: boolean
+          description: 'true: The cancel failed due to retriable error. <br> false: The
+
+            cancel failed due to non-retriable error.
+
+            '
+          example: 'true'
+    InitiateMerchantSessionRequest:
+      type: object
+      required:
+      - validationURL
+      description: 'The InitiateMerchantSessionRequest is used to initiate a merchant session in front of a payment request for token based payment like Apple Pay or Google Pay.
+
+        '
+      properties:
+        validationURL:
+          type: string
+          description: '''The URI is use to validate itself and obtain a merchant session object.
+
+            '
+          example: https://apple-pay-gateway.apple.com/paymentservices/paymentSession
+    CardbasedPaymentTransactionData:
+      type: object
+      required:
+      - commonTransactionData
+      properties:
+        acquirerInformation:
+          $ref: '#/components/schemas/AcquirerInformation'
+        beneficiary:
+          $ref: '#/components/schemas/TransactionParticipant'
+        businessApplicationId:
+          $ref: '#/components/schemas/BusinessApplicationId'
+        cardAcceptor:
+          $ref: '#/components/schemas/CardAcceptor'
+        commonTransactionData:
+          $ref: '#/components/schemas/CardbasedTransactionData'
+        pointOfServiceData:
+          $ref: '#/components/schemas/PointOfServiceData'
+        sender:
+          $ref: '#/components/schemas/TransactionParticipant'
+        sourceOfFundsCode:
+          $ref: '#/components/schemas/SourceOfFundsCode'
+        paymentFacilitator:
+          $ref: '#/components/schemas/PaymentFacilitator'
+        enablerVerificationValue:
+          type: string
+          maxLength: 5
+          description: "Enabler Verification Value (EVV) is a Visa assigned value \nthat is used to identify enablers that participate in certain programs. \nThe EVV is unique to the enabler.\n"
+          example: abcd1
+        merchantCategoryCode:
+          $ref: '#/components/schemas/MerchantCategoryCode'
     CreditBalanceResponse:
       type: object
       required:
@@ -604,6 +861,23 @@ components:
           type: string
           format: date-time
           description: "A timestamp until the CreditBalance is valid. It contains a date and a time as defined by RFC3339 time.<br> \nPlease see: <a href=\"https://tools.ietf.org/html/rfc3339\">Date and Time on the Internet: Timestamps</a>\n"
+    InitiateMerchantSessionResponse:
+      type: object
+      required:
+      - merchantSessionPromise
+      description: 'The GetTransactionsResponse contains a set of already processed payment
+
+        transactions in the given timeframe.
+
+        '
+      properties:
+        merchantSessionPromise:
+          type: string
+          minLength: 1
+          description: 'The opaque merchant session object. Basically it is a JSON Object.
+
+            '
+          example: "{\n  \"nonce\": \"1f39c07a\",\n  \"retries\": 0,\n  \"operationalAnalyticsIdentifier\": \"Apple Pay Demo:A77873CD368A460BD5D3325AD76B01C16BB7F838CFFF654F9A993F4B6A9B4098\",\n  \"displayName\": \"Apple Pay Demo\",\n  \"domainName\": \"applepaydemo.apple.com\",\n  \"merchantIdentifier\": \"REDACTED\",\n  \"epochTimestamp\": 1639123825804,\n  \"expiresAt\": 1639127425804,\n  \"merchantSessionIdentifier\": \"REDACTED\",\n  \"signature\": \"REDACTED\"\n}\n"
     Address:
       allOf:
       - $ref: '#/components/schemas/BaseAddress'
@@ -616,84 +890,23 @@ components:
             example: New York
           countryCode:
             $ref: '#/components/schemas/CountryCode'
-    RefundResponse:
-      type: object
-      description: 'The Refund Response contains  more or less only the link to the
-
-        transaction
-
-        '
-      properties:
-        href:
-          type: string
-          description: 'The URI used e.g. to cancel this transaction. Please see also
-
-            https://en.wikipedia.org/wiki/HATEOAS
-
-            '
-          example: http://pisp-pi-api-webapp/pi-api/v1/payments/123123123
-    PanEntryMode:
+    OwnerType:
       type: string
-      description: "An identifier that identifies the method used to enter the cardholder account number and card \nexpiration date. This code specifies e.g. whether the entire magnetic stripe is included in an \nauthorization or financial request.<br><br>\nPlease take a look into the TM programmer manual to discover: \n<font color='blue'><b>com.dieboldnixdorf.txm.core.businessobjects.switching.PanEntryMode.java</b></font>\n"
       enum:
-      - UNKNOWN
-      - MANUAL_ENTRY
-      - MAG_STRIPE_READ
-      - BARCODE_READ
-      - OCR_READ
-      - ICC_READ
-      - MANUAL_KEY_ENTERED
-      - ICC_FALLBACK_TO_MAGSTRIPE
-      - ICC_FALLBACK_TO_MANUAL_ENTRY
-      - CONTACTLESS_READ
-      - FULL_MAG_STRIPE_READ
-      - CONTACTLESS_MAGNETIC_STRIPE_READ
-      - ICC_CVV_UNRELIABLE
-      - CONTACTLESS_ICC_READ
-      - STORED
-      - DIGITALLY_STORED
-      - MICR_READ
-      - ELECTRONIC_COMMERCE
-      - ON_FILE
-      - ECOMMERCE_WITH_CRYPTOGRAM
-      - SERVER
-      - ONLINE_TELLER_MANUAL
-      - POS_DEVICE
-      - ATM
-      - DISK_INPUT
-      - MERCHANT_POS
-      - ONLINE_TELLER
-      example: MANUAL_ENTRY
-    PaymentFacilitator:
-      type: object
-      required:
-      - id
-      - name
-      - subMerchantId
-      properties:
-        id:
-          maxLength: 11
-          minLength: 1
-          type: string
-          description: 'Payment Facilitator ID or Marketplace ID (MasterCard).
-
-            '
-        name:
-          maxLength: 25
-          minLength: 1
-          type: string
-          description: 'Payment facilitator name in OCTs. This field is conditionally required when a payment facilitator is involved.
-
-            '
-        subMerchantId:
-          maxLength: 15
-          minLength: 1
-          type: string
-          description: 'Sub-Merchant ID containing the sponsored merchant ID.
-
-            '
-        address:
-          $ref: '#/components/schemas/Address'
+      - BUSINESS
+      - INDIVIDUAL
+      description: This field identifies if an entity is for a business or an individual.
+    CardBasedError:
+      allOf:
+      - $ref: '#/components/schemas/Error'
+      - type: object
+        properties:
+          detailedResponseCode:
+            type: array
+            items:
+              $ref: '#/components/schemas/DetailedResponseCode'
+          transactionState:
+            $ref: '#/components/schemas/TransactionStatus'
     UserAuthorizationData:
       description: 'These data are used to identify and authorize the cardless payment
 
@@ -747,582 +960,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/KeyValuePair'
-    PointOfServiceData:
-      type: object
-      description: 'Contains a code identifying transaction conditions at the point-of-sale or point of service.<br>
-
-        For messages that follow an original request, this code identifies the type of processing being done.<br>
-
-        <b>Note:</b> For a CardPresent Transactions, this field is required.
-
-        '
-      required:
-      - motoECIIndicator
-      - panEntryMode
-      - posConditionCode
-      properties:
-        motoECIIndicator:
-          type: string
-          pattern: ^[0-9]{1}$
-          description: "Identifies the level of security used in an electronic commerce transaction over an open network<br>\n(for example, the Internet) or the type of mail or telephone order. Acquirers supply indicator values,<br> \nwhich V.I.P. forwards in requests and advices to issuers that have successfully tested to receive them.<br>\nThe subfield is dropped if issuers have not successfully completed testing or choose not to receive it.<br>\nRefer to <a href=\"https://developer.visa.com/request_response_codes#moto_eci_ind_codes\">Moto ECI Codes</a> e.g. for VISA Direct.\n"
-        panEntryMode:
-          $ref: '#/components/schemas/PanEntryMode'
-        pinEntryMode:
-          $ref: '#/components/schemas/PinEntryMode'
-        posEnvironment:
-          type: string
-          pattern: ^[0-9,CIR]{1}$
-          description: '<b>Conditional</b><br><br> This field is required to identify whether a transaction is merchant-initiated.<br>
-
-            Refer to <a href="https://developer.visa.com/request_response_codes#pos_env_codes">POS Environment Codes</a>  e.g. for VISA Direct
-
-            '
-        posConditionCode:
-          type: string
-          description: 'Contains a code identifying transaction conditions at the point of sale or point of service.<br>
-
-            For messages that follow an original request, this code identifies the type of processing being done.<br>
-
-            <b>Note:</b> For CAVV and/or TAVV transaction, the POS condition code must be set to 59.<br>
-
-            Refer to <a href="https://developer.visa.com/request_response_codes#pos_cond_code_codes">POS Condition Codes</a> e.g. for VISA Direct
-
-            '
-        specialConditionIndicatorMerchant:
-          type: string
-          pattern: ^[0-9]{1}$
-          description: 'Cryptocurrency indicator with the value of “7” can be used to identify the purchase of cryptocurrency,<br>
-
-            thereby providing greater visibility to the issuers.
-
-            '
-    ParticipantInformation:
-      type: object
-      properties:
-        nationality:
-          $ref: '#/components/schemas/CountryCode'
-        countryOfBirth:
-          $ref: '#/components/schemas/CountryCode'
-        occupation:
-          type: string
-          minLength: 1
-          maxLength: 35
-          description: account owner occupation
-        dateOfBirth:
-          type: string
-          format: date
-          description: account owner date of birth
-          example: '2020-02-12'
-        emailAddress:
-          type: string
-          format: email
-          minLength: 1
-          maxLength: 99
-          description: account owner email address
-          example: john.doe@gmail.com
-    BusinessApplicationId:
-      type: string
-      description: 'This description refers to VISA Direct, but can be used also for other purposes.<br>
-
-        As used if the payment provider is VISA Direct:<br>
-
-        - Identifies the programs'' business application type for VisaNet transaction processing.<br>
-
-        - For Money Transfer, AA applies to transactions where the sender and recipient are the same person and PP applies to transactions where the sender and recipient are not the same person.<br>
-
-        - For Money Transfer, CD (Cash Deposit) applies to cash funded transactions.<br>
-
-        - For Argentina domestic purchase transactions the value should be "PS".<br>
-
-        - For Request To Pay, city will carry Invoice Id which will be used for C2B use case in the CEMEA region where payee initiates the OCT to the payer.<br>
-
-        '
-      example: PP
-    CardbasedPaymentBaseResponse:
-      type: object
-      required:
-      - transactionId
-      - transactionState
-      - transactionTimestamp
-      description: 'The InitiateCardBasedPaymentResponse contains some information''s from the payment provider.
-
-        '
-      properties:
-        transactionId:
-          $ref: '#/components/schemas/TransactionIdentifier'
-        transactionState:
-          $ref: '#/components/schemas/TransactionStatus'
-        transactionTimestamp:
-          type: string
-          format: date-time
-          description: 'A timestamp containing date and a time as defined by RFC3339
-
-            time.<br> Please see: <a href="https://tools.ietf.org/html/rfc3339">Date and Time on the Internet: Timestamps</a>
-
-            '
-          example: '2018-04-28T06:14:50.142Z'
-        paymentProviderTransactionId:
-          $ref: '#/components/schemas/PaymentProviderTransactionIdentifier'
-    InitiateMerchantSessionRequest:
-      type: object
-      required:
-      - validationURL
-      description: 'The InitiateMerchantSessionRequest is used to initiate a merchant session in front of a payment request for token based payment like Apple Pay or Google Pay.
-
-        '
-      properties:
-        validationURL:
-          type: string
-          description: '''The URI is use to validate itself and obtain a merchant session object.
-
-            '
-          example: https://apple-pay-gateway.apple.com/paymentservices/paymentSession
-    CancelResponse:
-      type: object
-      description: The CancelPaymentResponse contains  more or less only the retryFlag
-      properties:
-        href:
-          type: string
-          description: 'The URI used e.g. to cancel this transaction. Please see also
-
-            https://en.wikipedia.org/wiki/HATEOAS
-
-            '
-          example: http://pisp-pi-api-webapp/pi-api/v1/payments/123123123
-        retryFlag:
-          type: boolean
-          description: 'true: The cancel failed due to retriable error. <br> false: The
-
-            cancel failed due to non-retriable error.
-
-            '
-          example: 'true'
-    SettlementInfo:
-      type: object
-      required:
-      - settlementAmount
-      properties:
-        settlementAmount:
-          $ref: '#/components/schemas/Amount'
-        exchangeRate:
-          $ref: '#/components/schemas/CurrencyExchangeRate'
-          description: 'Exchange Rate used to convert the transaction amount to settlement amount in case of multi-currency.
-
-            '
-    BaseAddress:
-      type: object
-      properties:
-        street:
-          type: string
-          maxLength: 255
-          description: The name of the street.
-          example: Mainstreet
-        streetNo:
-          type: string
-          maxLength: 255
-          description: The street number of this address.
-          example: '119'
-        zipCode:
-          type: string
-          maxLength: 255
-          description: The zip code of this city.
-          example: NY 5467
-        county:
-          maxLength: 50
-          minLength: 1
-          type: string
-          description: '<b>Conditional.</b><br>
-
-            Must be the county of the Merchant/Originator.<br>
-
-            Required, e.g. if the payment provider is <b>VISA Direct</b> and if country is "USA".
-
-            '
-        state:
-          maxLength: 2
-          minLength: 2
-          type: string
-          description: "<b>Conditional.</b><br>\nUse a 2-character abbreviated states code or territory code as the state value.<br>\nRequired, e.g. if the payment provider is <b>VISA Direct</b> and if country is \"USA\".  \n"
-    AuthorizePaymentRequest:
-      type: object
-      required:
-      - authorizePymentRequestData
-      description: "The AuthorizePaymentRequest is used to initiate a authorization of a payment request \nfrom the cashiers desk.\n"
-      properties:
-        authorizePymentRequestData:
-          $ref: '#/components/schemas/PaymentAuthorizationData'
-    CurrencyExchangeRate:
-      type: object
-      required:
-      - rate
-      - decimals
-      properties:
-        rate:
-          type: integer
-          format: int64
-        decimals:
-          type: integer
-    OwnerType:
-      type: string
-      enum:
-      - BUSINESS
-      - INDIVIDUAL
-      description: This field identifies if an entity is for a business or an individual.
-    CountryCode:
-      type: string
-      minLength: 3
-      maxLength: 3
-      pattern: \d{3,3}|[A-Z]{3,3}
-      description: 'Refer to ISO Codes <p>https://en.wikipedia.org/wiki/ISO_3166-1_numeric</p> <p>https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3</p>
-
-        '
-      example: 276
-    Error:
-      description: "The error property is optional. \nIt is set only if an error has been detected.\n"
-      type: object
-      properties:
-        message:
-          description: An optional, additional message which describes the error.
-          type: string
-          maxLength: 256
-          example: 'Internal server error. A database connection could not be
-
-            established.
-
-            '
-        paymentProviderErrorCode:
-          description: An error code as outlined in the PI-API documentation.
-          type: string
-          example: SysErr#765
-        errorCode:
-          description: An error code as outlined in the PI-API documentation.
-          type: string
-          example: HOST_CANCEL
-        transactionId:
-          $ref: '#/components/schemas/TransactionIdentifier'
-    CardbasedTransactionTypes:
-      type: string
-      description: "The type of a card based transaction, which can be one of the following:<br>\n<ul>\n  <li>moneyTransferCredit</li>\n  <li>moneyTransferDebit</li>\n  <li>purchase</li>\n</ul>\n"
-      enum:
-      - moneyTransferCredit
-      - moneyTransferDebit
-      - purchase
-      example: moneyTransferCredit
-    CardlessPaymentTransactionData:
-      type: object
-      required:
-      - commonTransactionData
-      - userAuthorizationData
-      properties:
-        commonTransactionData:
-          $ref: '#/components/schemas/TransactionData'
-        userAuthorizationData:
-          $ref: '#/components/schemas/UserAuthorizationData'
-    SourceOfFundsCode:
-      type: string
-      example: 2
-      description: "<b>Depends on the payment provider!</b>\nFor example, if VISA Direct is used as the payment provider, the following explanation is valid:<br>\nminLength: 2<br>\nmaxLength: 2<br>\n<b>Conditional.</b><br>If the transaction is a money transfer, the field is required and must contain a valid \nsourceOfFundsCode.<br>Please see table below Code that matches the funding instrument.<br>\nIf the transaction is a funds disbursement, the field is required and most likely\ncontains a \"05\" as shown in the table below.\nThe code is used to identify that the merchant or government entity used a\ndeposit account to fund the disbursement<br>\nIf the transaction is a pre-paid load, the field is required if the transaction is\nnon-U.S. domestic.<br>\nIf the transaction is a credit bill pay, the field is required if the transaction is non-U.S. \ndomestic, and the code must not contain a \"01\" or \"06\".<br>\n<table>\n  <tr>\n    <td>Code</td>\n    <td>Description</td>\n  </tr>\n  <tr>\n    <td>01</td>\n    <td>Visa credit</td>\n    </tr>\n    <tr>\n      <td>02</td>\n      <td>Visa debit</td>\n    </tr>\n    <tr>\n      <td>03</td>\n      <td>Visa prepaid</td>\n    </tr>\n    <tr>\n      <td>04</td>\n      <td>Cash</td>\n    </tr>\n    <tr>\n      <td>05</td>\n      <td>Debit/deposit access accounts other than those linked to a Visa card (includes checking/savings accounts and proprietary debit/ATM cards).</td>\n    </tr>\n    <tr>\n      <td>06</td>\n      <td>Credit accounts other than those linked to a Visa card (includes credit cards and proprietary credit lines).</td>\n    </tr>\n  </table>\n"
-    MSISDN:
-      type: object
-      required:
-      - MSISDN
-      properties:
-        MSISDN:
-          $ref: '#/components/schemas/MsisdnString'
-    TransactionIdentifier:
-      type: string
-      minLength: 6
-      maxLength: 40
-      description: 'A unique identifier of a transaction in the PI-API backend domain.
-
-        <br><br> This transaction number must not be confused with the
-
-        merchantTransactionId. <br><br> This PI-API transaction number is
-
-        generated by the PI-API server and is unique within the whole PI-API
-
-        server domain.  <br>
-
-        '
-      example: '434354659863230244'
-    OrderItemData:
-      description: "Details of an order item.\nThe refered amounts are:\n  total: Line total\n  unitPrice: Unit price\n  discount: Discount amount\n"
-      type: object
-      required:
-      - itemDesc
-      - itemCount
-      - total
-      - taxRate
-      properties:
-        itemId:
-          description: Item POS ID
-          type: string
-          minLength: 4
-          maxLength: 128
-          example: 21478
-        itemDesc:
-          description: Item description
-          type: string
-          minLength: 5
-          maxLength: 256
-          example: PAX
-        itemCount:
-          description: Amount of items when purchasing more than one of a kind (including weighted items or bulk goods)
-          type: number
-          format: double
-          minimum: 0.0
-          example: 5.5
-        quantityUnit:
-          description: The quantity unit of the item. Default is "piece"
-          type: string
-          minLength: 1
-          example: cm,m,g,kg,L
-        total:
-          $ref: '#/components/schemas/Amount'
-        unitPrice:
-          $ref: '#/components/schemas/Amount'
-        discount:
-          $ref: '#/components/schemas/Amount'
-        taxRate:
-          description: Rate of taxation in percent
-          type: number
-          format: double
-          minimum: 0.0
-          example: 24.0
-    BIN:
-      type: string
-      minLength: 6
-      maxLength: 9
-      description: 'The Bank Identification Number (BIN) under which, e.g. the Visa Direct solution is registered.<br>
-
-        '
-      example: 12030000
-    CardAcceptor:
-      description: 'These data describes the card acceptor of this transaction.<br>
-
-        '
-      type: object
-      required:
-      - address
-      - cardAcceptorId
-      - name
-      properties:
-        address:
-          $ref: '#/components/schemas/CardAcceptorAddress'
-        cardAcceptorId:
-          maxLength: 15
-          minLength: 1
-          type: string
-          description: 'An unique identifier for the participant, e.g. <b>VISA Direct<b> Originator.<br>
-
-            This value should be unique for each CardAcceptor for whom you are sending transactions.
-
-            '
-        name:
-          type: string
-          minLength: 1
-          description: 'The name of the payment card acceptor.<br>
-
-            E.g. for VISA Direct P2P payments, the name must contain the sender name.<br>
-
-            For a funds disbursement, must contain either the name of the merchant or government entity sending the funds disbursement.<br>
-
-            For pre-paid loads, must contain either the name of the load partner providing the reload service or the bank designated service name, if offered over bank channels.<br>
-
-            For credit card bill payment, must contain either the name of the entity providing the credit card bill pay service or the bank designated service name, if offered over bank channels.<br>
-
-            '
-        taxId:
-          maxLength: 35
-          minLength: 1
-          type: string
-          description: '<b>Conditional.</b><br>
-
-            This field contains the identifier of the acceptor issued by a taxation authority.<br>
-
-            This field is conditionally required e.g. for all MasterCard transactions.
-
-            '
-        legalBusinessName:
-          maxLength: 25
-          minLength: 1
-          type: string
-          description: 'Acceptor’s legal business name associated with the card acceptor identification code.
-
-            '
-    TransactionDetailsResponse:
-      type: object
-      required:
-      - paymentTransactionData
-      description: 'The GetTransactionsResponse contains a set of already processed payment
-
-        transactions in the given timeframe.
-
-        '
-      properties:
-        paymentTransactionData:
-          $ref: '#/components/schemas/ExtendedTransactionData'
-    PinEntryMode:
-      type: string
-      description: "An identifier that identifies the method used to enter the cardholders PIN.<br><br>\nPlease take a look into the TM programmer manual to discover: \n<font color='blue'><b>com.dieboldnixdorf.txm.core.businessobjects.switching.PinEntryMode.java</b></font>\n"
-      enum:
-      - UNSPECIFIED
-      - TERM_HAS_PINENTRY_CAP
-      - TERM_HAS_NO_PINENTRY_CAP
-      - MPOS_SOFTWARE_BASED_PINENTRY_CAP
-      - PINPAD_CURRENTLY_NOT_OPERATIVE
-      example: UNSPECIFIED
-    InitiateCardBasedPaymentRequest:
-      type: object
-      required:
-      - initiatePaymentRequestData
-      description: 'The initiatePaymentRequest is used to initiate a payment request from
-
-        the cashiers desk to the payment provider. <br> The transactionId return
-
-        in the initiatePaymentResponse should be used as a reference to the
-
-        PI-API transaction for example in further refund request or in back
-
-        office processing.
-
-        '
-      properties:
-        initiatePaymentRequestData:
-          $ref: '#/components/schemas/CardbasedPaymentTransactionData'
-    InitiatePaymentResponse:
-      type: object
-      description: 'The InitiatePaymentResponse contains more or less only the PI-API
-
-        transaction number.
-
-        '
-      properties:
-        href:
-          type: string
-          description: 'The URI used e.g. to cancel this transaction. Please see also
-
-            https://en.wikipedia.org/wiki/HATEOAS
-
-            '
-          example: http://pisp-pi-api-webapp/pi-api/v1/payments/123123123
-        paymentTransactionData:
-          $ref: '#/components/schemas/ExtendedTransactionData'
-    ParticipantAncillaryDetails:
-      allOf:
-      - $ref: '#/components/schemas/ParticipantName'
-    MsisdnString:
-      type: string
-      format: ^\+(?:[0-9]\x20?){6,14}[0-9]$
-      description: 'The numbers must start with a plus sign, followed by the country code and national number regarding ITU-T E.123 and ITU-T E.164
-
-        Phone numbers cannot contain more than 15 digits. The shortest international phone numbers in use contain seven digits.
-
-        '
-    CardAcceptorAddress:
-      allOf:
-      - $ref: '#/components/schemas/BaseAddress'
-      - type: object
-        required:
-        - countryCode
-        - city
-        properties:
-          city:
-            type: string
-            maxLength: 255
-            description: The name of the city.
-            example: New York
-          countryCode:
-            $ref: '#/components/schemas/CountryCode'
-    CreditBalanceRequest:
-      type: object
-      required:
-      - userAuthorizationData
-      description: 'The CreditBalanceRequest is used to return the available credit balance<br>
-
-        '
-      properties:
-        userAuthorizationData:
-          $ref: '#/components/schemas/UserAuthorizationData'
-    ParticipantName:
-      type: object
-      properties:
-        firstName:
-          type: string
-          minLength: 1
-          maxLength: 35
-          description: This field contains participant's first name
-          example: John
-        middleName:
-          type: string
-          minLength: 1
-          maxLength: 35
-          description: This field contains participant's middle name
-          example: A
-        lastName:
-          type: string
-          minLength: 1
-          maxLength: 35
-          description: This field contains participant's last name
-          example: Doe
-    InitiateCardBasedPaymentResponse:
-      allOf:
-      - $ref: '#/components/schemas/CardbasedPaymentBaseResponse'
-      - type: object
-        properties:
-          detailedResponseCode:
-            type: array
-            items:
-              $ref: '#/components/schemas/DetailedResponseCode'
-          settlementInfo:
-            $ref: '#/components/schemas/SettlementInfo'
-    ParticipantIdentification:
-      type: object
-      required:
-      - idType
-      - idNumber
-      properties:
-        idType:
-          type: string
-          enum:
-          - CUSTOMER_IDENTIFICATION
-          - NATIONAL_IDENTIFICATION_ID
-          - PASSPORT
-          - DRIVERS_LICENSE
-          - TAX_ID
-          - COMPANY_REGISTRATION_NO
-          - PROXY_ID
-          - SOCIAL_SECURITY_NO
-          - ALIEN_REGISTRATION
-          - LAW_ENFORCEMENT
-          - MILITARY_ID
-          - TRAVEL_ID
-          - EMAIL
-          - PHONE_NO
-          - DATE_OF_BIRTH
-          description: This field will contain the type of participant identification.
-        idNumber:
-          type: string
-          minLength: 1
-          maxLength: 35
-          description: This field will contain a value associated with the Identification Type in field idType.
-          example: '1234567890'
-        issueCountryCode:
-          $ref: '#/components/schemas/CountryCode'
-        ownerType:
-          $ref: '#/components/schemas/OwnerType'
-          description: "This field denotes whether the Tax ID is a business or individual's Tax ID \nwhen idType contains the value of TAX_ID (Tax identification).\n"
-    CardBasedError:
-      allOf:
-      - $ref: '#/components/schemas/Error'
-      - type: object
-        properties:
-          detailedResponseCode:
-            type: array
-            items:
-              $ref: '#/components/schemas/DetailedResponseCode'
-          transactionState:
-            $ref: '#/components/schemas/TransactionStatus'
     ExtendedTransactionData:
       type: object
       required:
@@ -1395,49 +1032,269 @@ components:
           $ref: '#/components/schemas/UserAuthorizationData'
         cardData:
           $ref: '#/components/schemas/CardData'
-    RefundRequest:
+    CardbasedPaymentBaseResponse:
       type: object
       required:
-      - refundAmount
-      - refundReason
-      description: The refundPaymentRequest is used to refund an already processed payment.
-      properties:
-        refundAmount:
-          $ref: '#/components/schemas/Amount'
-        refundReason:
-          type: string
-          minLength: 1
-          maxLength: 512
-          description: A free text field e.g. for the reason of the refund.
-          example: Late delivery
-        refundItems:
-          type: array
-          items:
-            $ref: '#/components/schemas/OrderItemData'
-        additionalData:
-          description: 'A list of addtional properties.
-
-            '
-          type: array
-          items:
-            $ref: '#/components/schemas/KeyValuePair'
-    InitiateMerchantSessionResponse:
-      type: object
-      required:
-      - merchantSessionPromise
-      description: 'The GetTransactionsResponse contains a set of already processed payment
-
-        transactions in the given timeframe.
+      - transactionId
+      - transactionState
+      - transactionTimestamp
+      description: 'The InitiateCardBasedPaymentResponse contains some information''s from the payment provider.
 
         '
       properties:
-        merchantSessionPromise:
+        transactionId:
+          $ref: '#/components/schemas/TransactionIdentifier'
+        transactionState:
+          $ref: '#/components/schemas/TransactionStatus'
+        transactionTimestamp:
           type: string
-          minLength: 1
-          description: 'The opaque merchant session object. Basically it is a JSON Object.
+          format: date-time
+          description: 'A timestamp containing date and a time as defined by RFC3339
+
+            time.<br> Please see: <a href="https://tools.ietf.org/html/rfc3339">Date and Time on the Internet: Timestamps</a>
 
             '
-          example: "{\n  \"nonce\": \"1f39c07a\",\n  \"retries\": 0,\n  \"operationalAnalyticsIdentifier\": \"Apple Pay Demo:A77873CD368A460BD5D3325AD76B01C16BB7F838CFFF654F9A993F4B6A9B4098\",\n  \"displayName\": \"Apple Pay Demo\",\n  \"domainName\": \"applepaydemo.apple.com\",\n  \"merchantIdentifier\": \"REDACTED\",\n  \"epochTimestamp\": 1639123825804,\n  \"expiresAt\": 1639127425804,\n  \"merchantSessionIdentifier\": \"REDACTED\",\n  \"signature\": \"REDACTED\"\n}\n"
+          example: '2018-04-28T06:14:50.142Z'
+        paymentProviderTransactionId:
+          $ref: '#/components/schemas/PaymentProviderTransactionIdentifier'
+    TransactionParticipant:
+      allOf:
+      - $ref: '#/components/schemas/ParticipantInformation'
+      - type: object
+        description: 'These data describes a participant of a payment, which holds an normal account or an card account.<br>
+
+          <b>Optional required</b>. For cardBasedTransactionType = <b>moneyTransferDebit</b> the <b>sender</b> data must be set.
+
+          For cardBasedTransactionType = <b>moneyTransferCredit</b> the <b>beneficiary</b> data must be set.
+
+          '
+        required:
+        - cardData
+        properties:
+          name:
+            type: string
+            minLength: 1
+            description: 'The name of the payment participant.<br>
+
+              E.g. for VISA Direct P2P payments, the name must contain the sender name.<br>
+
+              For a funds disbursement, must contain either the name of the merchant or government entity sending the funds disbursement.<br>
+
+              For pre-paid loads, must contain either the name of the load partner providing the reload service or the bank designated service name, if offered over bank channels.<br>
+
+              For credit card bill payment, must contain either the name of the entity providing the credit card bill pay service or the bank designated service name, if offered over bank channels.<br>
+
+              '
+            example: Doe John A
+          detailedName:
+            $ref: '#/components/schemas/ParticipantName'
+          address:
+            $ref: '#/components/schemas/Address'
+          cardData:
+            $ref: '#/components/schemas/CardData'
+          identification:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParticipantIdentification'
+            description: Identification list of participant.
+          ancillaryDetails:
+            type: array
+            items:
+              $ref: '#/components/schemas/ParticipantAncillaryDetails'
+            description: Ancillary participant details.
+    CardAcceptorAddress:
+      allOf:
+      - $ref: '#/components/schemas/BaseAddress'
+      - type: object
+        required:
+        - countryCode
+        - city
+        properties:
+          city:
+            type: string
+            maxLength: 255
+            description: The name of the city.
+            example: New York
+          countryCode:
+            $ref: '#/components/schemas/CountryCode'
+    PaymentAuthorizationData:
+      description: The basic type of an amount.
+      type: object
+      required:
+      - purchaseAmount
+      - msisdn
+      properties:
+        amountToAuthorize:
+          $ref: '#/components/schemas/Amount'
+        msisdn:
+          $ref: '#/components/schemas/MSISDN'
+    InitiateCardBasedPaymentResponse:
+      allOf:
+      - $ref: '#/components/schemas/CardbasedPaymentBaseResponse'
+      - type: object
+        properties:
+          detailedResponseCode:
+            type: array
+            items:
+              $ref: '#/components/schemas/DetailedResponseCode'
+          settlementInfo:
+            $ref: '#/components/schemas/SettlementInfo'
+    TransactionIdentifier:
+      type: string
+      minLength: 6
+      maxLength: 40
+      description: 'A unique identifier of a transaction in the PI-API backend domain.
+
+        <br><br> This transaction number must not be confused with the
+
+        merchantTransactionId. <br><br> This PI-API transaction number is
+
+        generated by the PI-API server and is unique within the whole PI-API
+
+        server domain.  <br>
+
+        '
+      example: '434354659863230244'
+    InitiatePaymentResponse:
+      type: object
+      description: 'The InitiatePaymentResponse contains more or less only the PI-API
+
+        transaction number.
+
+        '
+      properties:
+        href:
+          type: string
+          description: 'The URI used e.g. to cancel this transaction. Please see also
+
+            https://en.wikipedia.org/wiki/HATEOAS
+
+            '
+          example: http://pisp-pi-api-webapp/pi-api/v1/payments/123123123
+        paymentTransactionData:
+          $ref: '#/components/schemas/ExtendedTransactionData'
+    InitiateCardBasedPaymentRequest:
+      type: object
+      required:
+      - initiatePaymentRequestData
+      description: 'The initiatePaymentRequest is used to initiate a payment request from
+
+        the cashiers desk to the payment provider. <br> The transactionId return
+
+        in the initiatePaymentResponse should be used as a reference to the
+
+        PI-API transaction for example in further refund request or in back
+
+        office processing.
+
+        '
+      properties:
+        initiatePaymentRequestData:
+          $ref: '#/components/schemas/CardbasedPaymentTransactionData'
+    SettlementInfo:
+      type: object
+      required:
+      - settlementAmount
+      properties:
+        settlementAmount:
+          $ref: '#/components/schemas/Amount'
+        exchangeRate:
+          $ref: '#/components/schemas/CurrencyExchangeRate'
+          description: 'Exchange Rate used to convert the transaction amount to settlement amount in case of multi-currency.
+
+            '
+    InitiateCardlessPaymentRequest:
+      type: object
+      required:
+      - initiatePaymentRequestData
+      description: 'The initiatePaymentRequest is used to initiate a payment request from
+
+        the cashiers desk to the payment provider. <br> The transactionId return
+
+        in the initiatePaymentResponse should be used as a reference to the
+
+        PI-API transaction for example in further refund request or in back
+
+        office processing.
+
+        '
+      properties:
+        initiatePaymentRequestData:
+          $ref: '#/components/schemas/CardlessPaymentTransactionData'
+    CardAcceptor:
+      description: 'These data describes the card acceptor of this transaction.<br>
+
+        '
+      type: object
+      required:
+      - address
+      - cardAcceptorId
+      - name
+      properties:
+        address:
+          $ref: '#/components/schemas/CardAcceptorAddress'
+        cardAcceptorId:
+          maxLength: 15
+          minLength: 1
+          type: string
+          description: 'An unique identifier for the participant, e.g. <b>VISA Direct<b> Originator.<br>
+
+            This value should be unique for each CardAcceptor for whom you are sending transactions.
+
+            '
+        name:
+          type: string
+          minLength: 1
+          description: 'The name of the payment card acceptor.<br>
+
+            E.g. for VISA Direct P2P payments, the name must contain the sender name.<br>
+
+            For a funds disbursement, must contain either the name of the merchant or government entity sending the funds disbursement.<br>
+
+            For pre-paid loads, must contain either the name of the load partner providing the reload service or the bank designated service name, if offered over bank channels.<br>
+
+            For credit card bill payment, must contain either the name of the entity providing the credit card bill pay service or the bank designated service name, if offered over bank channels.<br>
+
+            '
+        taxId:
+          maxLength: 35
+          minLength: 1
+          type: string
+          description: '<b>Conditional.</b><br>
+
+            This field contains the identifier of the acceptor issued by a taxation authority.<br>
+
+            This field is conditionally required e.g. for all MasterCard transactions.
+
+            '
+        legalBusinessName:
+          maxLength: 25
+          minLength: 1
+          type: string
+          description: 'Acceptor’s legal business name associated with the card acceptor identification code.
+
+            '
+    ParticipantName:
+      type: object
+      properties:
+        firstName:
+          type: string
+          minLength: 1
+          maxLength: 35
+          description: This field contains participant's first name
+          example: John
+        middleName:
+          type: string
+          minLength: 1
+          maxLength: 35
+          description: This field contains participant's middle name
+          example: A
+        lastName:
+          type: string
+          minLength: 1
+          maxLength: 35
+          description: This field contains participant's last name
+          example: Doe
     DetailedResponseCode:
       type: string
       enum:
@@ -1457,88 +1314,6 @@ components:
       - NVS_NAME_MATCH
       - NVS_PARTIAL_NAME_MATCH
       - NVS_NO_NAME_MATCH
-    AcquirerInformation:
-      type: object
-      required:
-      - acquiringBin
-      - acquirerCountryCode
-      properties:
-        acquiringBin:
-          $ref: '#/components/schemas/BIN'
-        acquirerCountryCode:
-          $ref: '#/components/schemas/CountryCode'
-    CardbasedPaymentTransactionData:
-      type: object
-      required:
-      - commonTransactionData
-      properties:
-        acquirerInformation:
-          $ref: '#/components/schemas/AcquirerInformation'
-        beneficiary:
-          $ref: '#/components/schemas/TransactionParticipant'
-        businessApplicationId:
-          $ref: '#/components/schemas/BusinessApplicationId'
-        cardAcceptor:
-          $ref: '#/components/schemas/CardAcceptor'
-        commonTransactionData:
-          $ref: '#/components/schemas/CardbasedTransactionData'
-        pointOfServiceData:
-          $ref: '#/components/schemas/PointOfServiceData'
-        sender:
-          $ref: '#/components/schemas/TransactionParticipant'
-        sourceOfFundsCode:
-          $ref: '#/components/schemas/SourceOfFundsCode'
-        paymentFacilitator:
-          $ref: '#/components/schemas/PaymentFacilitator'
-        enablerVerificationValue:
-          type: string
-          maxLength: 5
-          description: "Enabler Verification Value (EVV) is a Visa assigned value \nthat is used to identify enablers that participate in certain programs. \nThe EVV is unique to the enabler.\n"
-          example: abcd1
-        merchantCategoryCode:
-          $ref: '#/components/schemas/MerchantCategoryCode'
-    PaymentProvider:
-      type: string
-      description: 'The identifier of the payment provider.<br>
-
-        The payment provider ''TM'' indicates, that the transaction middleware server - aka. the TM server - should decide
-
-        which payment provider has to be used at the end, e.g. based on the card data.
-
-        '
-      enum:
-      - AGOS
-      - ALIPAY
-      - APPLEPAY
-      - BLUECODE
-      - DANISH_MOBILEPAY
-      - GOOGLEPAY
-      - HUMM
-      - IKEAREFUNDCARD
-      - RAIFFEISEN
-      - SATISPAY
-      - SEPAINSTANTPAYMENT
-      - SIMULATOR
-      - SWISH
-      - SWISHMCOMMERCE
-      - SWISSBILLING
-      - TM
-      - VIPPS
-      - VISADIRECT
-      - WECHAT
-      - WOSAIPAY
-      example: ALIPAY
-    TransactionStatus:
-      type: string
-      enum:
-      - NEW
-      - PENDING
-      - APPROVED
-      - FINISHED
-      - CANCELED
-      - TO_BE_CANCELLED
-      description: "The last known state of a transaction. \n\n<table>\n  <tr>\n    <td>Name</td>\n    <td>Description</td>\n  </tr>\n\n  <tr>\n    <td>NEW</td>\n    <td>The transaction is initiated/in progress but the backend has not yet been called or the backend has not sent a status in the response.</td>\n  </tr>\n  <tr>\n    <td>PENDING</td>\n    <td>The transaction is still in progress, the backend has been called and is waiting for the buyer's confirmation.</td>\n  </tr>\n  <tr>\n    <td>FINISHED</td>\n    <td>The transaction has been finished. Means for initiatePayment: The goods were payed. Means for cancelPayment: The cancel took place. Means for refundPayment: The refund took place.</td>\n  </tr>\n  <tr>\n    <td>CANCELED</td>\n    <td>The transaction is CANCELED, e.g. because of an unrecoverable error or a Cancel transaction.</td>\n  </tr>\n  <tr>\n    <td>TO_BE_CANCELLED</td>\n    <td>The transaction has been marked for cancellation by the regular cancellation job. The job contacts the backend to complete the cancellation.</td>\n  </tr>\n</table>\n"
-      example: PENDING
     KeyValuePair:
       description: A key value pair to store/retrieve a key and a value as strings in a generic way. Used in some API calls/objects.
       type: object
@@ -1560,6 +1335,17 @@ components:
           minLength: 0
           maxLength: 2097152
           example: this-is-a-sample-value
+    CurrencyExchangeRate:
+      type: object
+      required:
+      - rate
+      - decimals
+      properties:
+        rate:
+          type: integer
+          format: int64
+        decimals:
+          type: integer
     CardData:
       description: "Contains all card or account related data, which are used and specific for a card based payment.<br>\n<font color='red'><b>Attention!</b><br>\nIf parameter 'sessionKey' is set in the request header, this is used to  encrypt the <b>cardNumber, \ncardExpiryDate, cardCvv2Value, track1 and track2</b></font> if these vales are provided.\n"
       type: object
@@ -1637,137 +1423,82 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/KeyValuePair'
-    PaymentAuthorizationData:
-      description: The basic type of an amount.
+    BusinessApplicationId:
+      type: string
+      description: 'This description refers to VISA Direct, but can be used also for other purposes.<br>
+
+        As used if the payment provider is VISA Direct:<br>
+
+        - Identifies the programs'' business application type for VisaNet transaction processing.<br>
+
+        - For Money Transfer, AA applies to transactions where the sender and recipient are the same person and PP applies to transactions where the sender and recipient are not the same person.<br>
+
+        - For Money Transfer, CD (Cash Deposit) applies to cash funded transactions.<br>
+
+        - For Argentina domestic purchase transactions the value should be "PS".<br>
+
+        - For Request To Pay, city will carry Invoice Id which will be used for C2B use case in the CEMEA region where payee initiates the OCT to the payer.<br>
+
+        '
+      example: PP
+    ParticipantIdentification:
       type: object
       required:
-      - purchaseAmount
-      - msisdn
+      - idType
+      - idNumber
       properties:
-        amountToAuthorize:
-          $ref: '#/components/schemas/Amount'
-        msisdn:
-          $ref: '#/components/schemas/MSISDN'
-    ProcessingType:
-      type: object
-      required:
-      - requestType
-      properties:
-        requestType:
+        idType:
           type: string
           enum:
-          - NOT_DEFERRED
-          - ORIGINATOR_HOLD
-          - PAYMENT_PROVIDER_DEFERRED
-          - RECYCLING_PAYOUT
-          description: "The type of a card based transaction, which can be one of the following:<br>\n<ul>\n    <li>NOT_DEFERED - Not deferred transaction</li>\n    <li>ORIGANATOR_HOLD - This value indicates that the originating acquirer has held the transaction for \n    a period of time before sending to payment provider and is requesting for payment provider \n    to treat the transaction as a deferred transaction.</li>\n    <li>PAYMENT_PROVIDER_DEFERRED - This value indicates that the originating acquirer is requesting \n    payment provider to apply the default holding period (if deferredDataTime is not set) upon receipt and process the request as a deferred transaction.</li>\n    <li>RECYCLING_PAYOUT</li>\n</ul>\n"
-          example: NOT_DEFERRED
-        deferredDateTime:
+          - CUSTOMER_IDENTIFICATION
+          - NATIONAL_IDENTIFICATION_ID
+          - PASSPORT
+          - DRIVERS_LICENSE
+          - TAX_ID
+          - COMPANY_REGISTRATION_NO
+          - PROXY_ID
+          - SOCIAL_SECURITY_NO
+          - ALIEN_REGISTRATION
+          - LAW_ENFORCEMENT
+          - MILITARY_ID
+          - TRAVEL_ID
+          - EMAIL
+          - PHONE_NO
+          - DATE_OF_BIRTH
+          description: This field will contain the type of participant identification.
+        idNumber:
           type: string
-          format: date-time
-          description: 'The field identifies when the transaction needs to be processed by payment provider.<br>
-
-            A timestamp containing date and a time as defined by RFC3339
-
-            time.<br> Please see: <a href="https://tools.ietf.org/html/rfc3339">Date and Time on the Internet: Timestamps</a>
-
-            '
-          example: '2018-04-28T06:14:50.142Z'
-    Amount:
-      description: The basic type of an amount.
+          minLength: 1
+          maxLength: 35
+          description: This field will contain a value associated with the Identification Type in field idType.
+          example: '1234567890'
+        issueCountryCode:
+          $ref: '#/components/schemas/CountryCode'
+        ownerType:
+          $ref: '#/components/schemas/OwnerType'
+          description: "This field denotes whether the Tax ID is a business or individual's Tax ID \nwhen idType contains the value of TAX_ID (Tax identification).\n"
+    PinEntryMode:
+      type: string
+      description: "An identifier that identifies the method used to enter the cardholders PIN.<br><br>\nPlease take a look into the TM programmer manual to discover: \n<font color='blue'><b>com.dieboldnixdorf.txm.core.businessobjects.switching.PinEntryMode.java</b></font>\n"
+      enum:
+      - UNSPECIFIED
+      - TERM_HAS_PINENTRY_CAP
+      - TERM_HAS_NO_PINENTRY_CAP
+      - MPOS_SOFTWARE_BASED_PINENTRY_CAP
+      - PINPAD_CURRENTLY_NOT_OPERATIVE
+      example: UNSPECIFIED
+    TransactionDetailsResponse:
       type: object
       required:
-      - value
-      - currency
-      properties:
-        value:
-          description: 'The amount value of the given currency. As defined by ISO 20022,
+      - paymentTransactionData
+      description: 'The GetTransactionsResponse contains a set of already processed payment
 
-            CurrencyAndAmount.
-
-            '
-          type: string
-          pattern: '[0-9]{1,13}\.[0-9]{1,5}'
-          minimum: 0
-          example: 345.67
-        currency:
-          description: 'The currency code as defined by ISO 20022, ActiveCurrencyCode
-
-            See also: https://en.wikipedia.org/wiki/ISO_4217
-
-            '
-          type: string
-          minLength: 3
-          maxLength: 3
-          pattern: '[A-Z]{3,3}'
-          example: USD
-    InitiateCardlessPaymentRequest:
-      type: object
-      required:
-      - initiatePaymentRequestData
-      description: 'The initiatePaymentRequest is used to initiate a payment request from
-
-        the cashiers desk to the payment provider. <br> The transactionId return
-
-        in the initiatePaymentResponse should be used as a reference to the
-
-        PI-API transaction for example in further refund request or in back
-
-        office processing.
+        transactions in the given timeframe.
 
         '
       properties:
-        initiatePaymentRequestData:
-          $ref: '#/components/schemas/CardlessPaymentTransactionData'
-    PaymentProviderTransactionIdentifier:
-      description: The transactionId in the payment providers domain/eco-system.
-      type: string
-      example: 343545544423-34344317
-    TransactionParticipant:
-      allOf:
-      - $ref: '#/components/schemas/ParticipantInformation'
-      - type: object
-        description: 'These data describes a participant of a payment, which holds an normal account or an card account.<br>
-
-          <b>Optional required</b>. For cardBasedTransactionType = <b>moneyTransferDebit</b> the <b>sender</b> data must be set.
-
-          For cardBasedTransactionType = <b>moneyTransferCredit</b> the <b>beneficiary</b> data must be set.
-
-          '
-        required:
-        - cardData
-        properties:
-          name:
-            type: string
-            minLength: 1
-            description: 'The name of the payment participant.<br>
-
-              E.g. for VISA Direct P2P payments, the name must contain the sender name.<br>
-
-              For a funds disbursement, must contain either the name of the merchant or government entity sending the funds disbursement.<br>
-
-              For pre-paid loads, must contain either the name of the load partner providing the reload service or the bank designated service name, if offered over bank channels.<br>
-
-              For credit card bill payment, must contain either the name of the entity providing the credit card bill pay service or the bank designated service name, if offered over bank channels.<br>
-
-              '
-            example: Doe John A
-          detailedName:
-            $ref: '#/components/schemas/ParticipantName'
-          address:
-            $ref: '#/components/schemas/Address'
-          cardData:
-            $ref: '#/components/schemas/CardData'
-          identification:
-            type: array
-            items:
-              $ref: '#/components/schemas/ParticipantIdentification'
-            description: Identification list of participant.
-          ancillaryDetails:
-            type: array
-            items:
-              $ref: '#/components/schemas/ParticipantAncillaryDetails'
-            description: Ancillary participant details.
+        paymentTransactionData:
+          $ref: '#/components/schemas/ExtendedTransactionData'
     TransactionData:
       type: object
       required:
@@ -1830,6 +1561,182 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/KeyValuePair'
+    BIN:
+      type: string
+      minLength: 6
+      maxLength: 9
+      description: 'The Bank Identification Number (BIN) under which, e.g. the Visa Direct solution is registered.<br>
+
+        '
+      example: 12030000
+    MsisdnString:
+      type: string
+      format: ^\+(?:[0-9]\x20?){6,14}[0-9]$
+      description: 'The numbers must start with a plus sign, followed by the country code and national number regarding ITU-T E.123 and ITU-T E.164
+
+        Phone numbers cannot contain more than 15 digits. The shortest international phone numbers in use contain seven digits.
+
+        '
+    Error:
+      description: "The error property is optional. \nIt is set only if an error has been detected.\n"
+      type: object
+      properties:
+        message:
+          description: An optional, additional message which describes the error.
+          type: string
+          maxLength: 256
+          example: 'Internal server error. A database connection could not be
+
+            established.
+
+            '
+        paymentProviderErrorCode:
+          description: An error code as outlined in the PI-API documentation.
+          type: string
+          example: SysErr#765
+        errorCode:
+          description: An error code as outlined in the PI-API documentation.
+          type: string
+          example: HOST_CANCEL
+        transactionId:
+          $ref: '#/components/schemas/TransactionIdentifier'
+    TransactionStatus:
+      type: string
+      enum:
+      - NEW
+      - PENDING
+      - APPROVED
+      - FINISHED
+      - CANCELED
+      - TO_BE_CANCELLED
+      description: "The last known state of a transaction. \n\n<table>\n  <tr>\n    <td>Name</td>\n    <td>Description</td>\n  </tr>\n\n  <tr>\n    <td>NEW</td>\n    <td>The transaction is initiated/in progress but the backend has not yet been called or the backend has not sent a status in the response.</td>\n  </tr>\n  <tr>\n    <td>PENDING</td>\n    <td>The transaction is still in progress, the backend has been called and is waiting for the buyer's confirmation.</td>\n  </tr>\n  <tr>\n    <td>FINISHED</td>\n    <td>The transaction has been finished. Means for initiatePayment: The goods were payed. Means for cancelPayment: The cancel took place. Means for refundPayment: The refund took place.</td>\n  </tr>\n  <tr>\n    <td>CANCELED</td>\n    <td>The transaction is CANCELED, e.g. because of an unrecoverable error or a Cancel transaction.</td>\n  </tr>\n  <tr>\n    <td>TO_BE_CANCELLED</td>\n    <td>The transaction has been marked for cancellation by the regular cancellation job. The job contacts the backend to complete the cancellation.</td>\n  </tr>\n</table>\n"
+      example: PENDING
+    CardlessPaymentTransactionData:
+      type: object
+      required:
+      - commonTransactionData
+      - userAuthorizationData
+      properties:
+        commonTransactionData:
+          $ref: '#/components/schemas/TransactionData'
+        userAuthorizationData:
+          $ref: '#/components/schemas/UserAuthorizationData'
+    PanEntryMode:
+      type: string
+      description: "An identifier that identifies the method used to enter the cardholder account number and card \nexpiration date. This code specifies e.g. whether the entire magnetic stripe is included in an \nauthorization or financial request.<br><br>\nPlease take a look into the TM programmer manual to discover: \n<font color='blue'><b>com.dieboldnixdorf.txm.core.businessobjects.switching.PanEntryMode.java</b></font>\n"
+      enum:
+      - UNKNOWN
+      - MANUAL_ENTRY
+      - MAG_STRIPE_READ
+      - BARCODE_READ
+      - OCR_READ
+      - ICC_READ
+      - MANUAL_KEY_ENTERED
+      - ICC_FALLBACK_TO_MAGSTRIPE
+      - ICC_FALLBACK_TO_MANUAL_ENTRY
+      - CONTACTLESS_READ
+      - FULL_MAG_STRIPE_READ
+      - CONTACTLESS_MAGNETIC_STRIPE_READ
+      - ICC_CVV_UNRELIABLE
+      - CONTACTLESS_ICC_READ
+      - STORED
+      - DIGITALLY_STORED
+      - MICR_READ
+      - ELECTRONIC_COMMERCE
+      - ON_FILE
+      - ECOMMERCE_WITH_CRYPTOGRAM
+      - SERVER
+      - ONLINE_TELLER_MANUAL
+      - POS_DEVICE
+      - ATM
+      - DISK_INPUT
+      - MERCHANT_POS
+      - ONLINE_TELLER
+      example: MANUAL_ENTRY
+    ProcessingType:
+      type: object
+      required:
+      - requestType
+      properties:
+        requestType:
+          type: string
+          enum:
+          - NOT_DEFERRED
+          - ORIGINATOR_HOLD
+          - PAYMENT_PROVIDER_DEFERRED
+          - RECYCLING_PAYOUT
+          description: "The type of a card based transaction, which can be one of the following:<br>\n<ul>\n    <li>NOT_DEFERED - Not deferred transaction</li>\n    <li>ORIGANATOR_HOLD - This value indicates that the originating acquirer has held the transaction for \n    a period of time before sending to payment provider and is requesting for payment provider \n    to treat the transaction as a deferred transaction.</li>\n    <li>PAYMENT_PROVIDER_DEFERRED - This value indicates that the originating acquirer is requesting \n    payment provider to apply the default holding period (if deferredDataTime is not set) upon receipt and process the request as a deferred transaction.</li>\n    <li>RECYCLING_PAYOUT</li>\n</ul>\n"
+          example: NOT_DEFERRED
+        deferredDateTime:
+          type: string
+          format: date-time
+          description: 'The field identifies when the transaction needs to be processed by payment provider.<br>
+
+            A timestamp containing date and a time as defined by RFC3339
+
+            time.<br> Please see: <a href="https://tools.ietf.org/html/rfc3339">Date and Time on the Internet: Timestamps</a>
+
+            '
+          example: '2018-04-28T06:14:50.142Z'
+    AcquirerInformation:
+      type: object
+      required:
+      - acquiringBin
+      - acquirerCountryCode
+      properties:
+        acquiringBin:
+          $ref: '#/components/schemas/BIN'
+        acquirerCountryCode:
+          $ref: '#/components/schemas/CountryCode'
+    PointOfServiceData:
+      type: object
+      description: 'Contains a code identifying transaction conditions at the point-of-sale or point of service.<br>
+
+        For messages that follow an original request, this code identifies the type of processing being done.<br>
+
+        <b>Note:</b> For a CardPresent Transactions, this field is required.
+
+        '
+      required:
+      - motoECIIndicator
+      - panEntryMode
+      - posConditionCode
+      properties:
+        motoECIIndicator:
+          type: string
+          pattern: ^[0-9]{1}$
+          description: "Identifies the level of security used in an electronic commerce transaction over an open network<br>\n(for example, the Internet) or the type of mail or telephone order. Acquirers supply indicator values,<br> \nwhich V.I.P. forwards in requests and advices to issuers that have successfully tested to receive them.<br>\nThe subfield is dropped if issuers have not successfully completed testing or choose not to receive it.<br>\nRefer to <a href=\"https://developer.visa.com/request_response_codes#moto_eci_ind_codes\">Moto ECI Codes</a> e.g. for VISA Direct.\n"
+        panEntryMode:
+          $ref: '#/components/schemas/PanEntryMode'
+        pinEntryMode:
+          $ref: '#/components/schemas/PinEntryMode'
+        posEnvironment:
+          type: string
+          pattern: ^[0-9,CIR]{1}$
+          description: '<b>Conditional</b><br><br> This field is required to identify whether a transaction is merchant-initiated.<br>
+
+            Refer to <a href="https://developer.visa.com/request_response_codes#pos_env_codes">POS Environment Codes</a>  e.g. for VISA Direct
+
+            '
+        posConditionCode:
+          type: string
+          description: 'Contains a code identifying transaction conditions at the point of sale or point of service.<br>
+
+            For messages that follow an original request, this code identifies the type of processing being done.<br>
+
+            <b>Note:</b> For CAVV and/or TAVV transaction, the POS condition code must be set to 59.<br>
+
+            Refer to <a href="https://developer.visa.com/request_response_codes#pos_cond_code_codes">POS Condition Codes</a> e.g. for VISA Direct
+
+            '
+        specialConditionIndicatorMerchant:
+          type: string
+          pattern: ^[0-9]{1}$
+          description: 'Cryptocurrency indicator with the value of “7” can be used to identify the purchase of cryptocurrency,<br>
+
+            thereby providing greater visibility to the issuers.
+
+            '
     CardbasedTransactionData:
       allOf:
       - $ref: '#/components/schemas/TransactionData'
@@ -1846,81 +1753,143 @@ components:
             $ref: '#/components/schemas/ProcessingType'
           sourceAmount:
             $ref: '#/components/schemas/Amount'
-  parameters:
-    PSU-GEO-LocationParam:
-      name: PSU-GEO-Location
-      in: header
-      required: false
-      description: 'The (optional) GEO location of the client, if available.
+    Amount:
+      description: The basic type of an amount.
+      type: object
+      required:
+      - value
+      - currency
+      properties:
+        value:
+          description: 'The amount value of the given currency. As defined by ISO 20022,
+
+            CurrencyAndAmount.
+
+            '
+          type: string
+          pattern: '[0-9]{1,13}\.[0-9]{1,5}'
+          minimum: 0
+          example: 345.67
+        currency:
+          description: 'The currency code as defined by ISO 20022, ActiveCurrencyCode
+
+            See also: https://en.wikipedia.org/wiki/ISO_4217
+
+            '
+          type: string
+          minLength: 3
+          maxLength: 3
+          pattern: '[A-Z]{3,3}'
+          example: USD
+    SourceOfFundsCode:
+      type: string
+      example: 2
+      description: "<b>Depends on the payment provider!</b>\nFor example, if VISA Direct is used as the payment provider, the following explanation is valid:<br>\nminLength: 2<br>\nmaxLength: 2<br>\n<b>Conditional.</b><br>If the transaction is a money transfer, the field is required and must contain a valid \nsourceOfFundsCode.<br>Please see table below Code that matches the funding instrument.<br>\nIf the transaction is a funds disbursement, the field is required and most likely\ncontains a \"05\" as shown in the table below.\nThe code is used to identify that the merchant or government entity used a\ndeposit account to fund the disbursement<br>\nIf the transaction is a pre-paid load, the field is required if the transaction is\nnon-U.S. domestic.<br>\nIf the transaction is a credit bill pay, the field is required if the transaction is non-U.S. \ndomestic, and the code must not contain a \"01\" or \"06\".<br>\n<table>\n  <tr>\n    <td>Code</td>\n    <td>Description</td>\n  </tr>\n  <tr>\n    <td>01</td>\n    <td>Visa credit</td>\n    </tr>\n    <tr>\n      <td>02</td>\n      <td>Visa debit</td>\n    </tr>\n    <tr>\n      <td>03</td>\n      <td>Visa prepaid</td>\n    </tr>\n    <tr>\n      <td>04</td>\n      <td>Cash</td>\n    </tr>\n    <tr>\n      <td>05</td>\n      <td>Debit/deposit access accounts other than those linked to a Visa card (includes checking/savings accounts and proprietary debit/ATM cards).</td>\n    </tr>\n    <tr>\n      <td>06</td>\n      <td>Credit accounts other than those linked to a Visa card (includes credit cards and proprietary credit lines).</td>\n    </tr>\n  </table>\n"
+    CreditBalanceRequest:
+      type: object
+      required:
+      - userAuthorizationData
+      description: 'The CreditBalanceRequest is used to return the available credit balance<br>
 
         '
-      schema:
-        type: string
-        minLength: 8
-        maxLength: 255
-        pattern: GEO:(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)
-      example: GEO:52.506931,13.144558
-    PI-API-Transaction-ID:
-      name: transactionId
-      in: path
-      required: true
-      description: 'A unique identifier of a transaction in the PI-API backend domain.
-
-        This transaction number must not be confused with the merchantTransactionId. This PI-API transaction number is
-
-        generated by the PI-API server and is unique within the whole PI-API
-
-        server domain.
-
-        '
-      schema:
-        type: string
-        minLength: 6
-        maxLength: 40
-      example: '843409084374847833'
-    SessionKeyParam:
-      name: SessionKey
-      in: header
-      required: true
-      description: "<p>The <b>SessionKey</b> parameter contains an base64 encoded AES-128bit\n(AES128) key, which is used to encrypt the <b>AuthorizationType</b> and\n<b>AuthorizationToken</b>.</p> \n\n<p>Moreover, where appropriate, other parts of the request and/or response message are encrypted too, such as\n'buyerIdentityToken' in the 'UserAuthorizationData' of a\nInitiateCardlessPayment request.</p> \n\n<p>If the <b>SessionKey</b> is an <b>empty string</b> (with a zero length), it is assumed, that the\n<b>AuthorizationType</b> and <b>AuthorizationToken</b> are transmitted\n<font color='red'>unencrypted, which is by no means recommended and -\nwhenever possible - should be avoided</font>.</p>\n\n<p>If a part of a request or response message is or can be encrypted, this is explicitly\nindicated in the description.</p> \n\n<p>The key is separated from the InitializationVector using a '-' (Minus sign/Separator) like 'AESKey InitializationVector'.\n"
-      schema:
-        type: string
-      example: QmFzZTY0IGVuY29kaW5nIHNjaGVtZXMgYXJlIGNvbW1vbmx5VGhlIHBhcnRpY3VsYXIgY2hvaWNlIA==
-    CardBasedTransactionType:
-      name: cardBasedTransactionType
-      in: path
-      required: true
-      schema:
-        $ref: '#/components/schemas/CardbasedTransactionTypes'
+      properties:
+        userAuthorizationData:
+          $ref: '#/components/schemas/UserAuthorizationData'
+    MSISDN:
+      type: object
+      required:
+      - MSISDN
+      properties:
+        MSISDN:
+          $ref: '#/components/schemas/MsisdnString'
+    CardbasedTransactionTypes:
+      type: string
+      description: "The type of a card based transaction, which can be one of the following:<br>\n<ul>\n  <li>moneyTransferCredit</li>\n  <li>moneyTransferDebit</li>\n  <li>purchase</li>\n</ul>\n"
+      enum:
+      - moneyTransferCredit
+      - moneyTransferDebit
+      - purchase
       example: moneyTransferCredit
-    StoreIdParam:
-      name: StoreId
-      in: header
-      required: true
-      description: '<p>An unique identifier of store within the merchant''s eco-system.</p>
+    ConfirmResponse:
+      type: object
+      description: 'The Confirm Response contains  more or less only the link to the
+
+        transaction
 
         '
-      schema:
-        type: string
-        minLength: 4
-        maxLength: 256
-      example: '1234'
-    CredentialsParam:
-      name: AuthorizationToken
-      in: header
-      required: true
-      description: "<p>The contents and usage of the <b>AuthorizationToken</b> header field\ndepends on the authentication type as defined by the\n<b>AuthorizationType</b> header field.</p> \n\n<p>When using the <b>OAUTH</b> approach, consequent API requests are being authorized using the\nrespective OAuth Access Token. The access token is sent to the API using the AuthorizationToken header\nfield and the BEARER authentication schema as defined in RFC 6750.\n<br><b>Example:</b> 'Bearer SlAV32hkKG'</p> \n\n<p>If <b>USERNAME_PASSWORD</b> is used as AuthorizationType a JSON object\nlike: { 'username': 'Tester', 'password': 'thePassword' } is expected.\nThe given user must have the an appropriate group to access the system\nusing the CHANNEL_REST. Please see the TM documentation how to create\nand assign right, roles and groups to user.</p>\n"
-      schema:
-        type: string
-        minLength: 4
-        maxLength: 256
-    PaymentProviderParam:
-      name: PaymentProvider
-      in: header
-      required: true
-      schema:
-        $ref: '#/components/schemas/PaymentProvider'
-      example: HUMM
+      properties:
+        href:
+          type: string
+          description: 'The URI used e.g. to cancel this transaction. Please see also
+
+            https://en.wikipedia.org/wiki/HATEOAS
+
+            '
+          example: http://pisp-pi-api-webapp/pi-api/v1/payments/123123123
+    RefundResponse:
+      type: object
+      description: 'The Refund Response contains  more or less only the link to the
+
+        transaction
+
+        '
+      properties:
+        href:
+          type: string
+          description: 'The URI used e.g. to cancel this transaction. Please see also
+
+            https://en.wikipedia.org/wiki/HATEOAS
+
+            '
+          example: http://pisp-pi-api-webapp/pi-api/v1/payments/123123123
+    MerchantCategoryCode:
+      type: string
+      pattern: '[0-9]{4,4}'
+      description: "<b>Conditional.</b><br>\nIf provided, then the value overrides the one present in onboarding data.<br> \nIf the merchantCategoryCode value is not populated in onboarding data then this field is mandatory.<br><br>\n<b>Note:</b> Required if not provided during onboarding.\nNumeric value with total length of <b>4 digits</b>\nPlease see: ISO 18245:2023, Merchant category codes\n"
+  responses:
+    MethodNotAllowed405:
+      description: Method Not Allowed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound404:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized401:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest400:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Conflict409:
+      description: Conflict; The authorization has failed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    CardBasedInternalServerError500:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CardBasedError'
+    InternalServerError500:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  parameters:
     RetailUnitParam:
       name: RetailUnit
       in: header
@@ -1948,57 +1917,55 @@ components:
         type: string
         format: date-time
       example: '2017-10-02T15:34:12.345Z'
-    PSU-IP-AddressParam:
-      name: PSU-IP-Address
-      in: header
-      required: false
-      description: The IP-Address of the client.
-      schema:
-        type: string
-        minLength: 8
-        maxLength: 48
-      example: 192.168.8.1
-    PI-API-Merchant-ID:
-      name: merchantId
+    PI-API-Transaction-ID:
+      name: transactionId
       in: path
       required: true
-      description: 'ID of the merchant in the PI API.
+      description: 'A unique identifier of a transaction in the PI-API backend domain.
+
+        This transaction number must not be confused with the merchantTransactionId. This PI-API transaction number is
+
+        generated by the PI-API server and is unique within the whole PI-API
+
+        server domain.
 
         '
+      schema:
+        type: string
+        minLength: 6
+        maxLength: 40
+      example: '843409084374847833'
+    TerminalIdParam:
+      name: TerminalId
+      in: header
       schema:
         type: string
         minLength: 1
         maxLength: 64
-      example: TM-Merchant-ID
-    PSU-User-AgentParam:
-      name: PSU-User-Agent
-      in: header
-      required: false
-      description: 'The user agent string of the client.
+      required: true
+      description: 'UUID (Universally Unique Identifier) for a device, which is used by the PSU, if available.
+
+        UUID identifies either a device or a device dependant application installation.
+
+        In case of an installation identification this ID need to be unaltered until removal from device.
 
         '
-      schema:
-        type: string
-        minLength: 5
-        maxLength: 255
-      example: Mozilla/5.0(IE 11.0; Windows NT 6.3; Trident/7.0; .NET4.0E; .NET4.0C; rv:11.0) like Gecko
-    CredentialsTypeParam:
-      name: AuthorizationType
+      example: terminal1
+    SessionKeyParam:
+      name: SessionKey
       in: header
       required: true
-      description: 'AuthorizationType describes the kind of CredentialsParam. Based on
-
-        the AuthorizationType the AuthorizationToken is evaluated and
-
-        checked.
-
-        '
+      description: "<p>The <b>SessionKey</b> parameter contains an base64 encoded AES-128bit\n(AES128) key, which is used to encrypt the <b>AuthorizationType</b> and\n<b>AuthorizationToken</b>.</p> \n\n<p>Moreover, where appropriate, other parts of the request and/or response message are encrypted too, such as\n'buyerIdentityToken' in the 'UserAuthorizationData' of a\nInitiateCardlessPayment request.</p> \n\n<p>If the <b>SessionKey</b> is an <b>empty string</b> (with a zero length), it is assumed, that the\n<b>AuthorizationType</b> and <b>AuthorizationToken</b> are transmitted\n<font color='red'>unencrypted, which is by no means recommended and -\nwhenever possible - should be avoided</font>.</p>\n\n<p>If a part of a request or response message is or can be encrypted, this is explicitly\nindicated in the description.</p> \n\n<p>The key is separated from the InitializationVector using a '-' (Minus sign/Separator) like 'AESKey InitializationVector'.\n"
       schema:
         type: string
-        enum:
-        - OAUTH
-        - USERNAME_PASSWORD
-      example: USERNAME_PASSWORD
+      example: QmFzZTY0IGVuY29kaW5nIHNjaGVtZXMgYXJlIGNvbW1vbmx5VGhlIHBhcnRpY3VsYXIgY2hvaWNlIA==
+    PaymentProviderParam:
+      name: PaymentProvider
+      in: header
+      required: true
+      schema:
+        $ref: '#/components/schemas/PaymentProvider'
+      example: HUMM
     CashierIdParam:
       name: CashierId
       in: header
@@ -2025,65 +1992,98 @@ components:
         minLength: 6
         maxLength: 40
       example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
-    TerminalIdParam:
-      name: TerminalId
+    PSU-User-AgentParam:
+      name: PSU-User-Agent
       in: header
+      required: false
+      description: 'The user agent string of the client.
+
+        '
+      schema:
+        type: string
+        minLength: 5
+        maxLength: 255
+      example: Mozilla/5.0(IE 11.0; Windows NT 6.3; Trident/7.0; .NET4.0E; .NET4.0C; rv:11.0) like Gecko
+    PSU-IP-AddressParam:
+      name: PSU-IP-Address
+      in: header
+      required: false
+      description: The IP-Address of the client.
+      schema:
+        type: string
+        minLength: 8
+        maxLength: 48
+      example: 192.168.8.1
+    CredentialsParam:
+      name: AuthorizationToken
+      in: header
+      required: true
+      description: "<p>The contents and usage of the <b>AuthorizationToken</b> header field\ndepends on the authentication type as defined by the\n<b>AuthorizationType</b> header field.</p> \n\n<p>When using the <b>OAUTH</b> approach, consequent API requests are being authorized using the\nrespective OAuth Access Token. The access token is sent to the API using the AuthorizationToken header\nfield and the BEARER authentication schema as defined in RFC 6750.\n<br><b>Example:</b> 'Bearer SlAV32hkKG'</p> \n\n<p>If <b>USERNAME_PASSWORD</b> is used as AuthorizationType a JSON object\nlike: { 'username': 'Tester', 'password': 'thePassword' } is expected.\nThe given user must have the an appropriate group to access the system\nusing the CHANNEL_REST. Please see the TM documentation how to create\nand assign right, roles and groups to user.</p>\n"
+      schema:
+        type: string
+        minLength: 4
+        maxLength: 256
+    CardBasedTransactionType:
+      name: cardBasedTransactionType
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/CardbasedTransactionTypes'
+      example: moneyTransferCredit
+    CredentialsTypeParam:
+      name: AuthorizationType
+      in: header
+      required: true
+      description: 'AuthorizationType describes the kind of CredentialsParam. Based on
+
+        the AuthorizationType the AuthorizationToken is evaluated and
+
+        checked.
+
+        '
+      schema:
+        type: string
+        enum:
+        - OAUTH
+        - USERNAME_PASSWORD
+      example: USERNAME_PASSWORD
+    PI-API-Merchant-ID:
+      name: merchantId
+      in: path
+      required: true
+      description: 'ID of the merchant in the PI API.
+
+        '
       schema:
         type: string
         minLength: 1
         maxLength: 64
+      example: TM-Merchant-ID
+    StoreIdParam:
+      name: StoreId
+      in: header
       required: true
-      description: 'UUID (Universally Unique Identifier) for a device, which is used by the PSU, if available.
-
-        UUID identifies either a device or a device dependant application installation.
-
-        In case of an installation identification this ID need to be unaltered until removal from device.
+      description: '<p>An unique identifier of store within the merchant''s eco-system.</p>
 
         '
-      example: terminal1
-  responses:
-    InternalServerError500:
-      description: Internal Server Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    MethodNotAllowed405:
-      description: Method Not Allowed
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    CardBasedInternalServerError500:
-      description: Internal Server Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/CardBasedError'
-    NotFound404:
-      description: Not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Conflict409:
-      description: Conflict; The authorization has failed.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Unauthorized401:
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    BadRequest400:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
+      schema:
+        type: string
+        minLength: 4
+        maxLength: 256
+      example: '1234'
+    PSU-GEO-LocationParam:
+      name: PSU-GEO-Location
+      in: header
+      required: false
+      description: 'The (optional) GEO location of the client, if available.
+
+        '
+      schema:
+        type: string
+        minLength: 8
+        maxLength: 255
+        pattern: GEO:(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)
+      example: GEO:52.506931,13.144558
   securitySchemes:
     bearerAuth:
       type: http

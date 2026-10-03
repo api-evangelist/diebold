@@ -131,6 +131,11 @@ paths:
           $ref: '#/components/responses/InternalServerError500'
 components:
   schemas:
+    DPAN:
+      type: string
+      maxLength: 128
+      description: "A tokenized PAN.  \nMax length - 128. Type - String.\n"
+      example: '98765432104676066094325336'
     CorrelationId:
       type: string
       maxLength: 14
@@ -148,72 +153,6 @@ components:
       - REQUIRE_ADDITIONAL_AUTHENTICATION
       description: "The decision that was made by the system or which was recommended by e.g. the Wallet Provider.<br>\nMust be one of:<br>\n<ul>\n  <li>APPROVED = Services request was approved, \n  <li>DECLINED = Services request was declined, \n  <li>REQUIRE_ADDITIONAL_AUTHENTICATION = Services request requires additional authentication to be approved.</li>\n</ul>\n<br>\nMax length - Not applicable. Type - String.\n"
       example: APPROVED
-    ConsumerId:
-      type: string
-      maxLength: 88
-      description: 'Consumer Identifier provided by the token requestor.<br>
-
-        <b>Note:</b>Not required – Optionally present in AuthorizeService when provided by the wallet provider.<br>
-
-        Max length - 88. Type - String.
-
-        '
-      example: '123456'
-    DigitizationCompletedRequest:
-      type: object
-      required:
-      - requestId
-      - correlationId
-      - tokenizedPAN
-      - tokenUniqueNumber
-      - consumerId
-      - decision
-      - tokenActivatedDateTime
-      - tokenProviderType
-      - bankIdentifier
-      properties:
-        requestId:
-          $ref: '#/components/schemas/RequestId'
-        correlationId:
-          $ref: '#/components/schemas/CorrelationId'
-        tokenizedPAN:
-          $ref: '#/components/schemas/FPAN'
-        token:
-          $ref: '#/components/schemas/DPAN'
-        tokenUniqueNumber:
-          $ref: '#/components/schemas/TokenUniqueNumber'
-        consumerId:
-          $ref: '#/components/schemas/ConsumerId'
-        decision:
-          $ref: '#/components/schemas/DigitalizationDecision'
-        tokenActivatedDateTime:
-          type: string
-          format: date-time
-          description: 'The date, when the token was activated.<br>
-
-            Max length - Not applicable. Type - String.
-
-            '
-          example: '2015-07-04T12:09:57.123-07:00'
-        tokenProviderType:
-          $ref: '#/components/schemas/TokenProviderType'
-        bankIdentifier:
-          $ref: '#/components/schemas/BankIdentifier'
-        sendSMS:
-          type: string
-          enum:
-          - 'true'
-          - 'false'
-          description: "A flag whether SMS needs to be sent for TCN/TN;<br>\n<ul>\n  <li>true — Indicates that a SMS should send.</li>\n  <li>false — Indicates that there is no need to to send a SMS.</li>\n</ul></br>\n"
-          example: 'true'
-    BankIdentifier:
-      type: string
-      description: 'The bank identifier of the bank for which the token request is issued.<br>
-
-        The bank identifier is take from the original request.
-
-        '
-      example: NLBLJ
     DeliverActivationCodeRequest:
       type: object
       required:
@@ -265,6 +204,22 @@ components:
           $ref: '#/components/schemas/TokenProviderType'
         bankIdentifier:
           $ref: '#/components/schemas/BankIdentifier'
+    ConsumerId:
+      type: string
+      maxLength: 88
+      description: 'Consumer Identifier provided by the token requestor.<br>
+
+        <b>Note:</b>Not required – Optionally present in AuthorizeService when provided by the wallet provider.<br>
+
+        Max length - 88. Type - String.
+
+        '
+      example: '123456'
+    RequestId:
+      type: string
+      maxLength: 64
+      description: The unique id of the request submitted. Max length - 64
+      example: '123456'
     CustomerInformationRequest:
       type: object
       required:
@@ -287,11 +242,66 @@ components:
           $ref: '#/components/schemas/TokenProviderType'
         bankIdentifier:
           $ref: '#/components/schemas/BankIdentifier'
-    RequestId:
-      type: string
-      maxLength: 64
-      description: The unique id of the request submitted. Max length - 64
-      example: '123456'
+    DigitizationCompletedRequest:
+      type: object
+      required:
+      - requestId
+      - correlationId
+      - tokenizedPAN
+      - tokenUniqueNumber
+      - consumerId
+      - decision
+      - tokenActivatedDateTime
+      - tokenProviderType
+      - bankIdentifier
+      properties:
+        requestId:
+          $ref: '#/components/schemas/RequestId'
+        correlationId:
+          $ref: '#/components/schemas/CorrelationId'
+        tokenizedPAN:
+          $ref: '#/components/schemas/FPAN'
+        token:
+          $ref: '#/components/schemas/DPAN'
+        tokenUniqueNumber:
+          $ref: '#/components/schemas/TokenUniqueNumber'
+        consumerId:
+          $ref: '#/components/schemas/ConsumerId'
+        decision:
+          $ref: '#/components/schemas/DigitalizationDecision'
+        tokenActivatedDateTime:
+          type: string
+          format: date-time
+          description: 'The date, when the token was activated.<br>
+
+            Max length - Not applicable. Type - String.
+
+            '
+          example: '2015-07-04T12:09:57.123-07:00'
+        tokenProviderType:
+          $ref: '#/components/schemas/TokenProviderType'
+        bankIdentifier:
+          $ref: '#/components/schemas/BankIdentifier'
+        sendSMS:
+          type: string
+          enum:
+          - 'true'
+          - 'false'
+          description: "A flag whether SMS needs to be sent for TCN/TN;<br>\n<ul>\n  <li>true — Indicates that a SMS should send.</li>\n  <li>false — Indicates that there is no need to to send a SMS.</li>\n</ul></br>\n"
+          example: 'true'
+    ReasonCodes:
+      type: array
+      description: "The reason the account holder is being authenticated.<br>\nThe reason could impact the generation and validation of the code in a number of ways including but not limited to the time period of validity of the code and the number of attempts allowed to validate the code.<br>\nNew reason codes can be added at any time and should not result in a failure.\n<b>Note:</b>Conditional - Only present for Conset Service\nPossible push methods are:<br>\n<ul>\n  <li>>ADD_CARD: The account holder is being authenticated after adding the card to the token requestor</li>\n  <li>VERIFY_ACCOUNT: The account holder is being authenticated in order to verify account ownership.</li>\n  <li>OTHER: The account holder is being authenticated for a reason not enumerated in this list.</li>\n</ul>\n"
+      items:
+        type: string
+        example: ADD_CARD
+    DeliverActivationCodeResponse:
+      type: object
+      required:
+      - responseId
+      properties:
+        responseId:
+          $ref: '#/components/schemas/ResponseId'
     CustomerInformationResponse:
       type: object
       required:
@@ -328,77 +338,6 @@ components:
 
             '
           example: https://xyz.com/verfiycardholder
-    MSISDN:
-      type: string
-      pattern: ^\+(?:[0-9]\x20?){6,14}[0-9]$
-      example: +386 1511512564
-      description: 'The numbers must start with a plus sign, followed by the country code and national number regarding ITU-T E.123 and ITU-T E.164<br>
-
-        Phone numbers cannot contain more than 15 digits. The shortest international phone numbers in use contain seven digits.
-
-        '
-    ResponseId:
-      type: string
-      maxLength: 64
-      description: 'The id of the response sent.<br>
-
-        Required. Max length - 64
-
-        '
-      example: '123456'
-    TokenProviderType:
-      type: string
-      enum:
-      - APPLE_PAY
-      - GOOGLE_PAY
-      - SAMSUNG_PAY
-      - GARMIN_PAY
-      - XIAOMI_PAY
-      - MERCHANT_TOKENIZATION_PROGRAM
-      - OTHER
-      description: 'The identifier of the Wallet Provider who requested the digitization.<br>
-
-        '
-      example: APPLE_PAY
-    Error:
-      description: "The error property is optional. \nIt is set only if an error has been detected.\n"
-      type: object
-      required:
-      - errorCode
-      properties:
-        message:
-          description: An optional, additional message which describes the error.
-          type: string
-          maxLength: 256
-          example: Internal server error. A database connection could not be established.
-        paymentProviderErrorCode:
-          description: An error code as outlined in the PI-API documentation.
-          type: string
-          example: SysErr#765
-        errorCode:
-          description: An error code as outlined in the PI-API documentation.
-          type: string
-          example: HOST_CANCEL
-        correlationId:
-          $ref: '#/components/schemas/CorrelationId'
-    ReasonCodes:
-      type: array
-      description: "The reason the account holder is being authenticated.<br>\nThe reason could impact the generation and validation of the code in a number of ways including but not limited to the time period of validity of the code and the number of attempts allowed to validate the code.<br>\nNew reason codes can be added at any time and should not result in a failure.\n<b>Note:</b>Conditional - Only present for Conset Service\nPossible push methods are:<br>\n<ul>\n  <li>>ADD_CARD: The account holder is being authenticated after adding the card to the token requestor</li>\n  <li>VERIFY_ACCOUNT: The account holder is being authenticated in order to verify account ownership.</li>\n  <li>OTHER: The account holder is being authenticated for a reason not enumerated in this list.</li>\n</ul>\n"
-      items:
-        type: string
-        example: ADD_CARD
-    DPAN:
-      type: string
-      maxLength: 128
-      description: "A tokenized PAN.  \nMax length - 128. Type - String.\n"
-      example: '98765432104676066094325336'
-    NotifyServiceActivatedResponse:
-      type: object
-      required:
-      - responseId
-      properties:
-        responseId:
-          $ref: '#/components/schemas/ResponseId'
     TokenUniqueNumber:
       type: string
       maxLength: 64
@@ -410,18 +349,6 @@ components:
 
         '
       example: DWSPMC000000000fcb2f4136b2f4136a0532d2f4136a0532
-    DeliverActivationCodeResponse:
-      type: object
-      required:
-      - responseId
-      properties:
-        responseId:
-          $ref: '#/components/schemas/ResponseId'
-    FPAN:
-      type: string
-      maxLength: 128
-      description: "A tokenized PAN.  \nMax length - 128. Type - String.\n"
-      example: '98765432104676066094325336'
     ActivationMethod:
       type: object
       required:
@@ -451,15 +378,88 @@ components:
 
             '
           example: 1-800-BANK-NUMBER
+    NotifyServiceActivatedResponse:
+      type: object
+      required:
+      - responseId
+      properties:
+        responseId:
+          $ref: '#/components/schemas/ResponseId'
+    Error:
+      description: "The error property is optional. \nIt is set only if an error has been detected.\n"
+      type: object
+      required:
+      - errorCode
+      properties:
+        message:
+          description: An optional, additional message which describes the error.
+          type: string
+          maxLength: 256
+          example: Internal server error. A database connection could not be established.
+        paymentProviderErrorCode:
+          description: An error code as outlined in the PI-API documentation.
+          type: string
+          example: SysErr#765
+        errorCode:
+          description: An error code as outlined in the PI-API documentation.
+          type: string
+          example: HOST_CANCEL
+        correlationId:
+          $ref: '#/components/schemas/CorrelationId'
+    MSISDN:
+      type: string
+      pattern: ^\+(?:[0-9]\x20?){6,14}[0-9]$
+      example: +386 1511512564
+      description: 'The numbers must start with a plus sign, followed by the country code and national number regarding ITU-T E.123 and ITU-T E.164<br>
+
+        Phone numbers cannot contain more than 15 digits. The shortest international phone numbers in use contain seven digits.
+
+        '
+    FPAN:
+      type: string
+      maxLength: 128
+      description: "A tokenized PAN.  \nMax length - 128. Type - String.\n"
+      example: '98765432104676066094325336'
+    BankIdentifier:
+      type: string
+      description: 'The bank identifier of the bank for which the token request is issued.<br>
+
+        The bank identifier is take from the original request.
+
+        '
+      example: NLBLJ
+    ResponseId:
+      type: string
+      maxLength: 64
+      description: 'The id of the response sent.<br>
+
+        Required. Max length - 64
+
+        '
+      example: '123456'
+    TokenProviderType:
+      type: string
+      enum:
+      - APPLE_PAY
+      - GOOGLE_PAY
+      - SAMSUNG_PAY
+      - GARMIN_PAY
+      - XIAOMI_PAY
+      - MERCHANT_TOKENIZATION_PROGRAM
+      - OTHER
+      description: 'The identifier of the Wallet Provider who requested the digitization.<br>
+
+        '
+      example: APPLE_PAY
   responses:
-    Unauthorized401:
-      description: Unauthorized
+    MethodNotAllowed405:
+      description: Method Not Allowed
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    BadRequest400:
-      description: Bad Request
+    Unauthorized401:
+      description: Unauthorized
       content:
         application/json:
           schema:
@@ -470,8 +470,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    MethodNotAllowed405:
-      description: Method Not Allowed
+    BadRequest400:
+      description: Bad Request
       content:
         application/json:
           schema:
