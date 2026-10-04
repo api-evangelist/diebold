@@ -102,65 +102,88 @@ paths:
           $ref: '#/components/responses/InternalServerError500'
 components:
   schemas:
-    TmAuthenticationResponse:
+    TmRight:
       type: object
-      description: 'Describes the response of the authentication request.
+      description: 'Describes a right as integer values as well as in a readable form.
 
         '
       required:
-      - state
-      - message
+      - rightId
+      - rightName
       properties:
-        status:
+        rightId:
           type: string
-          enum:
-          - OK
-          - FAILED
+          description: 'The id of the right.
+
+            '
+        rightName:
+          type: string
+          description: 'The right in a human readable form.
+
+            '
+        rightDescription:
+          type: string
+          description: 'The description of the right in a human readable form.
+
+            '
+    Error:
+      description: "The error property is optional.<br< \nIt is set only if an error has been detected.\n"
+      type: object
+      properties:
         message:
+          description: An optional, additional message which describes the error.
           type: string
-          description: 'Description of what went wrong.
-
-            '
-        jwt:
+          maxLength: 256
+          example: Unauthorized
+        errorCode:
+          description: An error code as outlined in the PI-API documentation.
           type: string
-          format: JSON Web Token
-          description: 'After successful authentication a JSON Web Token is returned for further requests
-
-            '
-        userName:
-          type: string
-          description: 'The display name of the current user.
-
-            '
-        userLocale:
-          type: string
-          description: 'The locale of the current user.
-
-            '
-        userTimeZone:
-          type: string
-          description: 'The timezone name of the current user.
-
-            '
-        rootNodeIDs:
+          example: REQUEST_DATA_INVALID_ID
+    TmGetKeysResponse:
+      type: object
+      required:
+      - keys
+      properties:
+        keys:
           type: array
           items:
-            type: string
-            description: 'The root node IDs of the current user.
-
-              '
-        rootNodeType:
+            $ref: '#/components/schemas/TmKeyInfo'
+    TmAuthenticationRequest:
+      type: object
+      required:
+      - username
+      - password
+      properties:
+        username:
           type: string
-          description: 'The type of the root node of the user''s hierarchy.
+          description: name of the user to authenticate
+          example: qauser
+        password:
+          type: string
+          format: base64
+          description: password base64 encoded
+          example: base64-encode(my-password)
+        language:
+          type: string
+          format: ISO 639
+          description: 'sets the language for this session. This will override the "Accept-Language" HTTP header.
 
             '
-        rights:
-          description: 'The rights list of the current user.
+          example: de
+        timezone:
+          type: string
+          format: tz database
+          description: 'set the timezone for this session.
 
             '
-          type: array
-          items:
-            $ref: '#/components/schemas/TmRight'
+          example: Europe/Berlin
+        country:
+          type: string
+          format: ISO 3166-1
+          description: 'The time zone is determined based on the country if the timezone attribute is not set.
+
+            '
+          example: DE
     TmKeyInfo:
       type: object
       required:
@@ -221,88 +244,65 @@ components:
           type: string
           description: The y coordinate of an Elliptic Curve public key. (base64url encoded)
           example: pZ_2dqtMh7M..._k9blCwC6nQ
-    TmAuthenticationRequest:
+    TmAuthenticationResponse:
       type: object
-      required:
-      - username
-      - password
-      properties:
-        username:
-          type: string
-          description: name of the user to authenticate
-          example: qauser
-        password:
-          type: string
-          format: base64
-          description: password base64 encoded
-          example: base64-encode(my-password)
-        language:
-          type: string
-          format: ISO 639
-          description: 'sets the language for this session. This will override the "Accept-Language" HTTP header.
-
-            '
-          example: de
-        timezone:
-          type: string
-          format: tz database
-          description: 'set the timezone for this session.
-
-            '
-          example: Europe/Berlin
-        country:
-          type: string
-          format: ISO 3166-1
-          description: 'The time zone is determined based on the country if the timezone attribute is not set.
-
-            '
-          example: DE
-    TmGetKeysResponse:
-      type: object
-      required:
-      - keys
-      properties:
-        keys:
-          type: array
-          items:
-            $ref: '#/components/schemas/TmKeyInfo'
-    TmRight:
-      type: object
-      description: 'Describes a right as integer values as well as in a readable form.
+      description: 'Describes the response of the authentication request.
 
         '
       required:
-      - rightId
-      - rightName
+      - state
+      - message
       properties:
-        rightId:
+        status:
           type: string
-          description: 'The id of the right.
-
-            '
-        rightName:
-          type: string
-          description: 'The right in a human readable form.
-
-            '
-        rightDescription:
-          type: string
-          description: 'The description of the right in a human readable form.
-
-            '
-    Error:
-      description: "The error property is optional.<br< \nIt is set only if an error has been detected.\n"
-      type: object
-      properties:
+          enum:
+          - OK
+          - FAILED
         message:
-          description: An optional, additional message which describes the error.
           type: string
-          maxLength: 256
-          example: Unauthorized
-        errorCode:
-          description: An error code as outlined in the PI-API documentation.
+          description: 'Description of what went wrong.
+
+            '
+        jwt:
           type: string
-          example: REQUEST_DATA_INVALID_ID
+          format: JSON Web Token
+          description: 'After successful authentication a JSON Web Token is returned for further requests
+
+            '
+        userName:
+          type: string
+          description: 'The display name of the current user.
+
+            '
+        userLocale:
+          type: string
+          description: 'The locale of the current user.
+
+            '
+        userTimeZone:
+          type: string
+          description: 'The timezone name of the current user.
+
+            '
+        rootNodeIDs:
+          type: array
+          items:
+            type: string
+            description: 'The root node IDs of the current user.
+
+              '
+        rootNodeType:
+          type: string
+          description: 'The type of the root node of the user''s hierarchy.
+
+            '
+        rights:
+          description: 'The rights list of the current user.
+
+            '
+          type: array
+          items:
+            $ref: '#/components/schemas/TmRight'
   responses:
     InternalServerError500:
       description: Internal Server Error
@@ -310,14 +310,14 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    BadRequest400:
-      description: Bad Request
+    Unauthorized401:
+      description: Unauthorized
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    Unauthorized401:
-      description: Unauthorized
+    BadRequest400:
+      description: Bad Request
       content:
         application/json:
           schema:

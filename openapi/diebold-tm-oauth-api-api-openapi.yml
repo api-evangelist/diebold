@@ -238,6 +238,39 @@ paths:
           $ref: '#/components/responses/InternalServerError500'
 components:
   schemas:
+    AuthenticationProviderData:
+      type: object
+      required:
+      - displayName
+      - authorizationURL
+      properties:
+        displayName:
+          type: string
+          maxLength: 255
+          description: 'The name of the name of the external authorization system which in human readable form, which can be displayed to the customer.
+
+            '
+          example: Microsoft Azure AD
+        authorizationURL:
+          type: string
+          format: uri
+          description: '''The URI is use to call the external authorization system for to authenticate the user..
+
+            '
+          example: https://login.microsoftonline.com/52846f0f-bc96-4a36-939b-f4d04bb473a0/oauth2/v2.0/authorize
+    Error:
+      description: "The error property is optional.<br< \nIt is set only if an error has been detected.\n"
+      type: object
+      properties:
+        message:
+          description: An optional, additional message which describes the error.
+          type: string
+          maxLength: 256
+          example: Unauthorized
+        errorCode:
+          description: An error code as outlined in the PI-API documentation.
+          type: string
+          example: REQUEST_DATA_INVALID_ID
     TokenResponseData:
       type: object
       required:
@@ -309,39 +342,6 @@ components:
 
             '
           example: c3RhdGUKaWRfdG....BhZ2UKCg==
-    AuthenticationProviderData:
-      type: object
-      required:
-      - displayName
-      - authorizationURL
-      properties:
-        displayName:
-          type: string
-          maxLength: 255
-          description: 'The name of the name of the external authorization system which in human readable form, which can be displayed to the customer.
-
-            '
-          example: Microsoft Azure AD
-        authorizationURL:
-          type: string
-          format: uri
-          description: '''The URI is use to call the external authorization system for to authenticate the user..
-
-            '
-          example: https://login.microsoftonline.com/52846f0f-bc96-4a36-939b-f4d04bb473a0/oauth2/v2.0/authorize
-    Error:
-      description: "The error property is optional.<br< \nIt is set only if an error has been detected.\n"
-      type: object
-      properties:
-        message:
-          description: An optional, additional message which describes the error.
-          type: string
-          maxLength: 256
-          example: Unauthorized
-        errorCode:
-          description: An error code as outlined in the PI-API documentation.
-          type: string
-          example: REQUEST_DATA_INVALID_ID
   responses:
     InternalServerError500:
       description: Internal Server Error
@@ -349,14 +349,14 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    BadRequest400:
-      description: Bad Request
+    Unauthorized401:
+      description: Unauthorized
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    Unauthorized401:
-      description: Unauthorized
+    BadRequest400:
+      description: Bad Request
       content:
         application/json:
           schema:

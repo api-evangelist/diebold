@@ -70,6 +70,18 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ExecuteProcessResponse'
+    notFoundResponse:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    getEcKeyResponse:
+      description: Returns the API's public EC key as PEM.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetEcKeyResponse'
     defaultResponse:
       description: Unexpected error. Please see/inspect 'code' and 'message' properties of the error for more/detailed informations.
       content:
@@ -88,29 +100,27 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    notFoundResponse:
-      description: Not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    getEcKeyResponse:
-      description: Returns the API's public EC key as PEM.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/GetEcKeyResponse'
   schemas:
-    CryptoEnvelope:
+    Error:
       type: object
+      description: The error property is optional. It is set only if an error has been detected.
       required:
-      - payload
-      description: Object holding a cryptographically secured request/response properties.
+      - code
       properties:
-        payload:
+        code:
+          description: An error code.
+          type: integer
+          format: int32
+          minimum: 0
+          example: 850004
+        message:
+          description: An optional, additional message which describes the error.
           type: string
-          minLength: 1
-          example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+
+          maxLength: 255
+          example: Internal server error. A database connection could not be established.
+    EcPublicKey:
+      allOf:
+      - $ref: '#/components/schemas/PublicKeyPem'
     ExecuteProcessResponse:
       type: object
       required:
@@ -121,27 +131,16 @@ components:
           $ref: '#/components/schemas/ResponseBase'
         cryptoEnvelope:
           $ref: '#/components/schemas/CryptoEnvelope'
-    ExecuteProcessRequest:
+    CryptoEnvelope:
       type: object
       required:
-      - cryptoEnvelope
-      description: "The request body only holds one property, the __CryptoEnvelope__:\n\n  CryptoEnvelope:\n    type: object\n    required:\n      - payload\n    description: >-\n      Object holding cryptographically secured request/response properties.\n    properties:\n      payload:\n        type: string\n        minLength: 1\n        example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+\n\nThe __CryptoEnvelope__ has a __payload__ property which represents an encrypted JSON string of the actual request object which is specified by  the schema __ExecuteProcessRequestPayload__."
+      - payload
+      description: Object holding a cryptographically secured request/response properties.
       properties:
-        cryptoEnvelope:
-          $ref: '#/components/schemas/CryptoEnvelope'
-    PublicKeyPem:
-      description: A holder object for PEM formatted public keys
-      type: object
-      required:
-      - publicKeyPem
-      properties:
-        publicKeyPem:
+        payload:
           type: string
           minLength: 1
-          example: '"-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEt0 GMNz1Geam/Jw4lbIoPcspDbWt2\n84U+yYZqnqMIa5gQZyJNsTRdvDfb2jdP3MUVBJM UoOeuGTF/cJy4uQ587w==\n-----END PUBLIC KEY-----\n"'
-    EcPublicKey:
-      allOf:
-      - $ref: '#/components/schemas/PublicKeyPem'
+          example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+
     ResponseBase:
       description: 'The basic response object used to transmit the response status and errors
 
@@ -162,6 +161,24 @@ components:
           example: true
         error:
           $ref: '#/components/schemas/Error'
+    PublicKeyPem:
+      description: A holder object for PEM formatted public keys
+      type: object
+      required:
+      - publicKeyPem
+      properties:
+        publicKeyPem:
+          type: string
+          minLength: 1
+          example: '"-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEt0 GMNz1Geam/Jw4lbIoPcspDbWt2\n84U+yYZqnqMIa5gQZyJNsTRdvDfb2jdP3MUVBJM UoOeuGTF/cJy4uQ587w==\n-----END PUBLIC KEY-----\n"'
+    ExecuteProcessRequest:
+      type: object
+      required:
+      - cryptoEnvelope
+      description: "The request body only holds one property, the __CryptoEnvelope__:\n\n  CryptoEnvelope:\n    type: object\n    required:\n      - payload\n    description: >-\n      Object holding cryptographically secured request/response properties.\n    properties:\n      payload:\n        type: string\n        minLength: 1\n        example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+\n\nThe __CryptoEnvelope__ has a __payload__ property which represents an encrypted JSON string of the actual request object which is specified by  the schema __ExecuteProcessRequestPayload__."
+      properties:
+        cryptoEnvelope:
+          $ref: '#/components/schemas/CryptoEnvelope'
     GetEcKeyResponse:
       type: object
       required:
@@ -172,33 +189,6 @@ components:
           $ref: '#/components/schemas/ResponseBase'
         ecPublicKey:
           $ref: '#/components/schemas/EcPublicKey'
-    Error:
-      type: object
-      description: The error property is optional. It is set only if an error has been detected.
-      required:
-      - code
-      properties:
-        code:
-          description: An error code.
-          type: integer
-          format: int32
-          minimum: 0
-          example: 850004
-        message:
-          description: An optional, additional message which describes the error.
-          type: string
-          maxLength: 255
-          example: Internal server error. A database connection could not be established.
-  requestBodies:
-    executeProcessRequestBody:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ExecuteProcessRequest'
-      description: 'The request body used for /executeProcess requests
-
-        '
-      required: true
   parameters:
     cryptoParamsParam:
       name: Dn-Tm-Crypto-Params
@@ -216,6 +206,16 @@ components:
       schema:
         type: string
         minLength: 1
+  requestBodies:
+    executeProcessRequestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ExecuteProcessRequest'
+      description: 'The request body used for /executeProcess requests
+
+        '
+      required: true
   securitySchemes:
     basicAuth:
       description: 'A basic authentication method where the username and a password hash are provided in the Authentication header. The username and password string must be base64 encoded and align to the pattern <username>:<password>.

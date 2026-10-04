@@ -253,151 +253,47 @@ paths:
         default:
           $ref: '#/components/responses/defaultResponse'
 components:
-  parameters:
-    bankCodeParam:
-      name: Dn-Tm-Omapi-Bankcode
-      in: header
-      required: false
-      description: "Contains the BIC (aka. bank identifier code)\n  The BIC - also known as SWIFT-code - as defined by ISO 9362 is required in/for cross border transfers/transactions.\n  Please see: https://en.wikipedia.org/wiki/ISO_9362\n  This field can also be used to send/receive an ABA RTN (ABA routing transit number) or Canadian TN(Canadian transit number).\n  See also: https://en.wikipedia.org/wiki/Routing_transit_number\n  This parameter should be encrypted and encoded in base64.\n"
-      schema:
-        type: string
-        pattern: ^[A-Za-z0-9]*$
-        minLength: 8
-        maxLength: 11
-    consumerIdParam:
-      name: Dn-Tm-Omapi-Consumer-Id
-      in: header
-      description: A unique identifier of a consumer (within an external system), which is required to identify the consumer. Maybe the consumerId is moreover/also used to authorize the consumer against an external system. This parameter should be encrypted and encoded in base64.
-      required: true
-      schema:
-        type: string
-        minLength: 1
-    clientSecretParam:
-      name: Dn-Tm-Omapi-Client-Secret
-      in: header
-      required: true
-      description: "Depending on the crypto scheme (RSA/AES or ECIES) the client intends to use the corresponding properties of the __CryptoParams__ schema defined by OM-API should be filled accordingly and sent back to the server as stringified JSON. For example:\n\n__Using RSA/AES:__\n\n        cryptoParams: {\n            aesKeyParams: {\n                key: \"uMSlxHYT+ttxz0T+nL+A344iP6ujJdodCn6k5MmjWDC0T+MFCXcs1OjXK1DaYFaP3v1mqN9+uh58FE0VxcwFGaRSp6uDfbl9Oaji7v0vDS9mMFa4hzMoiiYBmRKUemTNkJOcgCpDi7kDNHPB+gpqYyc4dMFfPvSCG/SYv7CFXTA=\",\n                iv: \"FgZ/HdtOhroVzRd802X3NgHCuiqBjCM+6Q/6PS0lUrROBe8T+me444KpKt112gLwHck7nmOVkZJPznWf7bpX6dh+mcIQ/3B7PJ3xGEsHbmSXEAK10C+AKwXpI9Sdig8feP2QT+Hd0d1qGk0X93OFaJ/zfqs/MNIesNTVAY2YBIw=\"\n            },\n            rsaPublicKey:\"-----BEGIN PUBLIC KEY-----\\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCeB05D31/zFICpf9JJWDo1ZVXt\\npYwvJa6ka0g0EHN95C8fvMguNDmprslmsOqaJYplmknWpWjbHAtIPpqrtY3H6eWP\\nELkBN2hitJlQQjf1y2jsWHsSH7BsVY5z1hCzJySFE7Q1ae9WuYj3RTsq+4ZZpEk7\\nCjRdjA26emVkCR3vWwIDAQAB\\n-----END PUBLIC KEY-----\"\n            }\n\nThe property __rsaPublicKey__ is used to send the client's public key to the server in order to create encrypted responses. It is recommended to use __rsaPublicKey__ key size of  - at least - 1024 bit.\nThe property __aesKeyParams__ is used to send the client's AES key (256bit) and iv (128bit) to the server. Both values __must__ be encrypted with the servers public RSA key (see __/getRsaKey__).\n\n__Using ECIES:__\n\n        cryptoParams: {\n            \"ecPublicKey\":{\n                \"publicKeyPem\":\"-----BEGIN PUBLIC KEY-----\\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEHPMaBu6d0BR6QFw3VKwPipuAdDPL\\nG36/aoyTx7iTK1xgoi7X9aMmT1x3Qh1+S1zVhBh2LDDEljHkkVyHrl4bOg==\\n-----END PUBLIC KEY-----\\n\"\n                }\n            }\n\nThe property __ecPublicKey__ is used to send the client's public key to the server in order to create encrypted responses."
-      schema:
-        type: string
-        minLength: 1
-    scopeParam:
-      name: Dn-Tm-Omapi-Scope
-      in: header
-      required: true
-      description: The 'scope' of the preferences. If the scope is not given, all preferences are returned without taking any certain scope into account.
-      schema:
-        type: string
-        minLength: 1
-        maxLength: 255
-    panParam:
-      name: Dn-Tm-Omapi-Pan
-      in: header
-      description: The PAN of the card to get the preferences for. This parameter should be encrypted and encoded in base64.
-      required: true
-      schema:
-        type: string
-        pattern: ^\d+$
-        format: PAN
-        minLength: 13
-        maxLength: 19
-        example: '4761739028380180'
-    referenceIdParam:
-      name: Dn-Tm-Omapi-Reference-Id
-      in: header
-      description: A unique identifier referring to a transaction in TM. This parameter should be encrypted and encoded in base64.
-      required: true
-      schema:
-        type: string
-        minLength: 1
-    sessionTokenParam:
-      name: Dn-Tm-Omapi-Session-Token
-      in: header
-      description: A unique identifier of a consumer session (within an external system), which is required to validate the consumer session. The default implementation expects in the sessionToken parameter a valid openId Connect id_token. Moreover, the default implementation expects in the authorization header of the http request the authorization schema "Bearer" followed by a valid openId Connect access token. This parameter should be encrypted and encoded in base64.
-      required: true
-      schema:
-        type: string
-        minLength: 1
-  responses:
-    badRequestResponse:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    getPreferencesResponse:
-      description: Returns the preferences key-value map.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/GetPreferencesResponse'
-    setPreferencesResponse:
-      description: Returns the response status.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/SetPreferencesResponse'
-    unauthorizedResponse:
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    executeGenericTransactionOrderResponse:
-      description: Returns the response status.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ExecuteGenericTransactionOrderResponse'
-    getClientBrandingResponse:
-      description: Returns the response status.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/GetClientBrandingResponse'
-    getGenericTransactionOrdersResponse:
-      description: Returns the list of generic transaction orders.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/GetGenericTransactionOrdersResponse'
-    defaultResponse:
-      description: Unexpected error. Please see/inspect 'code' and 'message' properties of the error for more/detailed informations.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    getCreditorsResponse:
-      description: Returns the list of pending prestaged transactions.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/GetCreditorsResponse'
-    manageRemoteNotificationsResponse:
-      description: Returns the response status when subscribing/unsubscribing for remote notifications.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ManageRemoteNotificationsResponse'
-    getLocationsResponse:
-      description: Returns the response status.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/GetLocationsResponse'
-    notFoundResponse:
-      description: Not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    getSinglePaymentOrderDataResponse:
-      description: Returns the response status.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/GetSinglePaymentOrderDataResponse'
   schemas:
-    SetPreferencesResponse:
+    ExecuteGenericTransactionOrderRequest:
+      type: object
+      required:
+      - cryptoEnvelope
+      description: "With OM-API v3 encryption is used for all endpoints. The request body is therefore specified to contain only on property, the __CryptoEnvelope__:\n\n  CryptoEnvelope:\n    type: object\n    required:\n      - payload\n    description: >-\n      Object holding cryptographically secured request properties.\n    properties:\n      payload:\n        type: string\n        minLength: 1\n        example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+\n\nThe __CryptoEnvelope__ has a __payload__ property which represents an encrypted JSON string of the actual request object which is specified by  the schema __ExecuteGenericTransactionOrderRequestPayload__."
+      properties:
+        cryptoEnvelope:
+          $ref: '#/components/schemas/CryptoEnvelope'
+    Error:
+      type: object
+      description: "The error property is optional. It is set only if an error has been detected. <p> Each request has its number range used for error codes (see ResponseBase schema). This is the list of the actual error codes for each request: <br>\n  | Request Name  | Error | Error Code  |\n  |---------------|-------|-------------|\n  | *Account Management API*\n  | &nbsp; | | |\n  | getAccounts | SERVER_FAILURE | 2870000 |\n  |               | SYSTEM_ERROR | 2870001 |\n  |               | REQUEST_DATA_INVALID | 2870002 |\n  |               | NO_RESULT | 2870003 |\n  |               | HOST_OFFLINE | 2870004 |\n  |               | HOST_COMMUNICATION_ERROR | 2870005 |\n  |               | VERIFICATION_FAILED | 2870015 |\n  | &nbsp; | | |\n  | getAccountTypes | SERVER_FAILURE | 2870100 |\n  |               | VERIFICATION_FAILED | 2870115 |\n  | &nbsp; | | |\n  | getAccountDetails | SERVER_FAILURE | 2870200 |\n  |               | SYSTEM_ERROR | 2870201 |\n  |               | REQUEST_DATA_INVALID | 2870202 |\n  |               | NO_RESULT | 2870203 |\n  |               | HOST_OFFLINE | 2870204 |\n  |               | HOST_COMMUNICATION_ERROR | 2870205 |\n  |               | VERIFICATION_FAILED | 2870215 |\n  | &nbsp; | | |\n  | getTransactions | SERVER_FAILURE | 2870300 |\n  |               | SYSTEM_ERROR | 2870301 |\n  |               | REQUEST_DATA_INVALID | 2870302 |\n  |               | NO_RESULT | 2870303 |\n  |               | HOST_OFFLINE | 2870304 |\n  |               | HOST_COMMUNICATION_ERROR | 2870305 |\n  |               | VERIFICATION_FAILED | 2870315 |\n  | &nbsp; | | |\n  | getScheduledTransactions | SERVER_FAILURE | 2870400 |\n  |               | SYSTEM_ERROR | 2870401 |\n  |               | REQUEST_DATA_INVALID | 2870402 |\n  |               | NO_RESULT | 2870403 |\n  |               | HOST_OFFLINE | 2870404 |\n  |               | HOST_COMMUNICATION_ERROR | 2870405 |\n  |               | VERIFICATION_FAILED | 2870415 |\n  | &nbsp; | | |\n  | checkAccount | SERVER_FAILURE | 2870500 |\n  |               | SYSTEM_ERROR | 2870501 |\n  |               | REQUEST_DATA_INVALID | 2870502 |\n  |               | NO_RESULT | 2870503 |\n  |               | HOST_OFFLINE | 2870504 |\n  |               | HOST_COMMUNICATION_ERROR | 2870505 |\n  |               | VERIFICATION_FAILED | 2870515 |\n  | &nbsp; | | |\n  | createTransfer | SERVER_FAILURE | 2870600 |\n  |               | SYSTEM_ERROR | 2870601 |\n  |               | REQUEST_DATA_INVALID | 2870602 |\n  |               | NO_RESULT | 2870603 |\n  |               | HOST_OFFLINE | 2870604 |\n  |               | HOST_COMMUNICATION_ERROR | 2870605 |\n  |               | LIMIT_EXCEEDED | 2870606 |\n  |               | INSUFFICIENT_FUNDS | 2870607 |\n  |               | ACCOUNT_TYPE_INVALID | 2870608 |\n  |               | VERIFICATION_FAILED | 2870615 |\n  | &nbsp; | | |\n  | createDispute | SERVER_FAILURE | 2870700 |\n  |               | SYSTEM_ERROR | 2870701 |\n  |               | MESSAGE_NOT_SENT | 2870700 |\n  |               | REQUEST_DATA_INVALID | 2870703 |\n  |               | VERIFICATION_FAILED | 2870715 |\n  | &nbsp; | | |\n  | *Standing Order API*\n  | &nbsp; | | |\n  | getStandingOrders | SERVER_FAILURE | 2871000 |\n  |               | REQUEST_DATA_INVALID | 2871002 |\n  |               | CONSUMER_NOT_FOUND | 2871012 |\n  |               | VERIFICATION_FAILED | 2871015 |\n  | &nbsp; | | |\n  | createStandingOrder | SERVER_FAILURE | 2871100 |\n  |               | REQUEST_DATA_INVALID | 2871102 |\n  |               | VERIFICATION_FAILED | 2871115 |\n  | &nbsp; | | |\n  | updateStandingOrder | SERVER_FAILURE | 2871200 |\n  |               | SYSTEM_ERROR | 2871201 |\n  |               | REQUEST_DATA_INVALID | 2871202 |\n  |               | STANDINGORDER_NOT_FOUND | 2871209 |\n  |               | VERIFICATION_FAILED | 2871215 |\n  | &nbsp; | | |\n  | deleteStandingOrder | SERVER_FAILURE | 2871300 |\n  |               | REQUEST_DATA_INVALID | 2871302 |\n  |               | STANDINGORDER_NOT_FOUND | 2871309 |\n  |               | VERIFICATION_FAILED | 2871315 |\n  | &nbsp; | | |\n  | updateAccountNickname | SERVER_FAILURE | 2871400 |\n  |               | SYSTEM_ERROR | 2871401 |\n  |               | REQUEST_DATA_INVALID | 2871402 |\n  |               | NO_RESULT | 2871403 |\n  |               | HOST_OFFLINE | 2871404 |\n  |               | HOST_COMMUNICATION_ERROR | 2871405 |\n  |               | SERVICE_NOT_SUPPORTED | 2871413 |\n  |               | EXT_RESPONSE_NO_MATCHING_RECORD_FOUND | 2871414 |\n  |               | VERIFICATION_FAILED | 2871415 |\n  | &nbsp; | | |\n  | *Prestaged Transaction API*\n  | &nbsp; | | |\n  | createCashout4Me | SERVER_FAILURE | 2872000 |\n  |               | SYSTEM_ERROR | 2872001 |\n  |               | REQUEST_DATA_INVALID | 2872002 |\n  |               | NO_RESULT | 2872003 |\n  |               | HOST_OFFLINE | 2872004 |\n  |               | HOST_COMMUNICATION_ERROR | 2872005 |\n  |               | VERIFICATION_FAILED | 2872015 |\n  | &nbsp; | | |\n  | createCashout2You | SERVER_FAILURE | 2872100 |\n  |               | SYSTEM_ERROR | 2872101 |\n  |               | REQUEST_DATA_INVALID | 2872102 |\n  |               | NO_RESULT | 2872103 |\n  |               | HOST_OFFLINE | 2872104 |\n  |               | HOST_COMMUNICATION_ERROR | 2872105 |\n  |               | VERIFICATION_FAILED | 2872115 |\n  | &nbsp; | | |\n  | createDeposit | SERVER_FAILURE | 2872200 |\n  |               | SYSTEM_ERROR | 2872201 |\n  |               | REQUEST_DATA_INVALID | 2872202 |\n  |               | NO_RESULT | 2872203 |\n  |               | HOST_OFFLINE | 2872204 |\n  |               | HOST_COMMUNICATION_ERROR | 2872205 |\n  |               | VERIFICATION_FAILED | 2872215 |\n  | &nbsp; | | |\n  | createBranchDeposit | SERVER_FAILURE | 2872300 |\n  |               | SYSTEM_ERROR | 2872301 |\n  |               | REQUEST_DATA_INVALID | 2872302 |\n  |               | NO_RESULT | 2872303 |\n  |               | HOST_OFFLINE | 2872304 |\n  |               | HOST_COMMUNICATION_ERROR | 2872305 |\n  |               | VERIFICATION_FAILED | 2872315 |\n  | &nbsp; | | |\n  | deletePrestagedTransaction | SERVER_FAILURE | 2872400 |\n  |               | RESERVED | 2872400 |\n  |               | REQUEST_DATA_INVALID | 2872402 |\n  |               | VERIFICATION_FAILED | 2872415 |\n  | &nbsp; | | |\n  | getPrestagedTransactions | SERVER_FAILURE | 2872500 |\n  |               | SYSTEM_ERROR | 2872501 |\n  |               | REQUEST_DATA_INVALID | 2872502 |\n  |               | NO_RESULT | 2872503 |\n  |               | HOST_OFFLINE | 2872504 |\n  |               | HOST_COMMUNICATION_ERROR | 2872505 |\n  |               | VERIFICATION_FAILED | 2872515 |\n  | &nbsp; | | |\n  | executePrestagedTransaction | SERVER_FAILURE | 2872600 |\n  |               | SYSTEM_ERROR | 2872601 |\n  |               | REQUEST_DATA_INVALID | 2872602 |\n  |               | VERIFICATION_FAILED | 2872615 |\n  | &nbsp; | | |\n  | *Miscellaneous API*\n  | &nbsp; | | |\n  | getCreditors | SERVER_FAILURE | 2874000 |\n  |               | SYSTEM_ERROR | 2874001 |\n  |               | REQUEST_DATA_INVALID | 2874002 |\n  |               | VERIFICATION_FAILED | 2874015 |\n  | &nbsp; | | |\n  | getSinglePaymentOrderData | SERVER_FAILURE | 2874100 |\n  |               | RESERVED | 2874100 |\n  |               | REQUEST_DATA_INVALID | 2874102 |\n  |               | CONSUMER_NOT_FOUND | 2874112 |\n  |               | VERIFICATION_FAILED | 2874115 |\n  | &nbsp; | | |\n  | getPreferences | SERVER_FAILURE | 2874200 |\n  |               | RESERVED | 2874200 |\n  |               | REQUEST_DATA_INVALID | 2874202 |\n  |               | RESPONSE_NO_CONSUMER_ID_AVAILABLE | 2874210 |\n  |               | RESPONSE_NO_PREFERENCES_AVAILABLE | 2874211 |\n  |               | VERIFICATION_FAILED | 2874215 |\n  | &nbsp; | | |\n  | setPreferences | SERVER_FAILURE | 2874300 |\n  |               | RESERVED | 2874300 |\n  |               | REQUEST_DATA_INVALID | 2874302 |\n  |               | VERIFICATION_FAILED | 2874315 |\n  | &nbsp; | | |\n  | getClientBranding | SERVER_FAILURE | 2874400 |\n  |               | RESERVED | 2874400 |\n  |               | REQUEST_DATA_INVALID | 2874402 |\n  |               | VERIFICATION_FAILED | 2874415 |\n  | &nbsp; | | |\n  | getGenericTransactionOrders | SERVER_FAILURE | 2874500 |\n  |               | RESERVED | 2874500 |\n  |               | REQUEST_DATA_INVALID | 2874502 |\n  |               | VERIFICATION_FAILED | 2874515 |\n  | &nbsp; | | |\n  | executeGenericTransactionOrder | SERVER_FAILURE | 2874600 |\n  |               | RESERVED | 2874600 |\n  |               | REQUEST_DATA_INVALID | 2874602 |\n  |               | VERIFICATION_FAILED | 2874615 |\n  | &nbsp; | | |\n  | getLocations | SERVER_FAILURE | 2873000 |\n  |               | SYSTEM_ERROR | 2873001 |\n  |               | REQUEST_DATA_INVALID | 2873002 |\n  |               | NO_RESULT | 2873003 |\n  |               | VERIFICATION_FAILED | 2873015 |\n  | &nbsp; | | |\n  | *Accessibility API*\n  | &nbsp; | | |\n  | getRsaKey | SERVER_FAILURE | 2875000 |\n  |               | VERIFICATION_FAILED | 2875015 |\n  | &nbsp; | | |\n  | getEcKey | SERVER_FAILURE | 2875100 |\n  |               | VERIFICATION_FAILED | 2875115 |\n  | &nbsp; | | |\n  | getVersion | SERVER_FAILURE | 2875200 |\n  |               | VERIFICATION_FAILED | 2875215 |"
+      required:
+      - code
+      properties:
+        code:
+          description: An error code as outlined in the PC/E documentation.
+          type: integer
+          format: int32
+          minimum: 0
+          example: 850004
+        message:
+          description: An optional, additional message which describes the error.
+          type: string
+          maxLength: 255
+          example: Internal server error. A database connection could not be established.
+    AesKeyParams:
+      description: A holder object for AES symmetric key params.
+      required:
+      - key
+      - iv
+      properties:
+        key:
+          description: The Base64 encoded (and encrypted) AES key (256bit).
+          type: string
+          example: MTI4MzI1Mjc2NTI=
+        iv:
+          description: The Base64 encoded (and encrypted) AES iv (128bit).
+          type: string
+          example: MTI4MzI1Mjc2NTI=
+    ExecuteGenericTransactionOrderResponse:
       type: object
       required:
       - responseStatus
@@ -414,43 +310,19 @@ components:
           $ref: '#/components/schemas/ResponseBase'
         cryptoEnvelope:
           $ref: '#/components/schemas/CryptoEnvelope'
-    ExecuteGenericTransactionOrderResponse:
+    ManageRemoteNotificationsResponse:
       type: object
       required:
       - responseStatus
       properties:
         responseStatus:
           $ref: '#/components/schemas/ResponseBase'
-    GetLocationsResponse:
+    SetPreferencesRequest:
       type: object
       required:
-      - responseStatus
-      description: The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using the schema __GetLocationsResponsePayload__
+      - cryptoEnvelope
+      description: "With OM-API v3 encryption is used for all endpoints. The request body is therefore specified to contain only on property, the __CryptoEnvelope__:\n\n  CryptoEnvelope:\n    type: object\n    required:\n      - payload\n    description: >-\n      Object holding cryptographically secured request properties.\n    properties:\n      payload:\n        type: string\n        minLength: 1\n        example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+\n\nThe __CryptoEnvelope__ has a __payload__ property which represents an encrypted JSON string of the actual request object which is specified by  the schema __SetPreferencesRequestPayload__."
       properties:
-        responseStatus:
-          $ref: '#/components/schemas/ResponseBase'
-        cryptoEnvelope:
-          $ref: '#/components/schemas/CryptoEnvelope'
-    CryptoEnvelope:
-      type: object
-      required:
-      - payload
-      description: Object holding a cryptographically secured request properties.
-      properties:
-        keyParams:
-          $ref: '#/components/schemas/AesKeyParams'
-        payload:
-          type: string
-          minLength: 1
-          example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+
-    GetSinglePaymentOrderDataResponse:
-      type: object
-      required:
-      - responseStatus
-      description: The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using the schema __GetSinglePaymentOrderDataResponsePayload__
-      properties:
-        responseStatus:
-          $ref: '#/components/schemas/ResponseBase'
         cryptoEnvelope:
           $ref: '#/components/schemas/CryptoEnvelope'
     ResponseBase:
@@ -479,83 +351,11 @@ components:
       properties:
         cryptoEnvelope:
           $ref: '#/components/schemas/CryptoEnvelope'
-    ManageRemoteNotificationsResponse:
-      type: object
-      required:
-      - responseStatus
-      properties:
-        responseStatus:
-          $ref: '#/components/schemas/ResponseBase'
-    ExecuteGenericTransactionOrderRequest:
-      type: object
-      required:
-      - cryptoEnvelope
-      description: "With OM-API v3 encryption is used for all endpoints. The request body is therefore specified to contain only on property, the __CryptoEnvelope__:\n\n  CryptoEnvelope:\n    type: object\n    required:\n      - payload\n    description: >-\n      Object holding cryptographically secured request properties.\n    properties:\n      payload:\n        type: string\n        minLength: 1\n        example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+\n\nThe __CryptoEnvelope__ has a __payload__ property which represents an encrypted JSON string of the actual request object which is specified by  the schema __ExecuteGenericTransactionOrderRequestPayload__."
-      properties:
-        cryptoEnvelope:
-          $ref: '#/components/schemas/CryptoEnvelope'
-    AesKeyParams:
-      description: A holder object for AES symmetric key params.
-      required:
-      - key
-      - iv
-      properties:
-        key:
-          description: The Base64 encoded (and encrypted) AES key (256bit).
-          type: string
-          example: MTI4MzI1Mjc2NTI=
-        iv:
-          description: The Base64 encoded (and encrypted) AES iv (128bit).
-          type: string
-          example: MTI4MzI1Mjc2NTI=
     GetGenericTransactionOrdersResponse:
       type: object
       required:
       - responseStatus
       description: The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using the schema __GetGenericTransactionOrdersResponsePayload__
-      properties:
-        responseStatus:
-          $ref: '#/components/schemas/ResponseBase'
-        cryptoEnvelope:
-          $ref: '#/components/schemas/CryptoEnvelope'
-    Error:
-      type: object
-      description: "The error property is optional. It is set only if an error has been detected. <p> Each request has its number range used for error codes (see ResponseBase schema). This is the list of the actual error codes for each request: <br>\n  | Request Name  | Error | Error Code  |\n  |---------------|-------|-------------|\n  | *Account Management API*\n  | &nbsp; | | |\n  | getAccounts | SERVER_FAILURE | 2870000 |\n  |               | SYSTEM_ERROR | 2870001 |\n  |               | REQUEST_DATA_INVALID | 2870002 |\n  |               | NO_RESULT | 2870003 |\n  |               | HOST_OFFLINE | 2870004 |\n  |               | HOST_COMMUNICATION_ERROR | 2870005 |\n  |               | VERIFICATION_FAILED | 2870015 |\n  | &nbsp; | | |\n  | getAccountTypes | SERVER_FAILURE | 2870100 |\n  |               | VERIFICATION_FAILED | 2870115 |\n  | &nbsp; | | |\n  | getAccountDetails | SERVER_FAILURE | 2870200 |\n  |               | SYSTEM_ERROR | 2870201 |\n  |               | REQUEST_DATA_INVALID | 2870202 |\n  |               | NO_RESULT | 2870203 |\n  |               | HOST_OFFLINE | 2870204 |\n  |               | HOST_COMMUNICATION_ERROR | 2870205 |\n  |               | VERIFICATION_FAILED | 2870215 |\n  | &nbsp; | | |\n  | getTransactions | SERVER_FAILURE | 2870300 |\n  |               | SYSTEM_ERROR | 2870301 |\n  |               | REQUEST_DATA_INVALID | 2870302 |\n  |               | NO_RESULT | 2870303 |\n  |               | HOST_OFFLINE | 2870304 |\n  |               | HOST_COMMUNICATION_ERROR | 2870305 |\n  |               | VERIFICATION_FAILED | 2870315 |\n  | &nbsp; | | |\n  | getScheduledTransactions | SERVER_FAILURE | 2870400 |\n  |               | SYSTEM_ERROR | 2870401 |\n  |               | REQUEST_DATA_INVALID | 2870402 |\n  |               | NO_RESULT | 2870403 |\n  |               | HOST_OFFLINE | 2870404 |\n  |               | HOST_COMMUNICATION_ERROR | 2870405 |\n  |               | VERIFICATION_FAILED | 2870415 |\n  | &nbsp; | | |\n  | checkAccount | SERVER_FAILURE | 2870500 |\n  |               | SYSTEM_ERROR | 2870501 |\n  |               | REQUEST_DATA_INVALID | 2870502 |\n  |               | NO_RESULT | 2870503 |\n  |               | HOST_OFFLINE | 2870504 |\n  |               | HOST_COMMUNICATION_ERROR | 2870505 |\n  |               | VERIFICATION_FAILED | 2870515 |\n  | &nbsp; | | |\n  | createTransfer | SERVER_FAILURE | 2870600 |\n  |               | SYSTEM_ERROR | 2870601 |\n  |               | REQUEST_DATA_INVALID | 2870602 |\n  |               | NO_RESULT | 2870603 |\n  |               | HOST_OFFLINE | 2870604 |\n  |               | HOST_COMMUNICATION_ERROR | 2870605 |\n  |               | LIMIT_EXCEEDED | 2870606 |\n  |               | INSUFFICIENT_FUNDS | 2870607 |\n  |               | ACCOUNT_TYPE_INVALID | 2870608 |\n  |               | VERIFICATION_FAILED | 2870615 |\n  | &nbsp; | | |\n  | createDispute | SERVER_FAILURE | 2870700 |\n  |               | SYSTEM_ERROR | 2870701 |\n  |               | MESSAGE_NOT_SENT | 2870700 |\n  |               | REQUEST_DATA_INVALID | 2870703 |\n  |               | VERIFICATION_FAILED | 2870715 |\n  | &nbsp; | | |\n  | *Standing Order API*\n  | &nbsp; | | |\n  | getStandingOrders | SERVER_FAILURE | 2871000 |\n  |               | REQUEST_DATA_INVALID | 2871002 |\n  |               | CONSUMER_NOT_FOUND | 2871012 |\n  |               | VERIFICATION_FAILED | 2871015 |\n  | &nbsp; | | |\n  | createStandingOrder | SERVER_FAILURE | 2871100 |\n  |               | REQUEST_DATA_INVALID | 2871102 |\n  |               | VERIFICATION_FAILED | 2871115 |\n  | &nbsp; | | |\n  | updateStandingOrder | SERVER_FAILURE | 2871200 |\n  |               | SYSTEM_ERROR | 2871201 |\n  |               | REQUEST_DATA_INVALID | 2871202 |\n  |               | STANDINGORDER_NOT_FOUND | 2871209 |\n  |               | VERIFICATION_FAILED | 2871215 |\n  | &nbsp; | | |\n  | deleteStandingOrder | SERVER_FAILURE | 2871300 |\n  |               | REQUEST_DATA_INVALID | 2871302 |\n  |               | STANDINGORDER_NOT_FOUND | 2871309 |\n  |               | VERIFICATION_FAILED | 2871315 |\n  | &nbsp; | | |\n  | updateAccountNickname | SERVER_FAILURE | 2871400 |\n  |               | SYSTEM_ERROR | 2871401 |\n  |               | REQUEST_DATA_INVALID | 2871402 |\n  |               | NO_RESULT | 2871403 |\n  |               | HOST_OFFLINE | 2871404 |\n  |               | HOST_COMMUNICATION_ERROR | 2871405 |\n  |               | SERVICE_NOT_SUPPORTED | 2871413 |\n  |               | EXT_RESPONSE_NO_MATCHING_RECORD_FOUND | 2871414 |\n  |               | VERIFICATION_FAILED | 2871415 |\n  | &nbsp; | | |\n  | *Prestaged Transaction API*\n  | &nbsp; | | |\n  | createCashout4Me | SERVER_FAILURE | 2872000 |\n  |               | SYSTEM_ERROR | 2872001 |\n  |               | REQUEST_DATA_INVALID | 2872002 |\n  |               | NO_RESULT | 2872003 |\n  |               | HOST_OFFLINE | 2872004 |\n  |               | HOST_COMMUNICATION_ERROR | 2872005 |\n  |               | VERIFICATION_FAILED | 2872015 |\n  | &nbsp; | | |\n  | createCashout2You | SERVER_FAILURE | 2872100 |\n  |               | SYSTEM_ERROR | 2872101 |\n  |               | REQUEST_DATA_INVALID | 2872102 |\n  |               | NO_RESULT | 2872103 |\n  |               | HOST_OFFLINE | 2872104 |\n  |               | HOST_COMMUNICATION_ERROR | 2872105 |\n  |               | VERIFICATION_FAILED | 2872115 |\n  | &nbsp; | | |\n  | createDeposit | SERVER_FAILURE | 2872200 |\n  |               | SYSTEM_ERROR | 2872201 |\n  |               | REQUEST_DATA_INVALID | 2872202 |\n  |               | NO_RESULT | 2872203 |\n  |               | HOST_OFFLINE | 2872204 |\n  |               | HOST_COMMUNICATION_ERROR | 2872205 |\n  |               | VERIFICATION_FAILED | 2872215 |\n  | &nbsp; | | |\n  | createBranchDeposit | SERVER_FAILURE | 2872300 |\n  |               | SYSTEM_ERROR | 2872301 |\n  |               | REQUEST_DATA_INVALID | 2872302 |\n  |               | NO_RESULT | 2872303 |\n  |               | HOST_OFFLINE | 2872304 |\n  |               | HOST_COMMUNICATION_ERROR | 2872305 |\n  |               | VERIFICATION_FAILED | 2872315 |\n  | &nbsp; | | |\n  | deletePrestagedTransaction | SERVER_FAILURE | 2872400 |\n  |               | RESERVED | 2872400 |\n  |               | REQUEST_DATA_INVALID | 2872402 |\n  |               | VERIFICATION_FAILED | 2872415 |\n  | &nbsp; | | |\n  | getPrestagedTransactions | SERVER_FAILURE | 2872500 |\n  |               | SYSTEM_ERROR | 2872501 |\n  |               | REQUEST_DATA_INVALID | 2872502 |\n  |               | NO_RESULT | 2872503 |\n  |               | HOST_OFFLINE | 2872504 |\n  |               | HOST_COMMUNICATION_ERROR | 2872505 |\n  |               | VERIFICATION_FAILED | 2872515 |\n  | &nbsp; | | |\n  | executePrestagedTransaction | SERVER_FAILURE | 2872600 |\n  |               | SYSTEM_ERROR | 2872601 |\n  |               | REQUEST_DATA_INVALID | 2872602 |\n  |               | VERIFICATION_FAILED | 2872615 |\n  | &nbsp; | | |\n  | *Miscellaneous API*\n  | &nbsp; | | |\n  | getCreditors | SERVER_FAILURE | 2874000 |\n  |               | SYSTEM_ERROR | 2874001 |\n  |               | REQUEST_DATA_INVALID | 2874002 |\n  |               | VERIFICATION_FAILED | 2874015 |\n  | &nbsp; | | |\n  | getSinglePaymentOrderData | SERVER_FAILURE | 2874100 |\n  |               | RESERVED | 2874100 |\n  |               | REQUEST_DATA_INVALID | 2874102 |\n  |               | CONSUMER_NOT_FOUND | 2874112 |\n  |               | VERIFICATION_FAILED | 2874115 |\n  | &nbsp; | | |\n  | getPreferences | SERVER_FAILURE | 2874200 |\n  |               | RESERVED | 2874200 |\n  |               | REQUEST_DATA_INVALID | 2874202 |\n  |               | RESPONSE_NO_CONSUMER_ID_AVAILABLE | 2874210 |\n  |               | RESPONSE_NO_PREFERENCES_AVAILABLE | 2874211 |\n  |               | VERIFICATION_FAILED | 2874215 |\n  | &nbsp; | | |\n  | setPreferences | SERVER_FAILURE | 2874300 |\n  |               | RESERVED | 2874300 |\n  |               | REQUEST_DATA_INVALID | 2874302 |\n  |               | VERIFICATION_FAILED | 2874315 |\n  | &nbsp; | | |\n  | getClientBranding | SERVER_FAILURE | 2874400 |\n  |               | RESERVED | 2874400 |\n  |               | REQUEST_DATA_INVALID | 2874402 |\n  |               | VERIFICATION_FAILED | 2874415 |\n  | &nbsp; | | |\n  | getGenericTransactionOrders | SERVER_FAILURE | 2874500 |\n  |               | RESERVED | 2874500 |\n  |               | REQUEST_DATA_INVALID | 2874502 |\n  |               | VERIFICATION_FAILED | 2874515 |\n  | &nbsp; | | |\n  | executeGenericTransactionOrder | SERVER_FAILURE | 2874600 |\n  |               | RESERVED | 2874600 |\n  |               | REQUEST_DATA_INVALID | 2874602 |\n  |               | VERIFICATION_FAILED | 2874615 |\n  | &nbsp; | | |\n  | getLocations | SERVER_FAILURE | 2873000 |\n  |               | SYSTEM_ERROR | 2873001 |\n  |               | REQUEST_DATA_INVALID | 2873002 |\n  |               | NO_RESULT | 2873003 |\n  |               | VERIFICATION_FAILED | 2873015 |\n  | &nbsp; | | |\n  | *Accessibility API*\n  | &nbsp; | | |\n  | getRsaKey | SERVER_FAILURE | 2875000 |\n  |               | VERIFICATION_FAILED | 2875015 |\n  | &nbsp; | | |\n  | getEcKey | SERVER_FAILURE | 2875100 |\n  |               | VERIFICATION_FAILED | 2875115 |\n  | &nbsp; | | |\n  | getVersion | SERVER_FAILURE | 2875200 |\n  |               | VERIFICATION_FAILED | 2875215 |"
-      required:
-      - code
-      properties:
-        code:
-          description: An error code as outlined in the PC/E documentation.
-          type: integer
-          format: int32
-          minimum: 0
-          example: 850004
-        message:
-          description: An optional, additional message which describes the error.
-          type: string
-          maxLength: 255
-          example: Internal server error. A database connection could not be established.
-    SetPreferencesRequest:
-      type: object
-      required:
-      - cryptoEnvelope
-      description: "With OM-API v3 encryption is used for all endpoints. The request body is therefore specified to contain only on property, the __CryptoEnvelope__:\n\n  CryptoEnvelope:\n    type: object\n    required:\n      - payload\n    description: >-\n      Object holding cryptographically secured request properties.\n    properties:\n      payload:\n        type: string\n        minLength: 1\n        example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+\n\nThe __CryptoEnvelope__ has a __payload__ property which represents an encrypted JSON string of the actual request object which is specified by  the schema __SetPreferencesRequestPayload__."
-      properties:
-        cryptoEnvelope:
-          $ref: '#/components/schemas/CryptoEnvelope'
-    ManageRemoteNotificationsRequest:
-      type: object
-      required:
-      - cryptoEnvelope
-      description: "The request body only holds one property, the __CryptoEnvelope__:\n\n  CryptoEnvelope:\n    type: object\n    required:\n      - payload\n    description: >-\n      Object holding cryptographically secured request/response properties.\n    properties:\n      payload:\n        type: string\n        minLength: 1\n        example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+\n\nThe __CryptoEnvelope__ has a __payload__ property which represents an encrypted JSON string of the actual request object which is specified by  the schema __ManageRemoteNotificationsPayload__."
-      properties:
-        cryptoEnvelope:
-          $ref: '#/components/schemas/CryptoEnvelope'
-    GetCreditorsResponse:
-      type: object
-      required:
-      - responseStatus
-      description: The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using the schema __GetCreditorsResponsePayload__
       properties:
         responseStatus:
           $ref: '#/components/schemas/ResponseBase'
@@ -571,6 +371,206 @@ components:
           $ref: '#/components/schemas/ResponseBase'
         cryptoEnvelope:
           $ref: '#/components/schemas/CryptoEnvelope'
+    GetLocationsResponse:
+      type: object
+      required:
+      - responseStatus
+      description: The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using the schema __GetLocationsResponsePayload__
+      properties:
+        responseStatus:
+          $ref: '#/components/schemas/ResponseBase'
+        cryptoEnvelope:
+          $ref: '#/components/schemas/CryptoEnvelope'
+    CryptoEnvelope:
+      type: object
+      required:
+      - payload
+      description: Object holding a cryptographically secured request properties.
+      properties:
+        keyParams:
+          $ref: '#/components/schemas/AesKeyParams'
+        payload:
+          type: string
+          minLength: 1
+          example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+
+    ManageRemoteNotificationsRequest:
+      type: object
+      required:
+      - cryptoEnvelope
+      description: "The request body only holds one property, the __CryptoEnvelope__:\n\n  CryptoEnvelope:\n    type: object\n    required:\n      - payload\n    description: >-\n      Object holding cryptographically secured request/response properties.\n    properties:\n      payload:\n        type: string\n        minLength: 1\n        example: BB20WIJRTz/T9vkGhETgpehzc6dDoioQ9DJV4lRA6ICaWwLPLDE+\n\nThe __CryptoEnvelope__ has a __payload__ property which represents an encrypted JSON string of the actual request object which is specified by  the schema __ManageRemoteNotificationsPayload__."
+      properties:
+        cryptoEnvelope:
+          $ref: '#/components/schemas/CryptoEnvelope'
+    SetPreferencesResponse:
+      type: object
+      required:
+      - responseStatus
+      properties:
+        responseStatus:
+          $ref: '#/components/schemas/ResponseBase'
+    GetCreditorsResponse:
+      type: object
+      required:
+      - responseStatus
+      description: The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using the schema __GetCreditorsResponsePayload__
+      properties:
+        responseStatus:
+          $ref: '#/components/schemas/ResponseBase'
+        cryptoEnvelope:
+          $ref: '#/components/schemas/CryptoEnvelope'
+    GetSinglePaymentOrderDataResponse:
+      type: object
+      required:
+      - responseStatus
+      description: The response data is contained in the __CryptoEnvelope__'s property __payload__ as encrypted and stringified JSON object using the schema __GetSinglePaymentOrderDataResponsePayload__
+      properties:
+        responseStatus:
+          $ref: '#/components/schemas/ResponseBase'
+        cryptoEnvelope:
+          $ref: '#/components/schemas/CryptoEnvelope'
+  responses:
+    getPreferencesResponse:
+      description: Returns the preferences key-value map.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetPreferencesResponse'
+    getCreditorsResponse:
+      description: Returns the list of pending prestaged transactions.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetCreditorsResponse'
+    badRequestResponse:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    executeGenericTransactionOrderResponse:
+      description: Returns the response status.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ExecuteGenericTransactionOrderResponse'
+    getGenericTransactionOrdersResponse:
+      description: Returns the list of generic transaction orders.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetGenericTransactionOrdersResponse'
+    unauthorizedResponse:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    getSinglePaymentOrderDataResponse:
+      description: Returns the response status.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetSinglePaymentOrderDataResponse'
+    manageRemoteNotificationsResponse:
+      description: Returns the response status when subscribing/unsubscribing for remote notifications.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ManageRemoteNotificationsResponse'
+    setPreferencesResponse:
+      description: Returns the response status.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SetPreferencesResponse'
+    notFoundResponse:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    defaultResponse:
+      description: Unexpected error. Please see/inspect 'code' and 'message' properties of the error for more/detailed informations.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    getLocationsResponse:
+      description: Returns the response status.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetLocationsResponse'
+    getClientBrandingResponse:
+      description: Returns the response status.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetClientBrandingResponse'
+  parameters:
+    referenceIdParam:
+      name: Dn-Tm-Omapi-Reference-Id
+      in: header
+      description: A unique identifier referring to a transaction in TM. This parameter should be encrypted and encoded in base64.
+      required: true
+      schema:
+        type: string
+        minLength: 1
+    bankCodeParam:
+      name: Dn-Tm-Omapi-Bankcode
+      in: header
+      required: false
+      description: "Contains the BIC (aka. bank identifier code)\n  The BIC - also known as SWIFT-code - as defined by ISO 9362 is required in/for cross border transfers/transactions.\n  Please see: https://en.wikipedia.org/wiki/ISO_9362\n  This field can also be used to send/receive an ABA RTN (ABA routing transit number) or Canadian TN(Canadian transit number).\n  See also: https://en.wikipedia.org/wiki/Routing_transit_number\n  This parameter should be encrypted and encoded in base64.\n"
+      schema:
+        type: string
+        pattern: ^[A-Za-z0-9]*$
+        minLength: 8
+        maxLength: 11
+    clientSecretParam:
+      name: Dn-Tm-Omapi-Client-Secret
+      in: header
+      required: true
+      description: "Depending on the crypto scheme (RSA/AES or ECIES) the client intends to use the corresponding properties of the __CryptoParams__ schema defined by OM-API should be filled accordingly and sent back to the server as stringified JSON. For example:\n\n__Using RSA/AES:__\n\n        cryptoParams: {\n            aesKeyParams: {\n                key: \"uMSlxHYT+ttxz0T+nL+A344iP6ujJdodCn6k5MmjWDC0T+MFCXcs1OjXK1DaYFaP3v1mqN9+uh58FE0VxcwFGaRSp6uDfbl9Oaji7v0vDS9mMFa4hzMoiiYBmRKUemTNkJOcgCpDi7kDNHPB+gpqYyc4dMFfPvSCG/SYv7CFXTA=\",\n                iv: \"FgZ/HdtOhroVzRd802X3NgHCuiqBjCM+6Q/6PS0lUrROBe8T+me444KpKt112gLwHck7nmOVkZJPznWf7bpX6dh+mcIQ/3B7PJ3xGEsHbmSXEAK10C+AKwXpI9Sdig8feP2QT+Hd0d1qGk0X93OFaJ/zfqs/MNIesNTVAY2YBIw=\"\n            },\n            rsaPublicKey:\"-----BEGIN PUBLIC KEY-----\\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCeB05D31/zFICpf9JJWDo1ZVXt\\npYwvJa6ka0g0EHN95C8fvMguNDmprslmsOqaJYplmknWpWjbHAtIPpqrtY3H6eWP\\nELkBN2hitJlQQjf1y2jsWHsSH7BsVY5z1hCzJySFE7Q1ae9WuYj3RTsq+4ZZpEk7\\nCjRdjA26emVkCR3vWwIDAQAB\\n-----END PUBLIC KEY-----\"\n            }\n\nThe property __rsaPublicKey__ is used to send the client's public key to the server in order to create encrypted responses. It is recommended to use __rsaPublicKey__ key size of  - at least - 1024 bit.\nThe property __aesKeyParams__ is used to send the client's AES key (256bit) and iv (128bit) to the server. Both values __must__ be encrypted with the servers public RSA key (see __/getRsaKey__).\n\n__Using ECIES:__\n\n        cryptoParams: {\n            \"ecPublicKey\":{\n                \"publicKeyPem\":\"-----BEGIN PUBLIC KEY-----\\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEHPMaBu6d0BR6QFw3VKwPipuAdDPL\\nG36/aoyTx7iTK1xgoi7X9aMmT1x3Qh1+S1zVhBh2LDDEljHkkVyHrl4bOg==\\n-----END PUBLIC KEY-----\\n\"\n                }\n            }\n\nThe property __ecPublicKey__ is used to send the client's public key to the server in order to create encrypted responses."
+      schema:
+        type: string
+        minLength: 1
+    sessionTokenParam:
+      name: Dn-Tm-Omapi-Session-Token
+      in: header
+      description: A unique identifier of a consumer session (within an external system), which is required to validate the consumer session. The default implementation expects in the sessionToken parameter a valid openId Connect id_token. Moreover, the default implementation expects in the authorization header of the http request the authorization schema "Bearer" followed by a valid openId Connect access token. This parameter should be encrypted and encoded in base64.
+      required: true
+      schema:
+        type: string
+        minLength: 1
+    panParam:
+      name: Dn-Tm-Omapi-Pan
+      in: header
+      description: The PAN of the card to get the preferences for. This parameter should be encrypted and encoded in base64.
+      required: true
+      schema:
+        type: string
+        pattern: ^\d+$
+        format: PAN
+        minLength: 13
+        maxLength: 19
+        example: '4761739028380180'
+    scopeParam:
+      name: Dn-Tm-Omapi-Scope
+      in: header
+      required: true
+      description: The 'scope' of the preferences. If the scope is not given, all preferences are returned without taking any certain scope into account.
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 255
+    consumerIdParam:
+      name: Dn-Tm-Omapi-Consumer-Id
+      in: header
+      description: A unique identifier of a consumer (within an external system), which is required to identify the consumer. Maybe the consumerId is moreover/also used to authorize the consumer against an external system. This parameter should be encrypted and encoded in base64.
+      required: true
+      schema:
+        type: string
+        minLength: 1
   requestBodies:
     executeGenericTransactionOrderRequestBody:
       content:
@@ -578,15 +578,6 @@ components:
           schema:
             $ref: '#/components/schemas/ExecuteGenericTransactionOrderRequest'
       description: The request body used for /executeGenericTransactionOrder requests
-      required: true
-    manageRemoteNotificationsRequestBody:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ManageRemoteNotificationsRequest'
-      description: 'The request body used for /executeProcess requests
-
-        '
       required: true
     getLocationsRequestBody:
       content:
@@ -601,6 +592,15 @@ components:
           schema:
             $ref: '#/components/schemas/SetPreferencesRequest'
       description: The request body used for /setPreferences requests
+      required: true
+    manageRemoteNotificationsRequestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ManageRemoteNotificationsRequest'
+      description: 'The request body used for /executeProcess requests
+
+        '
       required: true
   securitySchemes:
     bearerAuth:
