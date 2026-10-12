@@ -1,0 +1,18 @@
+generated: '2026-10-12'
+method: none
+source:
+- https://zapier.com/apps/diebold/integrations
+- https://zapier.com/apps/diebold-nixdorf/integrations
+- https://n8n.io/integrations/diebold/
+- https://composio.dev/toolkits/diebold
+- https://monid.ai/tools/diebold
+checked:
+- https://composio.dev/toolkits/diebold
+- https://monid.ai/tools/diebold
+- https://n8n.io/integrations/diebold/
+- https://zapier.com/apps/diebold-nixdorf/integrations
+- https://zapier.com/apps/diebold/integrations
+summary: null
+marketplace_apps: []
+edges: []
+templates: []
