@@ -461,7 +461,587 @@ paths:
                 ServiceResponseFailExample:
                   $ref: '#/components/examples/ServiceResponseFailExample'
 components:
+  parameters:
+    authorization:
+      name: Authorization
+      in: header
+      description: 'In case the Authentication type is BASIC_AUTH, Authorization will contain base 64 encoded userName:password string using HTTP Basic Authentication.<br> In case the Authentication Type is JWE/TOKEN, Authorization will contain token received using getToken request as Bearer Token. '
+      schema:
+        type: string
+        example: Basic afae1wad213da OR Bearer T2131241
+    initiatingPartyName:
+      name: initiatingPartyName
+      in: header
+      description: The name of the initiating party.
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        example: DieboldNixdorf
+    productName:
+      name: productName
+      in: header
+      description: The name of the product which is consuming the service (business product name).
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        example: Transaction Middleware
+    initiatingPartyId:
+      name: initiatingPartyId
+      in: header
+      description: Identifier of the party that has initiated this transaction, in this case Diebold Nixdorf's ID.
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        example: DieboldNixdorf
+    referenceId:
+      name: referenceId
+      in: header
+      description: Unique identifier for the transaction request.
+      required: true
+      schema:
+        type: string
+        example: A123F34
+    timestamp:
+      name: timestamp
+      in: header
+      description: timestamp of the transaction
+      required: true
+      schema:
+        type: string
+        format: yyyy-MM-dd'T'HH:mm:ssZ
+        description: Timestamp
+        example: 2020-09-01T16:40:52+0000
+    version:
+      name: version
+      in: header
+      description: Version of DN Open Backend API being used.
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        example: 4.3.0
   schemas:
+    PreferenceScope:
+      type: string
+      description: The scope for the list of customer preferences
+      example: FastCash
+    AdditionalProperties:
+      type: object
+      additionalProperties:
+        type: string
+      description: Additional properties can be provided within this object
+    getPreferencesResponse:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ServiceResponse'
+      - type: object
+        required:
+        - payload
+        properties:
+          payload:
+            type: object
+            required:
+            - preferences
+            properties:
+              preferences:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ConsumerPreferences'
+              transaction:
+                $ref: '#/components/schemas/TransactionResponse'
+              additionalProperties:
+                $ref: '#/components/schemas/AdditionalProperties'
+              supplementaryData:
+                $ref: '#/components/schemas/SupplementaryData'
+    getMemberBankListResponse:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ServiceResponse'
+      - type: object
+        required:
+        - payload
+        properties:
+          payload:
+            type: object
+            properties:
+              operation:
+                type: string
+                description: Defines the operation to be performed on the list of 'memberBanks'.</br></br> ADD - adds the listed 'memberBanks' to existing list of member banks if not present. </br> REMOVE - removes the listed 'memberBanks' from existing list of member banks if present. </br></br> If unspecified, the entire list of member banks is refreshed with the new list of 'memberBanks'
+                enum:
+                - ADD
+                - REMOVE
+              memberBanks:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MemberBanks'
+    transactionConfirmationResponse:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ServiceResponse'
+      - type: object
+        required:
+        - payload
+        properties:
+          payload:
+            type: object
+            properties:
+              confirmationNumber:
+                $ref: '#/components/schemas/ConfirmationNumber'
+              hostResponseData:
+                $ref: '#/components/schemas/HostResponseData'
+              transaction:
+                $ref: '#/components/schemas/TransactionResponse'
+              additionalProperties:
+                $ref: '#/components/schemas/AdditionalProperties'
+              supplementaryData:
+                $ref: '#/components/schemas/SupplementaryData'
+    Channel:
+      type: string
+      enum:
+      - selfService
+      - network
+      - teller
+      - mobile
+      - undefined
+      description: Channel through which transaction is initiated.
+    ConsumerId:
+      type: string
+      description: A unique identifier of a consumer
+      example: '123456'
+    ConsumerPreferences:
+      type: object
+      description: Consumer preferences containing preferences for a specific scope
+      required:
+      - scope
+      - entries
+      properties:
+        scope:
+          $ref: '#/components/schemas/PreferenceScope'
+        entries:
+          type: array
+          description: "\nList of preferences in the key-value-type format. \n\n**key** - mandatory field of *string* type that indicates the name of the preference\n\n**value** - mandatory field of any data type containing the value of this preference\n\n**type** - mandatory field of *string* type indicating the data type of 'value' field. It is an enum containing the below values.\n\n    - Long\n    - Boolean\n    - String\n    - Integer\n    - Double\n    - BigInteger\n    - BigDecimal\n    - HashMap\n    - ArrayList\n    \n"
+          items:
+            type: object
+            additionalProperties: true
+          example:
+          - key: Language
+            value: en-US
+            type: String
+          - key: Print receipt
+            value: true
+            type: Boolean
+          - key: FastCash amount
+            value: 1000
+            type: Integer
+    setPreferencesResponse:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ServiceResponse'
+      - type: object
+        required:
+        - payload
+        properties:
+          payload:
+            type: object
+            properties:
+              confirmationNumber:
+                $ref: '#/components/schemas/ConfirmationNumber'
+              hostResponseData:
+                $ref: '#/components/schemas/HostResponseData'
+              transaction:
+                $ref: '#/components/schemas/TransactionResponse'
+              additionalProperties:
+                $ref: '#/components/schemas/AdditionalProperties'
+              supplementaryData:
+                $ref: '#/components/schemas/SupplementaryData'
+    MemberBankId:
+      type: string
+      description: Id of the member bank
+      example: '1234'
+    AccountSubType:
+      description: Represents the SubType of an account for AccountType
+      type: string
+      example: Savings account
+    PhoneNumber:
+      type: object
+      required:
+      - number
+      - phoneType
+      properties:
+        number:
+          type: string
+          example: '+919123456789'
+        phoneType:
+          type: string
+          enum:
+          - BUSINESS
+          - HOME
+          - WORK
+          - MOBILE
+          example: HOME
+    TransactionBase:
+      type: object
+      required:
+      - id
+      - type
+      - operation
+      properties:
+        id:
+          type: string
+          minLength: 1
+          example: '212423521525'
+        transactionTime:
+          type: string
+          description: Transaction time
+          format: yyyy-MM-dd'T'HH:mm:ssZ
+          example: 2020-09-01T16:40:52+0000
+        poiSettlementDate:
+          $ref: '#/components/schemas/PointOfInteractionSettlementDate'
+        businessCorrelationId:
+          type: string
+          description: Unique ID for a transaction business case
+          maxLength: 50
+          example: 7f2b9fcde28b42abbc10b0b9640f6ede
+        type:
+          $ref: '#/components/schemas/TransactionTypes'
+        operation:
+          type: string
+          minLength: 1
+          description: Operation performed for the given transaction type given by the 'type' property
+        retrievalReferenceNumber:
+          type: string
+          example: '827364775848'
+          description: 'A numeric value containing the unique transaction reference number '
+        authorizationIdentificationResponse:
+          type: string
+          example: '000123'
+          description: A numeric value containing the authorization code
+    Date:
+      type: string
+      format: yyyy-MM-dd
+      description: The date pattern is defined 'yyyy-MM-dd', with yyyy as 4-digit year, MM as 2-digit month and dd as 2-digit date of month
+      example: '2020-07-23'
+    OfacSearch:
+      type: object
+      required:
+      - ofacMatchType
+      properties:
+        ofacMatchType:
+          type: string
+          description: OFAC Match Type.
+          example: OFACAlias
+        ofacMatchRef:
+          type: string
+          description: OFAC Match Reference ID.
+          example: L0305
+        id:
+          type: string
+          description: OFAC ID.
+          example: '6366'
+        aliasID:
+          type: string
+          description: OFAC alias ID.
+          example: '4349'
+        aliasName:
+          type: string
+          description: OFAC alias name.
+          example: A.C.L.
+        name:
+          type: string
+          description: Full Name.
+          example: 'Alliance Corporation Limited '
+        type:
+          type: string
+          description: OFAC Type.
+          example: Unknown
+        program:
+          type: string
+          description: OFAC Program.
+          example: FTO] [SDGT] [SDT
+        street:
+          type: string
+          description: OFAC Street.
+          example: A.B. street
+        city:
+          type: string
+          description: OFAC City.
+          example: New York
+        country:
+          type: string
+          description: OFAC Country.
+          example: USA
+        remarks:
+          type: string
+          description: Remarks for the transaction.
+          example: Search for ACCT XXXX 4567
+    IsStandin:
+      type: boolean
+      description: Standin request indicator
+      example: false
+    AccountName:
+      type: string
+      description: The account name which is displayed to the user
+      example: Your Savings account
+    ExtendedResponseCode:
+      type: string
+      enum:
+      - OK
+      - SERVER_FAILURE
+      - NO_RESULT
+      - ACCOUNT_NOT_FOUND
+      - ACCOUNT_CLOSED
+      - ACCOUNT_TYPE_INVALID
+      - LIMIT_EXCEEDED
+      - INSUFFICIENT_FUNDS
+      - REQUEST_DATA_INVALID
+      - TRX_NOT_PERMITTED_TO_ACCOUNT
+      - TRANSACTION_NOT_POSSIBLE
+      - HOST_OFFLINE
+      - HOST_CANCEL
+      - HOST_BUSINESS_ERROR
+      - RESPONSE_FEE_CONFIRM_REQUIRED
+      - OVERDRAFT_CONFIRM_REQUIRED
+      - PIN_VALIDATION_FAILED
+      - FCC_CONFIRM_REQUIRED
+      - DIRECT_CURRENCY_CONVERSION_CONFIRM_REQUIRED
+      - MULTI_CONFIRM_REQUIRED
+      - CARD_NOT_FOUND
+      - CARD_NOT_FOUND_FOR_EXPIRY_DATE
+      - CARD_BLOCKED
+      - CARD_EXPIRED
+      - CARD_MANIPULATED
+      - PIN_INACTIVE
+      - PIN_TRY_LIMIT_EXCEEDED
+      - PINS_DIFFER
+      - OFFLINE_OKAY
+      - SERVER_NOT_READY
+      example: OK
+      description: Extended Response Code Mapping
+    HostResponseData:
+      type: object
+      description: Host Response details
+      properties:
+        hostResponseCode:
+          type: string
+          description: Host response code
+          example: '00000'
+        hostTransactionTime:
+          type: string
+          description: Host transaction datetime in milliseconds
+          format: yyyy-MM-dd'T'HH:mm:ssZ
+          example: 2020-09-01T16:40:52+0000
+        hostMessage:
+          type: string
+          description: Host response message
+          example: Success
+    TransactionTypes:
+      type: string
+      enum:
+      - sbLogin
+      - sbLogout
+      - sbRelogin
+      - sbOpenConsumer
+      - sbCardlessLogin
+      - sbAccountMovement
+      - sbAccountOverview
+      - sbCheckCashing
+      - sbDeposit
+      - sbMixedMediaPayment
+      - sbTransfer
+      - sbWithdrawal
+      - sbPinChange
+      - sbPrestagedCashOut
+      - sbPrestagedCashIn
+      - sbEReceipt
+      - sbLoadCustomerPreferences
+      - sbSaveCustomerPreferences
+      - sbAssistedWithdrawal
+      - sbAssistedDeposit
+      - sbLimitApproval
+      - sbRequestSupport
+      - sbCreditorSelection
+      - withdrawal
+      - balanceInquiry
+      - transfer
+      - purchase
+      - deposit
+      - payment
+      - refund
+      - purchaseCashback
+      - cashDisbursement
+      - consumerProfile
+      - moneyTransferDebit
+      - moneyTransferCredit
+      - paymentDebit
+      - paymentCredit
+      - adjustmentDebit
+      - adjustmentCredit
+      - financialProfile
+      - quasiCash
+      - requestCurrencyExchangeRates
+      description: Type of Transaction or BusinessCase performed
+    consumerIdentifyResponse:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ServiceResponse'
+      - type: object
+        required:
+        - payload
+        properties:
+          payload:
+            type: object
+            required:
+            - consumerDetails
+            properties:
+              consumerDetails:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ConsumerProfile'
+              transaction:
+                $ref: '#/components/schemas/TransactionResponse'
+              additionalProperties:
+                $ref: '#/components/schemas/AdditionalProperties'
+              supplementaryData:
+                $ref: '#/components/schemas/SupplementaryData'
+    AddressPOI:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/Address'
+      - type: object
+        properties:
+          state:
+            type: string
+            description: The name of the state.
+            example: New York
+          longitude:
+            type: number
+            description: The longitude coordinate of this location.
+          latitude:
+            type: number
+            description: The latitude coordinate of this location
+    ExtendedResponse:
+      type: object
+      required:
+      - code
+      properties:
+        code:
+          $ref: '#/components/schemas/ExtendedResponseCode'
+        message:
+          $ref: '#/components/schemas/ExtendedResponseMessage'
+    NetworkId:
+      type: string
+      description: Id of the acquiring network (scheme specific)
+      example: MAC
+    ConsumerLevel:
+      type: string
+      enum:
+      - NORMAL
+      - SENSITIVE
+      - HIGHLY_SENSITIVE
+      description: The consumer level
+      example: NORMAL
+    ConsumerProfile:
+      type: object
+      required:
+      - consumerId
+      - firstname
+      - taxId
+      properties:
+        consumerId:
+          type: string
+          minLength: 1
+          description: A unique identifier of a consumer
+          example: '123456'
+        consumerLevel:
+          $ref: '#/components/schemas/ConsumerLevel'
+        firstName:
+          type: string
+          example: Betty
+        lastName:
+          type: string
+          example: Adams
+        name:
+          type: string
+          example: Betty Adams
+        email:
+          type: string
+          format: email
+          example: betty.adams123456@cmail.com
+        phoneNumbers:
+          type: array
+          items:
+            $ref: '#/components/schemas/PhoneNumber'
+        taxId:
+          type: string
+          description: The Tax Id of the account.
+          example: '123'
+        address:
+          $ref: '#/components/schemas/Address'
+        isBankEmployee:
+          type: boolean
+        consumerType:
+          $ref: '#/components/schemas/ConsumerType'
+        consumerWarnings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Warning'
+        additionalProperties:
+          $ref: '#/components/schemas/AdditionalProperties'
+    ConsumerType:
+      type: string
+      enum:
+      - INDIVIDUAL
+      - BUSINESS
+      - UNKNOWN
+      description: Type of the consumer
+      example: INDIVIDUAL
+    getPreferencesRequest:
+      type: object
+      required:
+      - pointOfInteraction
+      - payload
+      - transaction
+      properties:
+        pointOfInteraction:
+          $ref: '#/components/schemas/PointOfInteraction'
+        transaction:
+          $ref: '#/components/schemas/TransactionBase'
+        payload:
+          type: object
+          required:
+          - scopes
+          properties:
+            consumerId:
+              $ref: '#/components/schemas/ConsumerId'
+            card:
+              $ref: '#/components/schemas/CardPan'
+            scopes:
+              type: array
+              items:
+                $ref: '#/components/schemas/PreferenceScope'
+            preferences:
+              type: array
+              items:
+                $ref: '#/components/schemas/ConsumerPreferencesLoad'
+            additionalProperties:
+              $ref: '#/components/schemas/AdditionalProperties'
+            supplementaryData:
+              $ref: '#/components/schemas/SupplementaryData'
+    MemberBanks:
+      type: object
+      required:
+      - memberBankName
+      - memberBankId
+      properties:
+        memberBankName:
+          type: string
+          example: Bank1
+          description: Name of the member bank
+        memberBankId:
+          $ref: '#/components/schemas/MemberBankId'
     EMVTags:
       type: string
       example: EMV_57
@@ -599,46 +1179,169 @@ components:
       - EMV_DF02
       - EMV_DF03
       - EMV_DF04
-    AccountName:
-      type: string
-      description: The account name which is displayed to the user
-      example: Your Savings account
     MerchantCategory:
       type: string
       description: Identifier representing the merchant's type of business product or service
       example: '6011'
-    CardPan:
+    TransactionWithStandin:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/TransactionBase'
+      - type: object
+        properties:
+          isStandin:
+            $ref: '#/components/schemas/IsStandin'
+    Pin:
+      type: object
+      required:
+      - encryptedPin
+      properties:
+        encryptedPin:
+          type: string
+          description: Hex encoded value of PIN block
+          example: B1D2AC6236D99348
+        format:
+          type: string
+          description: Encryption format for provided PIN
+          example: VISA_1
+        zpkGeneration:
+          type: string
+          description: Generation of Zone PIN Key used to encrypt the PIN
+          example: '2'
+    getOfacSearchRequest:
+      type: object
+      required:
+      - pointOfInteraction
+      - payload
+      - transaction
+      properties:
+        pointOfInteraction:
+          $ref: '#/components/schemas/PointOfInteraction'
+        transaction:
+          $ref: '#/components/schemas/TransactionBase'
+        payload:
+          type: object
+          properties:
+            consumerId:
+              $ref: '#/components/schemas/ConsumerId'
+            card:
+              $ref: '#/components/schemas/CardPan'
+            consumerSearchForm:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The name of the account owner
+                  example: Betty Adams
+                consumerType:
+                  $ref: '#/components/schemas/ConsumerType'
+            additionalProperties:
+              $ref: '#/components/schemas/AdditionalProperties'
+            supplementaryData:
+              $ref: '#/components/schemas/SupplementaryData'
+    ServiceResponse:
+      type: object
+      required:
+      - responseCode
+      properties:
+        responseCode:
+          $ref: '#/components/schemas/ResponseCode'
+        extendedResponse:
+          $ref: '#/components/schemas/ExtendedResponse'
+    TransactionResponse:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/TransactionWithStandin'
+      description: Exact replica of the request 'transaction' object which must be returned by the host
+    Card:
       type: object
       required:
       - pan
       properties:
-        bestMatchedElement:
-          $ref: '#/components/schemas/BestMatchedElement'
         pan:
           type: string
           minLength: 1
-          description: Primary Account Number (PAN) of the card
-          example: '4490739000000895'
-        track2:
+          description: Card number of the consumer
+          example: '4512665599887762'
+        cardState:
           type: string
-          example: 4490739000000895D161222366
-          description: ISO track 2 issued from the magnetic stripe card or from the ICC
-        emvData:
-          type: array
-          items:
-            $ref: '#/components/schemas/EMVTagData'
-        cardSequenceNumber:
+          description: Defines the state of the card (Active, Blocked etc)
+          enum:
+          - ACTIVE
+          - CLOSED
+          - EXPIRED
+          - BLOCKED
+          - ISSUED
+          - HOTCARD
+        cardStateReasonCode:
           type: string
-          example: '05'
-          description: Identify a card or a payment token inside a set of cards with the same PAN
-        expiryDate:
+          description: Card State Reason Code
+          enum:
+          - LOST
+          - STOLEN
+          - EXPIRED
+          - DAMAGED
+          - SUSPECTED_FRAUD
+          - FRAUD
+          - CLOSED_BY_CUSTOMER
+          - AUTOMATIC_AGREEMENT_COPY
+          - DO_NOT_HONOUR
+        cardStateReasonDescription:
           type: string
-          description: Expiry date of the card expressed in YYMM format
-          example: '2107'
-        consumerGroup:
+          description: Card State Reason Description
+          example: Activate Card
+    ClientType:
+      type: string
+      description: The type of the hardware terminal device
+      enum:
+      - ADMINISTRATIVE_TERMINAL
+      - POS_TERMINAL
+      - ATM
+      - HOME_TERMINAL
+      - ECR
+      - DIAL_TERMINAL
+      - TRAVELERS_CHECK_MACHINE
+      - FUEL_MACHINE
+      - SCRIP_MACHINE
+      - COUPON_MACHINE
+      - TICKET_MACHINE
+      - POINT_OF_BANKING_TERMINAL
+      - TELLER
+      - FRANCHISE_TELLER
+      - PERSONAL_BANKING
+      - PUBLIC_UTILITY
+      - VENDING
+      - SELF_SERVICE
+      - AUTHORIZATION
+      - PAYMENT
+      - VRU
+      - SMART_PHONE
+      - INTERACTIVE_TELEVISION
+      - PERSONAL_DIGITAL_ASSISTANT
+      - SCREEN_PHONE
+      - INTERNET_TERMINAL
+      - MICR_TERMINAL
+      - MOBILE_ACCEPTANCE_SOLUTION
+      - UNKNOWN
+      - NOT_CARDHOLDER_ACTIVATED
+      - LEVEL_1_CAT_ATM_WITH_PIN
+      - LEVEL_2_CAT_SELF_SERVICE_TERMINAL
+      - LEVEL_3_CAT_LIMITED_AMOUNT_TERMINAL
+      - LEVEL_4_CAT_IN_FLIGHT_COMMERCE
+      - LEVEL_6_CAT_ECOMMERCE
+      - LEVEL_7_CAT_TRANSPONDER_TRANSACTION
+      - LEVEL_8_CAT_MOBILE_INITIATED
+      - LEVEL_9_CAT_MPOS_ACCEPTANCE_DEVICE
+      example: ATM
+    EMVTagData:
+      type: object
+      properties:
+        tag:
+          $ref: '#/components/schemas/EMVTags'
+        value:
           type: string
-          description: Consumer Group Name
-          example: CG_ON_US_DEBIT
+          description: Hex Encoded value of EMVTag
+          example: 673336XXXXXXXXX1005D2005201XXXXXXXXXXF
     setPreferencesRequest:
       type: object
       required:
@@ -667,31 +1370,49 @@ components:
               $ref: '#/components/schemas/AdditionalProperties'
             supplementaryData:
               $ref: '#/components/schemas/SupplementaryData'
-    EMVTagData:
-      type: object
-      properties:
-        tag:
-          $ref: '#/components/schemas/EMVTags'
-        value:
-          type: string
-          description: Hex Encoded value of EMVTag
-          example: 673336XXXXXXXXX1005D2005201XXXXXXXXXXF
-    AddressPOI:
+    getOfacSearchResponse:
       type: object
       allOf:
-      - $ref: '#/components/schemas/Address'
+      - $ref: '#/components/schemas/ServiceResponse'
       - type: object
+        required:
+        - payload
         properties:
-          state:
-            type: string
-            description: The name of the state.
-            example: New York
-          longitude:
-            type: number
-            description: The longitude coordinate of this location.
-          latitude:
-            type: number
-            description: The latitude coordinate of this location
+          payload:
+            type: object
+            required:
+            - ofacSearchDetails
+            properties:
+              ofacSearchDetails:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OfacSearch'
+              transaction:
+                $ref: '#/components/schemas/TransactionResponse'
+              additionalProperties:
+                $ref: '#/components/schemas/AdditionalProperties'
+              supplementaryData:
+                $ref: '#/components/schemas/SupplementaryData'
+    Warning:
+      type: object
+      required:
+      - warningCode
+      - effectiveDate
+      properties:
+        effectiveDate:
+          $ref: '#/components/schemas/Date'
+        expirationDate:
+          $ref: '#/components/schemas/Date'
+        warningCode:
+          type: string
+          example: 94
+          description: The warning code for warning.
+        description:
+          type: string
+          description: The description for this warning.
+        category:
+          type: string
+          description: The category for this warning.
     getConsumerWarningsRequest:
       type: object
       required:
@@ -716,57 +1437,79 @@ components:
               $ref: '#/components/schemas/AdditionalProperties'
             supplementaryData:
               $ref: '#/components/schemas/SupplementaryData'
-    Date:
+    PointOfInteractionSettlementDate:
       type: string
-      format: yyyy-MM-dd
-      description: The date pattern is defined 'yyyy-MM-dd', with yyyy as 4-digit year, MM as 2-digit month and dd as 2-digit date of month
-      example: '2020-07-23'
-    TransactionTypes:
+      description: 'In Local Timezone <br> For ''selfService'' channel, ATM booking date for the transaction. <br><br>
+
+        For ''network'' channel, data element DE15 - the  month and day funds are transferred between the acquirer and issuer.'
+      format: MMDD
+      example: 0921
+    ClientTransactionTime:
+      type: string
+      description: 'In Local Timezone <br> For ''selfService'' channel, the local time the transaction takes place. <br><br>
+
+        For ''network'' channel, data element DE12 - the local time the transaction takes place at the card acceptor location.'
+      example: '164052'
+    updateCardStateRequest:
+      type: object
+      required:
+      - pointOfInteraction
+      - payload
+      - transaction
+      properties:
+        pointOfInteraction:
+          $ref: '#/components/schemas/PointOfInteraction'
+        transaction:
+          $ref: '#/components/schemas/TransactionBase'
+        payload:
+          type: object
+          required:
+          - card
+          properties:
+            consumerId:
+              $ref: '#/components/schemas/ConsumerId'
+            card:
+              $ref: '#/components/schemas/Card'
+            pin:
+              $ref: '#/components/schemas/Pin'
+            additionalProperties:
+              $ref: '#/components/schemas/AdditionalProperties'
+            supplementaryData:
+              $ref: '#/components/schemas/SupplementaryData'
+    getConsumerWarningsResponse:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ServiceResponse'
+      - type: object
+        required:
+        - payload
+        properties:
+          payload:
+            type: object
+            required:
+            - consumerWarnings
+            - isBankEmployee
+            properties:
+              isBankEmployee:
+                type: boolean
+                description: Is Bank Employee.
+              consumerWarnings:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Warning'
+              transaction:
+                $ref: '#/components/schemas/TransactionResponse'
+              additionalProperties:
+                $ref: '#/components/schemas/AdditionalProperties'
+              supplementaryData:
+                $ref: '#/components/schemas/SupplementaryData'
+    ResponseCode:
       type: string
       enum:
-      - sbLogin
-      - sbLogout
-      - sbRelogin
-      - sbOpenConsumer
-      - sbCardlessLogin
-      - sbAccountMovement
-      - sbAccountOverview
-      - sbCheckCashing
-      - sbDeposit
-      - sbMixedMediaPayment
-      - sbTransfer
-      - sbWithdrawal
-      - sbPinChange
-      - sbPrestagedCashOut
-      - sbPrestagedCashIn
-      - sbEReceipt
-      - sbLoadCustomerPreferences
-      - sbSaveCustomerPreferences
-      - sbAssistedWithdrawal
-      - sbAssistedDeposit
-      - sbLimitApproval
-      - sbRequestSupport
-      - sbCreditorSelection
-      - withdrawal
-      - balanceInquiry
-      - transfer
-      - purchase
-      - deposit
-      - payment
-      - refund
-      - purchaseCashback
-      - cashDisbursement
-      - consumerProfile
-      - moneyTransferDebit
-      - moneyTransferCredit
-      - paymentDebit
-      - paymentCredit
-      - adjustmentDebit
-      - adjustmentCredit
-      - financialProfile
-      - quasiCash
-      - requestCurrencyExchangeRates
-      description: Type of Transaction or BusinessCase performed
+      - OK
+      - FAIL
+      - RESUBMIT
+      example: OK
     AccountType:
       type: string
       enum:
@@ -816,66 +1559,75 @@ components:
       - EMPLOYEE_BENEFIT
       example: SAVINGS
       description: '| Symbolic name              | Comment                                                        | |----------------------------|----------------------------------------------------------------| | UNSPECIFIED                | Default value for unknown accounts.                              | | GIRO                       | Giro account.                                                  | | SAVINGS                    | Savings account.  | SECURITIES_DEPOSIT         | Depot of securities (shares and so on).                        | | SAVINGS_SECURITIES_DEPOSIT | Savings securities.                                            | | GIRO_SECURITIES_DEPOSIT    | Giro securities.                                               | | FIXED_TERM_DEPOSIT         | Fixed term deposit.                                            | | CREDIT_CARD                | Credit card account. (ISO 8583; MC DE.54->30 / VISA DE.54->30).| | LOAN                       | An account that covers a credit and its balance and movements. | | MORTGAGE                   | Security for a loan.                                           | | FOREIGN_CURRENCY           | An account that holds money in a foreign curreny.              | | EXTERNAL                   | An account that represents an account of a foreign institution.| | CHECKING                   | Checking account. (ISO 8583; MC DE.54->20 / VISA DE.54->20)    |  | UNIVERSAL                  | ISO 8583; VISA DE.54->40)                                      |  | SPENDING_POWER             | ISO 8583; VISA DE.54->64)                                      |  | FEE_COLLECTION_ACCOUNT     | used to collect fees                                           |  | ATM                        | ATM                                                            | | VENDOR                     | Vendor                                                         | | SHAREHOLDER                | Shareholder                                                    | | GENERAL_LEDGER             | General ledger                                                 | | CASH_RESERVE               | Cash Reserve Line of Credit                                    | | LOAN_DENIAL                | Load denial                                                    | | LEASE                      | Lease                                                          | | CONSUMER_LOAN              | Consumer loan                                                  | | COMMERCIAL_LOAN            | Cemercial loan                                                 | | RETIREMENT_LOAN            | Retirement loan                                                | | EXTERNAL_LOAN              | External loan                                                  | | SHARE                      | Share                                                          | | INDIVIDUAL_RETIREMENT      | Individual Retirement Account(IRA)                             |'
-    ResponseCode:
-      type: string
-      enum:
-      - OK
-      - FAIL
-      - RESUBMIT
-      example: OK
-    getOfacSearchRequest:
+    CardPan:
       type: object
       required:
-      - pointOfInteraction
-      - payload
-      - transaction
+      - pan
       properties:
-        pointOfInteraction:
-          $ref: '#/components/schemas/PointOfInteraction'
-        transaction:
-          $ref: '#/components/schemas/TransactionBase'
-        payload:
-          type: object
-          properties:
-            consumerId:
-              $ref: '#/components/schemas/ConsumerId'
-            card:
-              $ref: '#/components/schemas/CardPan'
-            consumerSearchForm:
-              type: object
-              properties:
-                name:
-                  type: string
-                  description: The name of the account owner
-                  example: Betty Adams
-                consumerType:
-                  $ref: '#/components/schemas/ConsumerType'
-            additionalProperties:
-              $ref: '#/components/schemas/AdditionalProperties'
-            supplementaryData:
-              $ref: '#/components/schemas/SupplementaryData'
-    PointOfInteractionSettlementDate:
+        bestMatchedElement:
+          $ref: '#/components/schemas/BestMatchedElement'
+        pan:
+          type: string
+          minLength: 1
+          description: Primary Account Number (PAN) of the card
+          example: '4490739000000895'
+        track2:
+          type: string
+          example: 4490739000000895D161222366
+          description: ISO track 2 issued from the magnetic stripe card or from the ICC
+        emvData:
+          type: array
+          items:
+            $ref: '#/components/schemas/EMVTagData'
+        cardSequenceNumber:
+          type: string
+          example: '05'
+          description: Identify a card or a payment token inside a set of cards with the same PAN
+        expiryDate:
+          type: string
+          description: Expiry date of the card expressed in YYMM format
+          example: '2107'
+        consumerGroup:
+          type: string
+          description: Consumer Group Name
+          example: CG_ON_US_DEBIT
+    ExtendedResponseMessage:
       type: string
-      description: 'In Local Timezone <br> For ''selfService'' channel, ATM booking date for the transaction. <br><br>
+      description: Extended Response Message
+      example: OK
+    Address:
+      type: object
+      properties:
+        street:
+          type: string
+          description: The name of the street.
+          example: Mainstreet
+        streetno:
+          type: string
+          description: The street number of this address.
+          example: '119'
+        city:
+          type: string
+          description: The name of the city.
+          example: New York City
+        zipcode:
+          type: string
+          description: The zip code of this city.
+          example: N5467
+        countrycode:
+          type: string
+          description: Country code
+          example: USA
+    ClientTransactionDate:
+      type: string
+      description: 'In Local Timezone <br> For ''selfService'' channel, the local month and day the transaction takes place. <br><br>
 
-        For ''network'' channel, data element DE15 - the  month and day funds are transferred between the acquirer and issuer.'
+        For ''network'' channel, data element DE13 - the local month and day the transaction takes place at the card acceptor location.'
       format: MMDD
       example: 0921
     SupplementaryData:
       type: object
       description: 'Additional information incorporated as an extension to the message by mixins based on the transaction type          '
-    PreferenceScope:
-      type: string
-      description: The scope for the list of customer preferences
-      example: FastCash
-    ConsumerLevel:
-      type: string
-      enum:
-      - NORMAL
-      - SENSITIVE
-      - HIGHLY_SENSITIVE
-      description: The consumer level
-      example: NORMAL
     BestMatchedElement:
       type: string
       example: TRACK_2
@@ -885,120 +1637,19 @@ components:
       - NFC
       - EMV
       - CUSTOM
-    Warning:
+    AccountRefConsumerIdentify:
       type: object
-      required:
-      - warningCode
-      - effectiveDate
       properties:
-        effectiveDate:
-          $ref: '#/components/schemas/Date'
-        expirationDate:
-          $ref: '#/components/schemas/Date'
-        warningCode:
+        accountNumber:
+          description: Account number
           type: string
-          example: 94
-          description: The warning code for warning.
-        description:
-          type: string
-          description: The description for this warning.
-        category:
-          type: string
-          description: The category for this warning.
-    ConfirmationNumber:
-      type: string
-      description: The unique identifier for the transaction
-      example: '998087999'
-    ConsumerPreferences:
-      type: object
-      description: Consumer preferences containing preferences for a specific scope
-      required:
-      - scope
-      - entries
-      properties:
-        scope:
-          $ref: '#/components/schemas/PreferenceScope'
-        entries:
-          type: array
-          description: "\nList of preferences in the key-value-type format. \n\n**key** - mandatory field of *string* type that indicates the name of the preference\n\n**value** - mandatory field of any data type containing the value of this preference\n\n**type** - mandatory field of *string* type indicating the data type of 'value' field. It is an enum containing the below values.\n\n    - Long\n    - Boolean\n    - String\n    - Integer\n    - Double\n    - BigInteger\n    - BigDecimal\n    - HashMap\n    - ArrayList\n    \n"
-          items:
-            type: object
-            additionalProperties: true
-          example:
-          - key: Language
-            value: en-US
-            type: String
-          - key: Print receipt
-            value: true
-            type: Boolean
-          - key: FastCash amount
-            value: 1000
-            type: Integer
-    ConsumerType:
-      type: string
-      enum:
-      - INDIVIDUAL
-      - BUSINESS
-      - UNKNOWN
-      description: Type of the consumer
-      example: INDIVIDUAL
-    TransactionResponse:
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/TransactionWithStandin'
-      description: Exact replica of the request 'transaction' object which must be returned by the host
-    getOfacSearchResponse:
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/ServiceResponse'
-      - type: object
-        required:
-        - payload
-        properties:
-          payload:
-            type: object
-            required:
-            - ofacSearchDetails
-            properties:
-              ofacSearchDetails:
-                type: array
-                items:
-                  $ref: '#/components/schemas/OfacSearch'
-              transaction:
-                $ref: '#/components/schemas/TransactionResponse'
-              additionalProperties:
-                $ref: '#/components/schemas/AdditionalProperties'
-              supplementaryData:
-                $ref: '#/components/schemas/SupplementaryData'
-    getMemberBankListResponse:
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/ServiceResponse'
-      - type: object
-        required:
-        - payload
-        properties:
-          payload:
-            type: object
-            properties:
-              operation:
-                type: string
-                description: Defines the operation to be performed on the list of 'memberBanks'.</br></br> ADD - adds the listed 'memberBanks' to existing list of member banks if not present. </br> REMOVE - removes the listed 'memberBanks' from existing list of member banks if present. </br></br> If unspecified, the entire list of member banks is refreshed with the new list of 'memberBanks'
-                enum:
-                - ADD
-                - REMOVE
-              memberBanks:
-                type: array
-                items:
-                  $ref: '#/components/schemas/MemberBanks'
-    TransactionWithStandin:
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/TransactionBase'
-      - type: object
-        properties:
-          isStandin:
-            $ref: '#/components/schemas/IsStandin'
+          example: A0123456789
+        accountType:
+          $ref: '#/components/schemas/AccountType'
+        accountName:
+          $ref: '#/components/schemas/AccountName'
+        accountSubType:
+          $ref: '#/components/schemas/AccountSubType'
     PointOfInteraction:
       properties:
         clientId:
@@ -1031,78 +1682,10 @@ components:
           $ref: '#/components/schemas/NetworkId'
         merchantCategory:
           $ref: '#/components/schemas/MerchantCategory'
-    MemberBanks:
-      type: object
-      required:
-      - memberBankName
-      - memberBankId
-      properties:
-        memberBankName:
-          type: string
-          example: Bank1
-          description: Name of the member bank
-        memberBankId:
-          $ref: '#/components/schemas/MemberBankId'
-    ConsumerProfile:
-      type: object
-      required:
-      - consumerId
-      - firstname
-      - taxId
-      properties:
-        consumerId:
-          type: string
-          minLength: 1
-          description: A unique identifier of a consumer
-          example: '123456'
-        consumerLevel:
-          $ref: '#/components/schemas/ConsumerLevel'
-        firstName:
-          type: string
-          example: Betty
-        lastName:
-          type: string
-          example: Adams
-        name:
-          type: string
-          example: Betty Adams
-        email:
-          type: string
-          format: email
-          example: betty.adams123456@cmail.com
-        phoneNumbers:
-          type: array
-          items:
-            $ref: '#/components/schemas/PhoneNumber'
-        taxId:
-          type: string
-          description: The Tax Id of the account.
-          example: '123'
-        address:
-          $ref: '#/components/schemas/Address'
-        isBankEmployee:
-          type: boolean
-        consumerType:
-          $ref: '#/components/schemas/ConsumerType'
-        consumerWarnings:
-          type: array
-          items:
-            $ref: '#/components/schemas/Warning'
-        additionalProperties:
-          $ref: '#/components/schemas/AdditionalProperties'
-    AccountRefConsumerIdentify:
-      type: object
-      properties:
-        accountNumber:
-          description: Account number
-          type: string
-          example: A0123456789
-        accountType:
-          $ref: '#/components/schemas/AccountType'
-        accountName:
-          $ref: '#/components/schemas/AccountName'
-        accountSubType:
-          $ref: '#/components/schemas/AccountSubType'
+    ConfirmationNumber:
+      type: string
+      description: The unique identifier for the transaction
+      example: '998087999'
     ConsumerPreferencesLoad:
       type: object
       description: Consumer preferences
@@ -1125,439 +1708,6 @@ components:
           - key: FastCash amount
             value: 1000
             type: Integer
-    Channel:
-      type: string
-      enum:
-      - selfService
-      - network
-      - teller
-      - mobile
-      - undefined
-      description: Channel through which transaction is initiated.
-    ClientTransactionTime:
-      type: string
-      description: 'In Local Timezone <br> For ''selfService'' channel, the local time the transaction takes place. <br><br>
-
-        For ''network'' channel, data element DE12 - the local time the transaction takes place at the card acceptor location.'
-      example: '164052'
-    ServiceResponse:
-      type: object
-      required:
-      - responseCode
-      properties:
-        responseCode:
-          $ref: '#/components/schemas/ResponseCode'
-        extendedResponse:
-          $ref: '#/components/schemas/ExtendedResponse'
-    ClientType:
-      type: string
-      description: The type of the hardware terminal device
-      enum:
-      - ADMINISTRATIVE_TERMINAL
-      - POS_TERMINAL
-      - ATM
-      - HOME_TERMINAL
-      - ECR
-      - DIAL_TERMINAL
-      - TRAVELERS_CHECK_MACHINE
-      - FUEL_MACHINE
-      - SCRIP_MACHINE
-      - COUPON_MACHINE
-      - TICKET_MACHINE
-      - POINT_OF_BANKING_TERMINAL
-      - TELLER
-      - FRANCHISE_TELLER
-      - PERSONAL_BANKING
-      - PUBLIC_UTILITY
-      - VENDING
-      - SELF_SERVICE
-      - AUTHORIZATION
-      - PAYMENT
-      - VRU
-      - SMART_PHONE
-      - INTERACTIVE_TELEVISION
-      - PERSONAL_DIGITAL_ASSISTANT
-      - SCREEN_PHONE
-      - INTERNET_TERMINAL
-      - MICR_TERMINAL
-      - MOBILE_ACCEPTANCE_SOLUTION
-      - UNKNOWN
-      - NOT_CARDHOLDER_ACTIVATED
-      - LEVEL_1_CAT_ATM_WITH_PIN
-      - LEVEL_2_CAT_SELF_SERVICE_TERMINAL
-      - LEVEL_3_CAT_LIMITED_AMOUNT_TERMINAL
-      - LEVEL_4_CAT_IN_FLIGHT_COMMERCE
-      - LEVEL_6_CAT_ECOMMERCE
-      - LEVEL_7_CAT_TRANSPONDER_TRANSACTION
-      - LEVEL_8_CAT_MOBILE_INITIATED
-      - LEVEL_9_CAT_MPOS_ACCEPTANCE_DEVICE
-      example: ATM
-    TransactionBase:
-      type: object
-      required:
-      - id
-      - type
-      - operation
-      properties:
-        id:
-          type: string
-          minLength: 1
-          example: '212423521525'
-        transactionTime:
-          type: string
-          description: Transaction time
-          format: yyyy-MM-dd'T'HH:mm:ssZ
-          example: 2020-09-01T16:40:52+0000
-        poiSettlementDate:
-          $ref: '#/components/schemas/PointOfInteractionSettlementDate'
-        businessCorrelationId:
-          type: string
-          description: Unique ID for a transaction business case
-          maxLength: 50
-          example: 7f2b9fcde28b42abbc10b0b9640f6ede
-        type:
-          $ref: '#/components/schemas/TransactionTypes'
-        operation:
-          type: string
-          minLength: 1
-          description: Operation performed for the given transaction type given by the 'type' property
-        retrievalReferenceNumber:
-          type: string
-          example: '827364775848'
-          description: 'A numeric value containing the unique transaction reference number '
-        authorizationIdentificationResponse:
-          type: string
-          example: '000123'
-          description: A numeric value containing the authorization code
-    Address:
-      type: object
-      properties:
-        street:
-          type: string
-          description: The name of the street.
-          example: Mainstreet
-        streetno:
-          type: string
-          description: The street number of this address.
-          example: '119'
-        city:
-          type: string
-          description: The name of the city.
-          example: New York City
-        zipcode:
-          type: string
-          description: The zip code of this city.
-          example: N5467
-        countrycode:
-          type: string
-          description: Country code
-          example: USA
-    ClientTransactionDate:
-      type: string
-      description: 'In Local Timezone <br> For ''selfService'' channel, the local month and day the transaction takes place. <br><br>
-
-        For ''network'' channel, data element DE13 - the local month and day the transaction takes place at the card acceptor location.'
-      format: MMDD
-      example: 0921
-    HostResponseData:
-      type: object
-      description: Host Response details
-      properties:
-        hostResponseCode:
-          type: string
-          description: Host response code
-          example: '00000'
-        hostTransactionTime:
-          type: string
-          description: Host transaction datetime in milliseconds
-          format: yyyy-MM-dd'T'HH:mm:ssZ
-          example: 2020-09-01T16:40:52+0000
-        hostMessage:
-          type: string
-          description: Host response message
-          example: Success
-    NetworkId:
-      type: string
-      description: Id of the acquiring network (scheme specific)
-      example: MAC
-    ConsumerId:
-      type: string
-      description: A unique identifier of a consumer
-      example: '123456'
-    AdditionalProperties:
-      type: object
-      additionalProperties:
-        type: string
-      description: Additional properties can be provided within this object
-    OfacSearch:
-      type: object
-      required:
-      - ofacMatchType
-      properties:
-        ofacMatchType:
-          type: string
-          description: OFAC Match Type.
-          example: OFACAlias
-        ofacMatchRef:
-          type: string
-          description: OFAC Match Reference ID.
-          example: L0305
-        id:
-          type: string
-          description: OFAC ID.
-          example: '6366'
-        aliasID:
-          type: string
-          description: OFAC alias ID.
-          example: '4349'
-        aliasName:
-          type: string
-          description: OFAC alias name.
-          example: A.C.L.
-        name:
-          type: string
-          description: Full Name.
-          example: 'Alliance Corporation Limited '
-        type:
-          type: string
-          description: OFAC Type.
-          example: Unknown
-        program:
-          type: string
-          description: OFAC Program.
-          example: FTO] [SDGT] [SDT
-        street:
-          type: string
-          description: OFAC Street.
-          example: A.B. street
-        city:
-          type: string
-          description: OFAC City.
-          example: New York
-        country:
-          type: string
-          description: OFAC Country.
-          example: USA
-        remarks:
-          type: string
-          description: Remarks for the transaction.
-          example: Search for ACCT XXXX 4567
-    setPreferencesResponse:
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/ServiceResponse'
-      - type: object
-        required:
-        - payload
-        properties:
-          payload:
-            type: object
-            properties:
-              confirmationNumber:
-                $ref: '#/components/schemas/ConfirmationNumber'
-              hostResponseData:
-                $ref: '#/components/schemas/HostResponseData'
-              transaction:
-                $ref: '#/components/schemas/TransactionResponse'
-              additionalProperties:
-                $ref: '#/components/schemas/AdditionalProperties'
-              supplementaryData:
-                $ref: '#/components/schemas/SupplementaryData'
-    getConsumerWarningsResponse:
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/ServiceResponse'
-      - type: object
-        required:
-        - payload
-        properties:
-          payload:
-            type: object
-            required:
-            - consumerWarnings
-            - isBankEmployee
-            properties:
-              isBankEmployee:
-                type: boolean
-                description: Is Bank Employee.
-              consumerWarnings:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Warning'
-              transaction:
-                $ref: '#/components/schemas/TransactionResponse'
-              additionalProperties:
-                $ref: '#/components/schemas/AdditionalProperties'
-              supplementaryData:
-                $ref: '#/components/schemas/SupplementaryData'
-    MemberBankId:
-      type: string
-      description: Id of the member bank
-      example: '1234'
-    IsStandin:
-      type: boolean
-      description: Standin request indicator
-      example: false
-    Pin:
-      type: object
-      required:
-      - encryptedPin
-      properties:
-        encryptedPin:
-          type: string
-          description: Hex encoded value of PIN block
-          example: B1D2AC6236D99348
-        format:
-          type: string
-          description: Encryption format for provided PIN
-          example: VISA_1
-        zpkGeneration:
-          type: string
-          description: Generation of Zone PIN Key used to encrypt the PIN
-          example: '2'
-    ExtendedResponse:
-      type: object
-      required:
-      - code
-      properties:
-        code:
-          $ref: '#/components/schemas/ExtendedResponseCode'
-        message:
-          $ref: '#/components/schemas/ExtendedResponseMessage'
-    getPreferencesResponse:
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/ServiceResponse'
-      - type: object
-        required:
-        - payload
-        properties:
-          payload:
-            type: object
-            required:
-            - preferences
-            properties:
-              preferences:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ConsumerPreferences'
-              transaction:
-                $ref: '#/components/schemas/TransactionResponse'
-              additionalProperties:
-                $ref: '#/components/schemas/AdditionalProperties'
-              supplementaryData:
-                $ref: '#/components/schemas/SupplementaryData'
-    ExtendedResponseMessage:
-      type: string
-      description: Extended Response Message
-      example: OK
-    transactionConfirmationResponse:
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/ServiceResponse'
-      - type: object
-        required:
-        - payload
-        properties:
-          payload:
-            type: object
-            properties:
-              confirmationNumber:
-                $ref: '#/components/schemas/ConfirmationNumber'
-              hostResponseData:
-                $ref: '#/components/schemas/HostResponseData'
-              transaction:
-                $ref: '#/components/schemas/TransactionResponse'
-              additionalProperties:
-                $ref: '#/components/schemas/AdditionalProperties'
-              supplementaryData:
-                $ref: '#/components/schemas/SupplementaryData'
-    Card:
-      type: object
-      required:
-      - pan
-      properties:
-        pan:
-          type: string
-          minLength: 1
-          description: Card number of the consumer
-          example: '4512665599887762'
-        cardState:
-          type: string
-          description: Defines the state of the card (Active, Blocked etc)
-          enum:
-          - ACTIVE
-          - CLOSED
-          - EXPIRED
-          - BLOCKED
-          - ISSUED
-          - HOTCARD
-        cardStateReasonCode:
-          type: string
-          description: Card State Reason Code
-          enum:
-          - LOST
-          - STOLEN
-          - EXPIRED
-          - DAMAGED
-          - SUSPECTED_FRAUD
-          - FRAUD
-          - CLOSED_BY_CUSTOMER
-          - AUTOMATIC_AGREEMENT_COPY
-          - DO_NOT_HONOUR
-        cardStateReasonDescription:
-          type: string
-          description: Card State Reason Description
-          example: Activate Card
-    updateCardStateRequest:
-      type: object
-      required:
-      - pointOfInteraction
-      - payload
-      - transaction
-      properties:
-        pointOfInteraction:
-          $ref: '#/components/schemas/PointOfInteraction'
-        transaction:
-          $ref: '#/components/schemas/TransactionBase'
-        payload:
-          type: object
-          required:
-          - card
-          properties:
-            consumerId:
-              $ref: '#/components/schemas/ConsumerId'
-            card:
-              $ref: '#/components/schemas/Card'
-            pin:
-              $ref: '#/components/schemas/Pin'
-            additionalProperties:
-              $ref: '#/components/schemas/AdditionalProperties'
-            supplementaryData:
-              $ref: '#/components/schemas/SupplementaryData'
-    consumerIdentifyResponse:
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/ServiceResponse'
-      - type: object
-        required:
-        - payload
-        properties:
-          payload:
-            type: object
-            required:
-            - consumerDetails
-            properties:
-              consumerDetails:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ConsumerProfile'
-              transaction:
-                $ref: '#/components/schemas/TransactionResponse'
-              additionalProperties:
-                $ref: '#/components/schemas/AdditionalProperties'
-              supplementaryData:
-                $ref: '#/components/schemas/SupplementaryData'
     consumerIdentifyRequest:
       type: object
       required:
@@ -1609,156 +1759,6 @@ components:
               $ref: '#/components/schemas/AdditionalProperties'
             supplementaryData:
               $ref: '#/components/schemas/SupplementaryData'
-    AccountSubType:
-      description: Represents the SubType of an account for AccountType
-      type: string
-      example: Savings account
-    ExtendedResponseCode:
-      type: string
-      enum:
-      - OK
-      - SERVER_FAILURE
-      - NO_RESULT
-      - ACCOUNT_NOT_FOUND
-      - ACCOUNT_CLOSED
-      - ACCOUNT_TYPE_INVALID
-      - LIMIT_EXCEEDED
-      - INSUFFICIENT_FUNDS
-      - REQUEST_DATA_INVALID
-      - TRX_NOT_PERMITTED_TO_ACCOUNT
-      - TRANSACTION_NOT_POSSIBLE
-      - HOST_OFFLINE
-      - HOST_CANCEL
-      - HOST_BUSINESS_ERROR
-      - RESPONSE_FEE_CONFIRM_REQUIRED
-      - OVERDRAFT_CONFIRM_REQUIRED
-      - PIN_VALIDATION_FAILED
-      - FCC_CONFIRM_REQUIRED
-      - DIRECT_CURRENCY_CONVERSION_CONFIRM_REQUIRED
-      - MULTI_CONFIRM_REQUIRED
-      - CARD_NOT_FOUND
-      - CARD_NOT_FOUND_FOR_EXPIRY_DATE
-      - CARD_BLOCKED
-      - CARD_EXPIRED
-      - CARD_MANIPULATED
-      - PIN_INACTIVE
-      - PIN_TRY_LIMIT_EXCEEDED
-      - PINS_DIFFER
-      - OFFLINE_OKAY
-      - SERVER_NOT_READY
-      example: OK
-      description: Extended Response Code Mapping
-    PhoneNumber:
-      type: object
-      required:
-      - number
-      - phoneType
-      properties:
-        number:
-          type: string
-          example: '+919123456789'
-        phoneType:
-          type: string
-          enum:
-          - BUSINESS
-          - HOME
-          - WORK
-          - MOBILE
-          example: HOME
-    getPreferencesRequest:
-      type: object
-      required:
-      - pointOfInteraction
-      - payload
-      - transaction
-      properties:
-        pointOfInteraction:
-          $ref: '#/components/schemas/PointOfInteraction'
-        transaction:
-          $ref: '#/components/schemas/TransactionBase'
-        payload:
-          type: object
-          required:
-          - scopes
-          properties:
-            consumerId:
-              $ref: '#/components/schemas/ConsumerId'
-            card:
-              $ref: '#/components/schemas/CardPan'
-            scopes:
-              type: array
-              items:
-                $ref: '#/components/schemas/PreferenceScope'
-            preferences:
-              type: array
-              items:
-                $ref: '#/components/schemas/ConsumerPreferencesLoad'
-            additionalProperties:
-              $ref: '#/components/schemas/AdditionalProperties'
-            supplementaryData:
-              $ref: '#/components/schemas/SupplementaryData'
-  parameters:
-    authorization:
-      name: Authorization
-      in: header
-      description: 'In case the Authentication type is BASIC_AUTH, Authorization will contain base 64 encoded userName:password string using HTTP Basic Authentication.<br> In case the Authentication Type is JWE/TOKEN, Authorization will contain token received using getToken request as Bearer Token. '
-      schema:
-        type: string
-        example: Basic afae1wad213da OR Bearer T2131241
-    initiatingPartyName:
-      name: initiatingPartyName
-      in: header
-      description: The name of the initiating party.
-      required: true
-      schema:
-        type: string
-        minLength: 1
-        example: DieboldNixdorf
-    version:
-      name: version
-      in: header
-      description: Version of DN Open Backend API being used.
-      required: true
-      schema:
-        type: string
-        minLength: 1
-        example: 4.3.0
-    referenceId:
-      name: referenceId
-      in: header
-      description: Unique identifier for the transaction request.
-      required: true
-      schema:
-        type: string
-        example: A123F34
-    productName:
-      name: productName
-      in: header
-      description: The name of the product which is consuming the service (business product name).
-      required: true
-      schema:
-        type: string
-        minLength: 1
-        example: Transaction Middleware
-    initiatingPartyId:
-      name: initiatingPartyId
-      in: header
-      description: Identifier of the party that has initiated this transaction, in this case Diebold Nixdorf's ID.
-      required: true
-      schema:
-        type: string
-        minLength: 1
-        example: DieboldNixdorf
-    timestamp:
-      name: timestamp
-      in: header
-      description: timestamp of the transaction
-      required: true
-      schema:
-        type: string
-        format: yyyy-MM-dd'T'HH:mm:ssZ
-        description: Timestamp
-        example: 2020-09-01T16:40:52+0000
   examples:
     ServiceResponseFailExample:
       value:

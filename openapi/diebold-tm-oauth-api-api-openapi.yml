@@ -238,6 +238,19 @@ paths:
           $ref: '#/components/responses/InternalServerError500'
 components:
   schemas:
+    Error:
+      description: "The error property is optional.<br< \nIt is set only if an error has been detected.\n"
+      type: object
+      properties:
+        message:
+          description: An optional, additional message which describes the error.
+          type: string
+          maxLength: 256
+          example: Unauthorized
+        errorCode:
+          description: An error code as outlined in the PI-API documentation.
+          type: string
+          example: REQUEST_DATA_INVALID_ID
     AuthenticationProviderData:
       type: object
       required:
@@ -258,19 +271,20 @@ components:
 
             '
           example: https://login.microsoftonline.com/52846f0f-bc96-4a36-939b-f4d04bb473a0/oauth2/v2.0/authorize
-    Error:
-      description: "The error property is optional.<br< \nIt is set only if an error has been detected.\n"
+    RefreshTokenRequest:
       type: object
+      required:
+      - refreshToken
+      description: 'The RefreshTokenRequest.
+
+        '
       properties:
-        message:
-          description: An optional, additional message which describes the error.
+        refreshToken:
           type: string
-          maxLength: 256
-          example: Unauthorized
-        errorCode:
-          description: An error code as outlined in the PI-API documentation.
-          type: string
-          example: REQUEST_DATA_INVALID_ID
+          description: 'The refresh token.
+
+            '
+          example: eyJhb.....ImlzcyI6Imh0dHBzOi8vaG5zaHUud2luY29yLW5peGRvcmYuY2
     TokenResponseData:
       type: object
       required:
@@ -317,20 +331,6 @@ components:
           description: 'The (optional) scope.
 
             '
-    RefreshTokenRequest:
-      type: object
-      required:
-      - refreshToken
-      description: 'The RefreshTokenRequest.
-
-        '
-      properties:
-        refreshToken:
-          type: string
-          description: 'The refresh token.
-
-            '
-          example: eyJhb.....ImlzcyI6Imh0dHBzOi8vaG5zaHUud2luY29yLW5peGRvcmYuY2
     ExchangeTokenResponseData:
       type: object
       required:
@@ -342,25 +342,6 @@ components:
 
             '
           example: c3RhdGUKaWRfdG....BhZ2UKCg==
-  responses:
-    InternalServerError500:
-      description: Internal Server Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Unauthorized401:
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    BadRequest400:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
   parameters:
     nodeID-Param:
       name: nodeID
@@ -375,6 +356,25 @@ components:
         type: string
         minLength: 1
       example: '10800'
+  responses:
+    Unauthorized401:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest400:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    InternalServerError500:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   securitySchemes:
     basicAuth:
       type: http
